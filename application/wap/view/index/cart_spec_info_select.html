@@ -1,0 +1,98 @@
+<!-- 新建html模板页 -->
+
+{include file="/index/top" /}
+
+</head>
+
+<body>
+  <div id="app">
+    <!-- 中间页 -->
+    <div class="aui-row aui-padded-10">
+      <div class="aui-col-xs-6">
+        <img :src="select_spec_group_info.thum || goods.thum" class="aui-padded-15">
+      </div>
+      <div class="aui-col-xs-6 aui-padded-10">
+        <h2 class="aui-text-price">
+          <span style="font-size: 0.6rem;">￥</span>
+          <span class="aui-font-size-20" style="letter-spacing:.1rem;" v-text="select_spec_group_info.sell_price || goods.sell_price"></span>
+        </h2>
+        <h4 class="aui-text-default" v-text="'库存: ' + (select_spec_group_info.stock || goods.stock)"></h4>
+      </div>
+    </div>
+    <div class="aui-content" style="margin-bottom:2.6rem;">
+      <div class="aui-row aui-padded-5" v-for="(name, nameKey) in spec_template.names" :key="nameKey">
+        <h3 v-text="name.name" class="aui-font-size-12"></h3>
+        <div class="aui-col-xs-3 aui-padded-t-5 aui-padded-b-5 aui-margin-t-5 aui-font-size-12 aui-text-center" v-for="(option, optionKey) in goods.goods_spec_info[name.id]"
+          :key="optionKey" v-text="option.option" @click="selectSpec(option, name)" :class="[{'aui-bg-info': option.isSelected},{'aui-text-white': option.isSelected}]"></div>
+      </div>
+    </div>
+    <footer class="aui-bar aui-bar-tab">
+      <div class="aui-bar-tab-item aui-padded-l-15 aui-padded-r-15" @click="submit">
+        <div class="aui-btn aui-btn-block aui-btn-sm aui-btn-info">确定</div>
+      </div>
+    </footer>
+  </div>
+  <script>
+    var index = parent.layer.getFrameIndex(window.name);
+    var cart = getStorage('cart', sessionStorage);
+    var app = new Vue({
+      el: '#app',
+      data: {
+        // 商品信息
+        goods: cart.goods_info,
+        // 商品规格模板信息
+        spec_template: [],
+        // 选择的规格组信息
+        select_spec_group_info: cart.spec_group_info
+      },
+      methods: {
+        // 选择规格
+        selectSpec: function (option, name) {
+          this.goods.goods_spec_info[name.id].forEach(function (item) {
+            Vue.set(item, 'isSelected', false);
+          })
+          Vue.set(option, 'isSelected', true);
+          this.getSelectSpecGroupInfo();
+        },
+        // 组合已经选择的规格项，进行自然序排序，与对应的规格组进行对比，获得选择得规格组
+        getSelectSpecGroupInfo: function () {
+          var ids = [];
+          for (var key in this.goods.goods_spec_info) {
+            this.goods.goods_spec_info[key].forEach(function (item) {
+              if (item.isSelected) {
+                ids.push(item.id)
+              }
+            })
+          }
+          ids = ids.sort().toString();
+          this.goods.goods_spec_group_info.forEach(function (item) {
+            if (ids == item.spec_option_ids) {
+              app.select_spec_group_info = item;
+            }
+          })
+        },
+        // 确定
+        submit: function () {
+          parent.app.updateCartSpec(cart.id, this.select_spec_group_info)
+          parent.layer.close(index);
+        }
+      },
+      mounted: function () {
+        httpRequest('post', 'api_query/goods_cates/template', { 'goods_cate_id': cart.goods_info.goods_cate_id }).then(function (resp) {
+          app.spec_template = resp.data.spec_template;
+          // 初始化选中规格项
+          var select_spec_group_info_option_ids = app.select_spec_group_info.spec_option_ids.split(',')
+          app.spec_template.names.forEach(function (item) {
+            app.goods.goods_spec_info[item.id].forEach(function (i) {
+              if (select_spec_group_info_option_ids.indexOf(i.id.toString()) != -1) {
+                Vue.set(i, 'isSelected', true);
+              }
+            })
+          });
+        })
+      }
+    })
+  </script>
+</body>
+
+</html>

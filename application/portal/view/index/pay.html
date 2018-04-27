@@ -1,0 +1,93 @@
+{include file="/index/top" /}
+</head>
+
+<body class="body-bg">
+
+	{include file="/index/header" /}
+	<div class="div-bk">
+		<div class="w1200">
+			<div class="chose-pay-top">
+				<div class="bottom">
+					<p class="baoxiu" id="number"></p>
+					<p class="address" id="address"></p>
+				</div>
+			</div>
+			<div class="chose-pay-bottom">
+				<div class="price">
+					<em class="word">金额:</em>
+					<span class="money" id="price"></span>
+				</div>
+				<div class="chose-way">
+					<div class="zhifubao">
+						<input type="radio" id="radio-1-1" name="radio-1-set" class="regular-radio" checked />
+						<label for="radio-1-1"></label>
+						<span class="text">支付宝支付</span>
+					</div>
+					<div class="weixin">
+						<input type="radio" id="radio-1-2" name="radio-1-set" class="regular-radio" />
+						<label for="radio-1-2"></label>
+						<span class="text">微信支付</span>
+					</div>
+				</div>
+				<button class="payment" onclick="pay()">去支付</button>
+			</div>
+			<div id="ali"></div>
+		</div>
+	</div>
+	{include file="/index/footer" /}
+</body>
+
+
+</html>
+
+<script type="text/javascript">
+	if (!user) {
+		location = "{:url('Index/login')}"
+	}
+
+	var layer, order;
+	layui.use(['layer'], function () {
+		layer = layui.layer;
+		order = JSON.parse(sessionStorage.getItem('orderInfo'));
+		if (!order) {
+			layer.msg('参数错误');
+			setTimeout(function () { location = "/portal" }, 300)
+		}
+		document.getElementById('number').textContent = '订单编号:' + order.order_no;
+		document.getElementById('address').textContent = '收货信息:' + order.address + ', ' + order.consignee_name + ', ' + order.mobile;
+		document.getElementById('price').textContent = '￥' + order.total_money;
+
+		initFooter();
+	})
+
+	pay = function () {
+		if (document.getElementById('radio-1-1').checked) {
+			$.ajax({
+				type: 'post',
+				url: apiHost + 'pay/ali_pay_pc',
+				headers: {
+					token: token.token,
+					auth: auth
+				},
+				data: {
+					order_no: order.order_no
+				},
+				timeout: 7000,
+				success: function (resp) {
+					if (resp.code == 0) {
+						layer.msg(resp.msg)
+					} else {
+						document.getElementById('ali').innerHTML = resp;
+						document.forms['alipaysubmit'].submit();
+					}
+				},
+				error: function (resp) {
+					layer.msg('网络错误')
+				}
+			})
+		} else {
+			location = "{:url('Index/wxpay')}"
+		}
+	}
+
+</script>

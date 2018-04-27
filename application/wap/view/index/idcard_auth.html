@@ -1,0 +1,152 @@
+<!-- 新建html模板页 -->
+
+{include file="/index/top" /}
+</head>
+
+<body>
+  <div id="app">
+    <header class="aui-bar aui-bar-nav aui-bar-light" id="header">
+      <a class="aui-pull-left aui-btn" onclick="goto('home')">
+        <span class="aui-iconfont aui-icon-left"></span>
+      </a>
+      <div class="aui-title" v-text="title"></div>
+    </header>
+    <div class="aui-content aui-bg-white  aui-padded-10" style="margin-bottom:2.5rem;">
+      <h5 class="aui-padded-t-10">请按照实例上传您的身份证正反面照片</h5>
+      <section class="aui-grid">
+        <div class="aui-row">
+          <div class="aui-col-xs-6 aui-padded-r-5">
+            <img :src="idcard_front">
+          </div>
+          <div class="aui-col-xs-6 aui-padded-l-5">
+            <img :src="idcard_back">
+          </div>
+        </div>
+      </section>
+      <img class="aui-col-xs-12" src="__static__/wap/images/idcard_front.png" @click="fileClick(1)">
+      <input @change="fileChange($event, 'idcard_front')" type="file" id="upload_file1" style="display: none">
+      <img class="aui-col-xs-12 aui-padded-t-10" src="__static__/wap/images/idcard_back.png" @click="fileClick(2)">
+      <input @change="fileChange($event, 'idcard_back')" type="file" id="upload_file2" style="display: none">
+    </div>
+
+    <footer class="aui-bar aui-bar-tab">
+      <div class="aui-bar-tab-item aui-padded-l-15 aui-padded-r-15" @click="submit()">
+        <div class="aui-btn aui-btn-block aui-btn-sm aui-btn-info">提交审核</div>
+      </div>
+    </footer>
+  </div>
+  <script>
+    var app = new Vue({
+      el: '#app',
+      data: {
+        title: '实名认证',
+        idcard_front: '__static__/wap/images/idcard_front_example.png',
+        idcard_back: '__static__/wap/images/idcard_back_example.png'
+      },
+      methods: {
+        submit: function () {
+          if (this.idcard_front == '__static__/wap/images/idcard_front_example.png') {
+            layer.msg('请上传身份证正面照片');
+            return;
+          }
+          if (this.idcard_back == '__static__/wap/images/idcard_back_example.png') {
+            layer.msg('请上传身份证反面照片');
+            return;
+          }
+          layer.confirm('确认提交审核?', { icon: 3, title: '提示' }, function (index) {
+            layer.close(index);
+
+            if (querystring.status == 0) {
+              var router = 'api_users/user_auths/save';
+              var data = {
+                id_card_front_img: app.idcard_front,
+                id_card_back_img: app.idcard_back,
+                status: 1,
+              };
+            } else {
+              var router = 'api_users/user_auths/update';
+              var data = {
+                id: querystring.id,
+                id_card_front_img: app.idcard_front,
+                id_card_back_img: app.idcard_back,
+                status: 1,
+              }
+            }
+
+            httpRequest('POST', router, data).then(function (resp) {
+              layer.msg('提交成功');
+              setTimeout(function (resp) {
+                goto('idcard_info')
+              }, 500)
+            })
+          })
+        },
+        fileClick: function (type) {
+          document.getElementById('upload_file' + type).click()
+        },
+        //文件发生该变
+        fileChange: function (el, type) {
+          if (!el.target.files[0].size) return;
+          this.fileList(el.target, type);
+          el.target.value = ''
+        },
+        //文件列表
+        fileList: function (fileList, type) {
+          var files = fileList.files;
+          for (var i = 0; i < files.length; i++) {
+            //判断是否为文件夹
+            if (files[i].type != '') {
+              this.fileAdd(files[i], type);
+            } else {
+              //文件夹处理
+              this.folders(fileList.items[i], type);
+            }
+          }
+        },
+        //文件夹处理
+        folders: function (files, type) {
+          var _this = this;
+          //判断是否为原生file
+          if (files.kind) {
+            files = files.webkitGetAsEntry();
+          }
+          files.createReader().readEntries(function (file) {
+            for (var i = 0; i < file.length; i++) {
+              if (file[i].isFile) {
+                _this.foldersAdd(file[i], type);
+              } else {
+                _this.folders(file[i], type);
+              }
+            }
+          })
+        },
+        foldersAdd: function (entry, type) {
+          var _this = this;
+          entry.file(function (file) {
+            _this.fileAdd(file, type)
+          })
+        },
+        fileAdd: function (file, type) {
+          //判断是否为图片文件
+          if (file.type.indexOf('image') == -1) {
+            layer.msg('请选择图片类型的文件')
+          } else {
+            var that = this;
+            var reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = function () {
+              file.src = this.result;
+              that[type] = file.src;
+            }
+
+          }
+        }
+      },
+      mounted: function () {
+        //查询实名认证状态
+      }
+    })
+  </script>
+</body>
+
+</html>

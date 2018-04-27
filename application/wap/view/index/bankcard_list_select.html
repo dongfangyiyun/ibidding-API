@@ -1,0 +1,88 @@
+<!-- 新建html模板页 -->
+
+{include file="/index/top" /}
+</head>
+<!-- :style="{color: selectBankStyle}" -->
+
+<body>
+  <div id="app">
+
+    <div class="aui-content">
+      <ul class="aui-list aui-list aui-media-list aui-bg-default" style="background-image:none;">
+        <li class="aui-list-item aui-list-item-middle aui-margin-t-10 aui-margin-b-10 aui-bg-white" v-for="(card, key) in cards"
+          :key="key" @click="selectCard(card)">
+          <div class="aui-media-list-item-inner">
+            <div class="aui-list-item-media" style="width: 3rem;">
+              <i class="iconfont" :class="card | selectBankFontClassObj" style="font-size: 2rem;" :style="card | selectBankStyle"></i>
+            </div>
+            <div class="aui-list-item-inner aui-list-item-arrow">
+              <div class="aui-list-item-title" v-text="card.bank_name"></div>
+              <div class="aui-list-item-text" v-text="card.card_number"></div>
+            </div>
+          </div>
+        </li>
+      </ul>
+      <div class="area">
+        <div class="submit" @click="addBankCard">新增银行卡</div>
+      </div>
+    </div>
+  </div>
+  <script>
+    var parentIndex = parent.layer.getFrameIndex(window.name);
+    var app = new Vue({
+      el: '#app',
+      data: {
+        title: '我的银行卡',
+        cards: [],
+        cardNameMapping: {
+          '中国农业银行': { color: '#018a6e', fontClass: { 'icon-nongyeyinxing': true } },
+          '中国建设银行': { color: '#0c4290', fontClass: { 'icon-jiansheyinxing': true } },
+          '中国工商银行': { color: '#b0091a', fontClass: { 'icon-gongshangyinxing': true } },
+          '中国银行': { color: '#d90000', fontClass: { 'icon-zhongguoyinxing': true } },
+          '招商银行': { color: '#cb0101', fontClass: { 'icon-zhaoshangyinhangbank1193432easyiconnet': true } },
+          '光大银行': { color: '#52047b', fontClass: { 'icon-guangdayinxing': true } },
+          '中国邮政储蓄银行': { color: '#0b6c37', fontClass: { 'icon-youzhengyinxing': true } },
+          '兴业银行': { color: '#143981', fontClass: { 'icon-changyonglogo05': true } },
+          '中信银行': { color: '#d50202', fontClass: { 'icon-zhongxinyinxing': true } },
+          '浦发银行': { color: '#062561', fontClass: { 'icon-pufayinxing': true } },
+          '广发银行': { color: '#a01d1d', fontClass: { 'icon-yinhangqia': true } },
+          '平安银行': { color: '#f15a21', fontClass: { 'icon-yinhangqia': true } },
+          '交通银行': { color: '#003267', fontClass: { 'icon-jiaotongyinxing': true } },
+          '华夏银行': { color: '#d50202', fontClass: { 'icon-changyonglogo17': true } },
+          '民生银行': { color: '#28a1a3', fontClass: { 'icon-minshengyinxing': true } },
+        },
+      },
+      methods: {
+        selectCard: function (card) {
+          parent.app.bankcard = card;
+          parent.layer.close(parentIndex);
+        },
+        addBankCard: function () {
+          goto('bankcard_edit_select')
+        }
+      },
+      filters: {
+        selectBankFontClassObj: function (card) {
+          return app.cardNameMapping[card.bank_name].fontClass
+        },
+        selectBankStyle: function (card) {
+          return { color: app.cardNameMapping[card.bank_name].color };
+        },
+      }
+    });
+    loadData = function () {
+      httpRequest('POST', 'api_users/bank_cards/lists', {
+        'page-num': 1,
+        'page-limit': 100
+      }).
+        then(function (resp) {
+          resp.data.forEach(function (item) {
+            app.cards.push(item);
+          })
+        });
+    }
+    loadData();
+  </script>
+</body>
+
+</html>

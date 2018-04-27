@@ -1,0 +1,159 @@
+<!-- 新建html模板页 -->
+
+{include file="/index/top" /}
+</head>
+
+<body>
+  <div id="app">
+    <!-- 头部 -->
+    <header class="aui-bar aui-bar-nav aui-bar-light" id="header" style="background-image:none;">
+      <a class="aui-pull-left aui-btn" onclick="javascript:window.history.back(); return false;">
+        <span class="aui-iconfont aui-icon-left"></span>
+      </a>
+      <div class="aui-title" v-text="title"></div>
+    </header>
+    <!-- 中间页 -->
+    <div class="aui-content aui-padded-5 aui-bg-white aui-margin-t-10">
+      <div class="aui-margin-b-15">
+        <ul class="aui-list aui-form-list" style="background-image:none;">
+          <li class="aui-list-item" style="background-image:none;">
+            <div class="aui-list-item-inner">
+              <div class="aui-list-item-label">
+                退款金额
+              </div>
+              <div class="aui-list-item-input">
+                <input class="aui-border aui-text-price aui-font-weight aui-padded-5" type="text" readonly :value="'￥' + goods.real_price * goods.num">
+              </div>
+            </div>
+          </li>
+          <li class="aui-list-item" style="background-image:none;">
+            <div class="aui-list-item-inner">
+              <div class="aui-list-item-label">
+                退款说明
+              </div>
+              <div class="aui-list-item-input">
+                <textarea class="aui-border aui-padded-5" placeholder="请输入退款说明(必填)" v-model="desc"></textarea>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div class="aui-row aui-row-padded">
+        <div class="aui-col-xs-3" v-for="(img,imgKey) in imgs" :key="imgKey">
+          <img :src="img" />
+        </div>
+        <div class="aui-col-xs-3" @click="fileClick()">
+          <img src="__static__/wap/images/add_photo.png">
+        </div>
+        <input @change="fileChange($event)" type="file" id="upload_file" style="display: none" multiple>
+      </div>
+      <div class="area">
+        <div class="submit" @click="submit()">提交申请</div>
+      </div>
+    </div>
+  </div>
+  <script>
+    var app = new Vue({
+      el: '#app',
+      data: {
+        title: '申请退款',
+        goods: getStorage('refundGoods', sessionStorage),
+        imgs: [],
+        desc: ''
+      },
+      methods: {
+        submit: function () {
+          if (!this.desc) {
+            layer.msg('请填写退款说明');
+          } else {
+            httpRequest('POST', 'api_orders/return_goods/save', {
+              order_id: this.goods.order_id,
+              order_goods_id: this.goods.id,
+              return_type: 1,
+              return_reason: this.desc,
+              imgs: this.imgs
+            }).then(function (resp) {
+              layer.msg(resp.msg);
+              setTimeout(function () {
+                goto('order_list', { status: 0 });
+              }, 800)
+            })
+          }
+
+        },
+        fileClick: function () {
+          document.getElementById('upload_file').click()
+        },
+        //文件发生该变
+        fileChange: function (el) {
+          if (!el.target.files[0].size) return;
+          this.fileList(el.target);
+          el.target.value = ''
+        },
+        //文件列表
+        fileList: function (fileList) {
+          var files = fileList.files;
+          for (var i = 0; i < files.length; i++) {
+            //判断是否为文件夹
+            if (files[i].type != '') {
+              this.fileAdd(files[i]);
+            } else {
+              //文件夹处理
+              this.folders(fileList.items[i]);
+            }
+          }
+        },
+        //文件夹处理
+        folders: function (files) {
+          var _this = this;
+          //判断是否为原生file
+          if (files.kind) {
+            files = files.webkitGetAsEntry();
+          }
+          files.createReader().readEntries(function (file) {
+            for (var i = 0; i < file.length; i++) {
+              if (file[i].isFile) {
+                _this.foldersAdd(file[i]);
+              } else {
+                _this.folders(file[i]);
+              }
+            }
+          })
+        },
+        foldersAdd: function (entry) {
+          var _this = this;
+          entry.file(function (file) {
+            _this.fileAdd(file)
+          })
+        },
+        fileAdd: function (file) {
+          //判断是否为图片文件
+          if (file.type.indexOf('image') == -1) {
+            layer.msg('请选择图片类型的文件')
+          } else {
+            var that = this;
+            var reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = function () {
+              if (that.imgs.length < 5) {
+                file.src = this.result;
+                that.imgs.push(file.src)
+              } else {
+                layer.msg('最多上传5张图片')
+              }
+
+            }
+          }
+        },
+      },
+      filters: {
+
+      },
+      mounted: function () {
+
+      }
+    })
+  </script>
+</body>
+
+</html>

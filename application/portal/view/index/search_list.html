@@ -1,0 +1,382 @@
+{include file="/index/top" /}
+<link rel="stylesheet" href="__static__/OwlCarousel2-2.2.1/assets/owl.carousel.min.css">
+<link rel="stylesheet" href="__static__/OwlCarousel2-2.2.1/assets/owl.theme.default.min.css">
+<script src="__static__/OwlCarousel2-2.2.1/owl.carousel.min.js"></script>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<style type="text/css">
+	body {
+		background: #f4f4f4;
+	}
+
+	.search-list-cont1 {
+		border-radius: 4px;
+		background-color: #ffffff;
+		box-sizing: border-box;
+		margin-top: 24px;
+		margin-bottom: 8px;
+		padding-left: 30px;
+		padding-right: 30px;
+	}
+
+	.search-list-cont1 .search-nav {
+		line-height: 60px;
+		border-bottom: 1px solid #eeeeee;
+	}
+
+	.search-list-cont1 .search-nav:last-child {
+		border-bottom: 0px;
+	}
+
+	.search-list-cont1 .search-nav p {
+		margin-right: 32px;
+		color: #000000;
+	}
+
+	.search-list-cont1 .search-nav a {
+		color: #878787;
+		margin-right: 20px;
+	}
+
+	.search-list-cont1 .search-nav a:hover {
+		color: #108ee9;
+	}
+
+	.search-list-cont1 .search-nav a.on {
+		color: #108ee9;
+	}
+
+	.search-list-cont1 .search-nav.mr-33 a {
+		margin-right: 33px;
+	}
+
+	.search-list-cont2 {
+		padding: 0 30px;
+		box-sizing: border-box;
+		background-color: #ffffff;
+		border-radius: 4px;
+	}
+
+	.search-keyword {
+		line-height: 70px;
+	}
+
+	.search-keyword .title {
+		color: rgb(164, 164, 164);
+	}
+
+	.search-keyword a {
+		color: rgb(164, 164, 164);
+		line-height: 1;
+		padding: 0 10px;
+		border-right: 1px solid #bdbdbd;
+	}
+
+	.search-keyword a:last-child {
+		border-right: 0px;
+	}
+
+	.search-keyword a:hover {
+		color: #ff2b2b;
+	}
+
+	.search-list-cont2 {
+		padding-bottom: 50px;
+		margin-bottom: 22px;
+	}
+
+	.search-list-cont2 .search-list li {
+		width: 210px;
+		margin-right: 22px;
+		float: left;
+		border: 1px solid #efeeee;
+		box-sizing: border-box;
+		margin-bottom: 22px;
+	}
+
+	.search-list-cont2 .search-list li:nth-child(5n) {
+		margin-right: 0px;
+	}
+
+	.search-list-cont2 .search-list li .img-top {
+		border-bottom: 1px solid #efeeee;
+	}
+
+	.search-list-cont2 .search-list li .cont2-bottom {
+		width: 208px;
+		height: 107px;
+		box-sizing: border-box;
+		padding: 14px 9px 0px 9px;
+	}
+
+	.search-list-cont2 .search-list li .cont2-bottom .title {
+		color: rgb(40, 40, 40);
+		line-height: 1.3;
+	}
+
+	.search-list-cont2 .search-list li .cont2-bottom .price {
+		float: left;
+		color: rgb(221, 9, 9);
+		font-size: 21px;
+		margin-bottom: 0px;
+		margin-top: 0px;
+	}
+
+	.search-list-cont2 .search-list li .cont2-bottom .price span {
+		text-decoration: line-through;
+		color: rgb(85, 85, 85);
+		line-height: 27px;
+		display: inline-block;
+		vertical-align: top;
+	}
+
+	.search-list-cont2 .search-list li .cont2-bottom .mun {
+		float: right;
+		color: rgb(85, 85, 85);
+		line-height: 27px;
+	}
+
+	.fen-page {
+		text-align: center;
+		margin-top: 34px;
+		width: 100%;
+		height: 34px;
+	}
+
+	.fen-page a {
+		width: 34px;
+		height: 34px;
+		text-align: center;
+		line-height: 34px;
+		background-color: #d2d2d2;
+		font-size: 14px;
+		color: rgb(255, 254, 254);
+		margin: 0 3px;
+		transition: all .2s;
+		-moz-transition: all .2s;
+		-webkit-transition: all .2s;
+		-o-transition: all .2s;
+	}
+
+	.fen-page a:hover {
+		background-color: #108ee9;
+	}
+
+	.search-list-cont3 {
+		width: 100%;
+		padding: 30px 17px 37px 17px;
+		background-color: #ffffff;
+		border-radius: 4px;
+		box-sizing: border-box;
+		margin-bottom: 40px;
+	}
+
+	.search-list-cont3 .cont3-title {
+		margin: 30px auto;
+		width: 180px;
+		text-align: center;
+		font-size: 18px;
+		color: rgb(71, 71, 71);
+		position: relative;
+	}
+
+	.search-list-cont3 .cont3-title:after {
+		content: "";
+		width: 50px;
+		height: 1px;
+		background-color: #d2d2d2;
+		position: absolute;
+		top: 10px;
+		right: -50px;
+	}
+
+	.search-list-cont3 .cont3-title:before {
+		content: "";
+		width: 50px;
+		height: 1px;
+		background-color: #d2d2d2;
+		position: absolute;
+		top: 10px;
+		left: -50px;
+	}
+
+	.search-list-cont3 .cont3-bottom li {
+		float: left;
+		width: 276px;
+		margin-right: 20px;
+	}
+
+	.search-list-cont3 .cont3-bottom li:last-child {
+		margin-right: 0px;
+	}
+</style>
+
+</head>
+
+<body>
+	{include file="/index/header" /}
+
+	<div class="w1200" id="app">
+		<div class="search-list-cont1 padding-top-10">
+			<div class="search-nav">
+				<p class="title inline-black">产品分类:</p>
+				<a v-for="(cate, cateKey) in cates" :key="cateKey" v-text="cate.name" @click="selectCate(cate)"></a>
+			</div>
+			<div class="search-nav mr-33">
+				<p class="title inline-black">排&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;序:</p>
+				<a class="on" @click="addcondition('default')">默认</a>
+				<a @click="addcondition('price')">价格</a>
+				<a @click="addcondition('time')">时间</a>
+			</div>
+		</div>
+		<div class="search-list-cont2">
+			<div class="search-keyword">
+				<p class="title inline-black">热搜词：</p>
+				<a>MK</a>
+				<a>UGG</a>
+				<a>Burberry</a>
+				<a>MO&Co.</a>
+				<a>ochirly</a>
+				<a>黛安芬</a>
+				<a>双肩包</a>
+			</div>
+
+			<div v-if="haveNoData" class="search-none-cont1">
+				<div class="content">
+					<img class="img-logo" src="__static__/portal/images/search-logo.png">
+					<p class="title">您查找的商品未上架！</p>
+					<a class="button" href="">去逛逛</a>
+				</div>
+			</div>
+			<div v-else class="search-list">
+				<ul>
+					<li v-for="(goods,goodsKey) in goodslist" :key="goodsKey" @click="goGoods(goods.id)" style="cursor:default">
+						<a class="img-top">
+							<img class="img-class" :src="goods.thum">
+						</a>
+						<div class="cont2-bottom">
+							<a class="title font-size-14 margin-btn-15" v-text="goods.name"></a>
+							<div class="clearfix">
+								<h5 class="price">￥{{goods.sell_price}}
+									<span class="font-size-10 margin-left-5">￥{{goods.market_price}}</span>
+								</h5>
+								<p class="mun font-size-12">月销量:{{goods.sell_num}}</p>
+							</div>
+						</div>
+
+					</li>
+				</ul>
+				<div class="fen-page">
+					<a style="cursor:default" v-for="n in totalpage" @click="goPage(n)">
+						<span class="current" v-if="page_num == n">{{ n }}</span>
+						<span v-else>{{ n }}</span>
+					</a>
+				</div>
+			</div>
+		</div>
+		<div class="search-list-cont3">
+			<h4 class="cont3-title">正在进行中的活动</h4>
+			<div class="cont3-bottom">
+				<ul>
+					<li>
+						<a href="">
+							<img class="img-class" src="__static__/portal/images/search-bottom-img1.jpg">
+						</a>
+					</li>
+					<li>
+						<a href="">
+							<img class="img-class" src="__static__/portal/images/search-bottom-img2.jpg">
+						</a>
+					</li>
+					<li>
+						<a href="">
+							<img class="img-class" src="__static__/portal/images/search-bottom-img3.jpg">
+						</a>
+					</li>
+					<li>
+						<a href="">
+							<img class="img-class" src="__static__/portal/images/search-bottom-img4.jpg">
+						</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+
+	{include file="index/footer" /}
+	<script>
+		$(document).ready(function () {
+			$('.search-keyword a').click(function () {
+				var keysear = $(this).text();
+
+				window.location = '/portal/index/search_list?keyword=' + keysear;
+			});
+		});
+		var page = 1;
+		var typestr = '';
+		var app = new Vue({
+			el: '#app',
+			data: {
+				goodslist: [],
+				cates: [],
+				totalpage: 0,
+				page_num: 1,
+				haveNoData: false
+			},
+			methods: {
+				goGoods: function (goodsId) {
+					goto('goods_detail', { goodsId: goodsId });
+				},
+				goPage: function (pagenum) {
+					page = pagenum;
+					app.goodslist = [];
+					loadGoods();
+				},
+				selectCate: function (cate) {
+					location = "/portal/index/search_list?cateId=" + cate.id;
+				},
+				addcondition: function (type) {
+					typestr = type;
+					app.goodslist = [];
+					loadGoods();
+				},
+			},
+			mounted: function () {
+				// 加载分类
+				httpRequest('POST', 'api_goods/goods_cates/lists_tree', {}).then(function (resp) {
+					app.cates = resp.data;
+				})
+			},
+		})
+		loadGoods = function () {
+			var data = {};
+			//此处再添加addcondition的参数
+			if (querystring.cateId) {
+				data.goods_cate_id = querystring.cateId;
+			} else if (querystring.keyword) {
+				data.keyword = decodeURIComponent(querystring.keyword);
+			} else if (querystring.tag) {
+				data.tag = decodeURIComponent(querystring.tag);
+			}
+
+			httpRequest('POST', 'api_goods/goods/lists', data, {
+				'page-num': page,
+				'page-limit': 10
+			}).then(function (resp) {
+				console.log(resp);
+				if (resp.data.length > 0) {
+					app.totalpage = Math.ceil(resp.page.data_count / resp.page.page_limit);
+					app.haveNoData = false;
+					app.page_num = resp.page.page_num;
+					resp.data.forEach(function (item) {
+						app.goodslist.push(item);
+					})
+				} else { //window.location.href='/portal/index/search_none';
+					app.haveNoData = true;
+				}
+			});
+		}
+		loadGoods();
+	</script>
+</body>
+
+</html>

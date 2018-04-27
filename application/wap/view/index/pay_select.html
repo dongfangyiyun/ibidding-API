@@ -1,0 +1,146 @@
+<!-- 新建html模板页 -->
+
+{include file="/index/top" /}
+</head>
+
+<body>
+  <div id="app">
+    <header class="aui-bar aui-bar-nav aui-bar-light" id="header" style="background-image:none;">
+      <a class="aui-pull-left aui-btn" onclick="javascript:window.history.back(); return false;">
+        <span class="aui-iconfont aui-icon-left"></span>
+      </a>
+      <div class="aui-title" v-text="title"></div>
+    </header>
+    <div class="aui-content">
+      <div class="aui-bg-white aui-padded-15 aui-margin-t-10 aui-margin-b-10">
+        <h3>订单号：
+          <span v-text="order.order_no"></span>
+        </h3>
+        <h3 class="aui-padded-t-10">订单金额：
+          <span class="aui-text-price aui-font-size-12">￥</span>
+          <span class="aui-text-price aui-font-size-18" v-text="order.total_money"></span>
+        </h3>
+      </div>
+      <div class="aui-margin-b-15">
+        <ul class="aui-list aui-list-in" style="background-image:none;">
+          <li class="aui-list-item" style="height:3rem;">
+            <div class="aui-list-item-label-icon">
+              <i class="aui-iconfont iconfont icon-yue" style="font-size: 1.5rem;color: #eb661b;"></i>
+            </div>
+            <div class="aui-list-item-inner">
+              <div class="aui-list-item-title">余额支付</div>
+              <div class="aui-list-item-right" @click="changeTabName('yue')">
+                <i class="aui-iconfont iconfont icon-roundcheckfill aui-margin-r-5 aui-font-size-20 aui-text-info" v-show="activeTabName == 'yue'"></i>
+                <i class="aui-iconfont iconfont icon-roundcheckfill aui-margin-r-5 aui-font-size-20" style="color: #ccc" v-show="activeTabName != 'yue'"></i>
+              </div>
+            </div>
+          </li>
+          <li class="aui-list-item" style="height:3rem;">
+            <div class="aui-list-item-label-icon">
+              <i class="aui-iconfont iconfont icon-weixinzhifu" style="font-size: 1.5rem;color:#09bb07;"></i>
+            </div>
+            <div class="aui-list-item-inner">
+              <div class="aui-list-item-title">微信支付</div>
+              <div class="aui-list-item-right" @click="changeTabName('wechat')">
+                <i class="aui-iconfont iconfont icon-roundcheckfill aui-margin-r-5 aui-font-size-20 aui-text-info" v-show="activeTabName == 'wechat'"></i>
+                <i class="aui-iconfont iconfont icon-roundcheckfill aui-margin-r-5 aui-font-size-20" style="color: #ccc" v-show="activeTabName != 'wechat'"></i>
+              </div>
+            </div>
+          </li>
+          <li class="aui-list-item" style="height:3rem;" v-if="!isWeiXin">
+            <div class="aui-list-item-label-icon">
+              <i class="aui-iconfont iconfont icon-zhifubao" style="font-size: 1.5rem;color: #0ae"></i>
+            </div>
+            <div class="aui-list-item-inner">
+              <div class="aui-list-item-title">支付宝支付</div>
+              <div class="aui-list-item-right" @click="changeTabName('ali')">
+                <i class="aui-iconfont iconfont icon-roundcheckfill aui-margin-r-5 aui-font-size-20 aui-text-info" v-show="activeTabName == 'ali'"></i>
+                <i class="aui-iconfont iconfont icon-roundcheckfill aui-margin-r-5 aui-font-size-20" style="color: #ccc" v-show="activeTabName != 'ali'"></i>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div class="area">
+        <div class="submit" @click="submit()">确认支付
+          <span v-text="'￥' + order.total_money"></span>
+        </div>
+      </div>
+      <div id="ali"></div>
+    </div>
+  </div>
+  <script>
+    setStorage('pay_order_no', querystring.order_no);
+    setStorage('pay_order_type', 'goods_order_pay');
+    var app = new Vue({
+      el: '#app',
+      data: {
+        title: '支付选择',
+        order: {
+          order_no: querystring.order_no,
+          total_money: querystring.total_money
+        },
+        activeTabName: 'yue',
+        isWeiXin: isWeiXin()
+      },
+      methods: {
+        submit: function () {
+          if (this.activeTabName == 'wechat') {
+            if (this.isWeiXin) {
+              // jsapi支付
+              location = location.origin + '/index.php/api_orders/pay/wechat_pay_jsapi/order_no/' + this.order.order_no;
+            } else {
+              // h5支付
+              httpRequest('POST', 'api_orders/pay/wechat_pay_h5', {
+                order_no: this.order.order_no
+              }).then(function (resp) {
+                location = resp.data;
+              })
+            }
+            //微信支付
+          } else if (this.activeTabName == 'ali') {
+            //支付宝支付
+            axios.post(host + 'api_orders/pay/ali_pay_wap', {
+              order_no: this.order.order_no
+            }).then(function (resp) {
+              if (resp.status == 200) {
+                document.getElementById('ali').innerHTML = resp.data;
+                document.forms['alipaysubmit'].submit();
+              }
+            })
+          } else if (this.activeTabName == 'yue') {
+            httpRequest('POST', 'api_query/users/is_set_pay_password').then(function (resp) {
+              if (resp.data.is_set_pay_password == 0) {
+                layer.msg('请设置支付密码');
+                setTimeout(function () {
+                  goto('reset_password', { type: 2 })
+                }, 500)
+              } else {
+                layer.prompt({ title: '请输入支付密码', formType: 1 }, function (pass, index) {
+                  layer.close(index);
+                  httpRequest('POST', 'api_orders/pay/money', {
+                    order_no: querystring.order_no,
+                    pay_password: pass
+                  }).then(function (resp) {
+                    layer.msg(resp.msg);
+                    setTimeout(function () {
+                      goto('order_list', { status: 0 })
+                    }, 500)
+                  })
+                });
+              }
+            })
+          }
+        },
+        changeTabName: function (tabName) {
+          this.activeTabName = tabName
+        }
+      },
+      mounted: function () {
+
+      }
+    })
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,161 @@
+
+<div class="foot white minwid1200">
+		<div class="w1200 row">
+			<div class="col s3 over black-text margin-tt-15" >
+				<div class="left margin-lr-15">
+					<div class="icon-goods">特</div>
+				</div>
+				<div class="left">
+					<div class="font-size-18 margin-tt-5">特色服务体验</div>
+					<div class="font-size-14">为你呈现不一样的服务</div>
+				</div>
+			</div>
+			<div class="col s3 over black-text margin-tt-15" >
+				<div class="left margin-lr-15">
+					<div class="icon-goods">特</div>
+				</div>
+				<div class="left">
+					<div class="font-size-18  margin-tt-5">特色服务体验</div>
+					<div class="font-size-14">为你呈现不一样的服务</div>
+				</div>
+			</div>
+			<div class="col s3 over black-text margin-tt-15" >
+				<div class="left margin-lr-15">
+					<div class="icon-goods">特</div>
+				</div>
+				<div class="left">
+					<div class="font-size-18  margin-tt-5">特色服务体验</div>
+					<div class="font-size-14">为你呈现不一样的服务</div>
+				</div>
+			</div>
+			<div class="col s3 over black-text margin-tt-15" >
+				<div class="left margin-lr-15">
+					<div class="icon-goods">特</div>
+				</div>
+				<div class="left">
+					<div class="font-size-18  margin-tt-5">特色服务体验</div>
+					<div class="font-size-14">为你呈现不一样的服务</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="w1200">
+		<div class="row">
+			<div class="col s3 ">
+				<div class="margin-top-15">
+					<img src="__static__/portal/img/ibid-logo.png">
+				</div>
+				<div class="margin-top-15"> 
+					<span class="font-size-14 black-text">关注我们：</span>
+					<img src="__static__/portal/img/wxpay.png" class="margin-lr-5">
+				</div>
+			</div>
+			<div class="col s6 over black-text">
+				<div class="row"></div>
+				<div class="col s3">
+					<div class="margin-btn-15 font-size-16">新手指南</div>
+					<div class="margin-btn-5 font-size-12">购物流程</div>
+					<div class="margin-btn-5 font-size-12">支付方式</div>
+					<div class="margin-btn-5 font-size-12">通关税费</div>
+					<div class="margin-btn-5 font-size-12">常见问题</div>
+				</div>
+				<div class="col s3">
+					<div class="margin-btn-15 font-size-16">新手指南</div>
+					<div class="margin-btn-5 font-size-12">购物流程</div>
+					<div class="margin-btn-5 font-size-12">支付方式</div>
+					<div class="margin-btn-5 font-size-12">通关税费</div>
+					<div class="margin-btn-5 font-size-12">常见问题</div>
+				</div>
+				<div class="col s3">
+					<div class="margin-btn-15 font-size-16">新手指南</div>
+					<div class="margin-btn-5 font-size-12">购物流程</div>
+					<div class="margin-btn-5 font-size-12">支付方式</div>
+					<div class="margin-btn-5 font-size-12">通关税费</div>
+					<div class="margin-btn-5 font-size-12">常见问题</div>
+				</div>
+				<div class="col s3">
+					<div class="margin-btn-15 font-size-16">新手指南</div>
+					<div class="margin-btn-5 font-size-12">购物流程</div>
+					<div class="margin-btn-5 font-size-12">支付方式</div>
+					<div class="margin-btn-5 font-size-12">通关税费</div>
+					<div class="margin-btn-5 font-size-12">常见问题</div>
+				</div>
+			</div>
+			<div class="col s3 center">
+				<div class="qurde">
+					<img src="https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=539789409,2887248174&fm=27&gp=0.jpg">
+				</div>
+				<div class="font-size-14 black-text">
+					扫描下载到手机端
+				</div>
+			</div>
+			</div>
+		</div>
+	
+		<div class="black padding-tt-15 center white-text minwid1200">
+				<div class="margin-tt-5">
+					<span class="border-right-white padding-lr-15">关于我们</span>
+					<span class="border-right-white padding-lr-15">帮助中心</span>
+					<span class="border-right-white padding-lr-15">售后服务</span>
+					<span class="border-right-white padding-lr-15">配送与验收</span>
+					<span class="border-right-white padding-lr-15">商务合作</span>
+					<span class="border-right-white padding-lr-15">联系方法</span>
+					<span class="border-right-white padding-lr-15">友情链接</span>
+				</div>
+				<div class="white-text margin-tt-15">
+					<span class="margin-right-15">网络文化经营许可证：浙网文{2016}0155-055号</span>
+					<span class="margin-left-15">网开亿面公司版权所有@1997-2018</span>
+				</div>
+		</div>
+	</div>
+	
+<script>
+	var footerData = JSON.parse(sessionStorage.getItem('footerData'));
+	initFooter = function () {
+		if (!footerData) {
+			footerData = {};
+			httpRequest('POST', 'dds/values_index', {
+				class_id: 5
+			}, function (resp) {
+				footerData.bottomAds = resp.data.filter(function (item) {
+					return item.position == 2
+				});
+				sessionStorage.setItem('footerData', JSON.stringify(footerData));
+				htmlConcat();
+			})
+
+			httpRequest('GET', 'friendly_links', {}, function (resp) {
+				footerData.friendLinks = {};
+				resp.data.forEach(function (item) {
+					footerData.friendLinks[item.type] = footerData.friendLinks[item.type] || [];
+					footerData.friendLinks[item.type].push(item)
+				})
+				htmlConcat2();
+			})
+		} else {
+			htmlConcat();
+			htmlConcat2();
+		}
+	}
+
+	htmlConcat = function () {
+		var html = '';
+		footerData.bottomAds.forEach(function (item) {
+			html += '<li><a href="' + item.href + '"><img src="' + item.thum + '"></a></li>'
+		})
+		document.getElementById('bottom-posts').innerHTML = html;
+
+	}
+	htmlConcat2 = function () {
+		var bHtml = '';
+		for (var key in footerData.friendLinks) {
+			bHtml += '<ul><li>' + key + '</li>';
+			footerData.friendLinks[key].forEach(function (item) {
+				bHtml += '<li><a href="' + item.href + '">' + item.name + '</a></li>';
+			})
+			bHtml += '</ul>';
+		}
+		bHtml += '<div class="rwm"><img src="__static__/portal/images/ewm.png" /><p>网开亿面手机站</p></div><div class="phone"><a href="">网开亿面</a><span>4000-500-740</span></div>';
+		document.getElementById('links').innerHTML = bHtml;
+	}
+</script>

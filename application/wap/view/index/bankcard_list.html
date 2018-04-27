@@ -1,0 +1,158 @@
+<!-- 新建html模板页 -->
+
+{include file="/index/top" /}
+<style>
+  .bank {
+    position: relative;
+  }
+
+  .bank .owner {
+    position: absolute;
+    top: 30%;
+    left: 21.5%;
+    color: #fff;
+  }
+
+  .bank .add {
+    height: 2rem;
+    line-height: 2rem;
+    text-align: center;
+    border-radius: 2rem;
+    background-color: #fff;
+    border: 1px solid #2e76d7;
+    color: #2e76d7;
+    position: absolute;
+    width: 30%;
+    left: 35%;
+    top: 55%;
+  }
+
+  .bank .add:active {
+    background-color: #f4f4f4;
+  }
+
+  .bank .number {
+    position: absolute;
+    top: 50%;
+    left: 21.5%;
+    color: #fff;
+    font-size: .9rem;
+    letter-spacing: 0.1rem
+  }
+</style>
+</head>
+
+<body>
+  <div id="app">
+    <header class="aui-bar aui-bar-nav aui-bar-light" id="header" style="background-image:none;">
+      <a class="aui-pull-left aui-btn" onclick="goto('home')">
+        <span class="aui-iconfont aui-icon-left"></span>
+      </a>
+      <div class="aui-title" v-text="title"></div>
+    </header>
+    <div class="aui-padded-5" v-show="cards.length != 0" style="margin-bottom: 2.5rem;">
+      <div v-for="(card,key) in cards" :key="key" @click="selectCard(card)">
+        <div class="bank">
+          <img :src="card.bank_name | cardImg" style="width:100%;">
+          <div class="owner">{{card.card_holder}}</div>
+          <div class="number">{{card.card_number | formatNumber}}</div>
+        </div>
+      </div>
+    </div>
+    <footer class="aui-bar aui-bar-tab">
+      <div class="aui-bar-tab-item aui-padded-l-15 aui-padded-r-15" @click="addBankcard();">
+        <div class="aui-btn aui-btn-block aui-btn-sm aui-btn-info">新增银行卡</div>
+      </div>
+    </footer>
+  </div>
+  <script>
+    // 滚动到底部的事件
+    scrollEvent = function () {
+      var scrollTop = document.documentElement.scrollTop || window.pageYOffset || document.body.scrollTop;
+      if (document.documentElement.scrollHeight - scrollTop - document.documentElement.clientHeight < 10) {
+        loadBanks();
+      }
+    }
+    var page = 1;
+
+    var cardNameMapping = {
+      '中国农业银行': '__static__/wap/images/nongye.png',
+      '中国建设银行': '__static__/wap/images/jianshe.png',
+      '中国工商银行': '__static__/wap/images/gongshang.png',
+      '中国银行': '__static__/wap/images/zhongguo.png',
+      '招商银行': '__static__/wap/images/zhaoshang.png',
+      '光大银行': '__static__/wap/images/guangda.png',
+      '中国邮政储蓄银行': '__static__/wap/images/youzheng.png',
+      '兴业银行': '__static__/wap/images/xingye.png',
+      '中信银行': '__static__/wap/images/zhongxin.png',
+      '浦发银行': '__static__/wap/images/pufa.png',
+      '广发银行': '__static__/wap/images/guangfa.png',
+      '平安银行': '__static__/wap/images/pingan.png',
+      '交通银行': '__static__/wap/images/jiaotong.png',
+      '华夏银行': '__static__/wap/images/huaxia.png',
+      '民生银行': '__static__/wap/images/minsheng.png',
+    }
+    var app = new Vue({
+      el: '#app',
+      data: {
+        title: '我的银行卡',
+        cards: []
+      },
+      methods: {
+        selectCard: function (card) {
+          goto('bankcard_edit', { cardId: card.id });
+        },
+        addBankcard: function () {
+          goto('bankcard_edit')
+        }
+      },
+      filters: {
+        formatNumber: function (cardNumber) {
+          var format = ''
+          for (var i = 0; i < cardNumber.length; i++) {
+            if ((i + 1) % 4 == 0) {
+              format += (cardNumber[i] + ' ');
+            } else {
+              format += cardNumber[i];
+            }
+          }
+          return format;
+        },
+        cardImg: function (bank_name) {
+          return cardNameMapping[bank_name]
+        }
+      },
+      mounted: function () {
+
+      }
+    });
+    loadData = function () {
+      document.body.onscroll = null;
+      httpRequest('POST', 'api_users/bank_cards/lists', {
+        'page-num': page,
+        'page-limit': 10
+      }).
+        then(function (resp) {
+          if (resp.data.length > 0) {
+            app.haveNoData = false;
+            resp.data.forEach(function (item) {
+              app.cards.push(item);
+            })
+            if (resp.data.length == 10) {
+              page++;
+              document.body.onscroll = scrollEvent;
+            } else {
+              document.body.onscroll = null;
+            }
+          } else {
+            if (page == 1) {
+              app.haveNoData = true;
+            }
+          }
+        });
+    }
+    loadData();
+  </script>
+</body>
+
+</html>

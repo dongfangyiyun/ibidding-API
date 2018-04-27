@@ -1,0 +1,93 @@
+<!-- 新建html模板页 -->
+
+{include file="/index/top" /}
+<style>
+  #message {
+    background-color: #fff;
+    width: 96%;
+    height: 6rem;
+    border: 1px solid #eee;
+    border-radius: 0.2rem;
+    margin: 0rem 2%;
+    padding: .3rem;
+    letter-spacing: .1rem;
+  }
+
+  .option {
+    background-color: #f4f4f4;
+    line-height: 2.5rem;
+    height: 2.5rem;
+    width: 100%;
+    padding-left: 0.5rem;
+  }
+</style>
+</head>
+
+<body>
+  <div id="app">
+    {include file="/index/header" /}
+    <div style="background-color:#f4f4f4;line-height:2.5rem;height:2.5rem;width:100%;padding-left:0.5rem;">请选择反馈问题的类型</div>
+    <div class="aui-content">
+      <ul class="aui-list aui-list-in">
+        <li class="aui-list-item" @click="changeIndex(true)">
+          <div class="aui-list-item-inner">
+            <div class="aui-list-item-title">功能异常</div>
+            <div class="aui-list-item-right">
+              <i class="aui-iconfont iconfont icon-roundcheckfill aui-margin-r-5 aui-font-size-20 aui-text-info" v-show="selectFirst"></i>
+              <i class="aui-iconfont iconfont icon-roundcheckfill aui-margin-r-5 aui-font-size-20" style="color: #ccc" v-show="!selectFirst"></i>
+            </div>
+          </div>
+        </li>
+        <li class="aui-list-item" @click="changeIndex(false)">
+          <div class="aui-list-item-inner">
+            <div class="aui-list-item-title">功能改进</div>
+            <div class="aui-list-item-right">
+              <i class="aui-iconfont iconfont icon-roundcheckfill aui-margin-r-5 aui-font-size-20 aui-text-info" v-show="!selectFirst"></i>
+              <i class="aui-iconfont iconfont icon-roundcheckfill aui-margin-r-5 aui-font-size-20" style="color: #ccc" v-show="selectFirst"></i>
+            </div>
+          </div>
+        </li>
+      </ul>
+      <div class="option">问题和意见描述</div>
+      <textarea id="message" rows="8" cols="80" v-model="message"></textarea>
+      <div class="area">
+        <div class="submit" @click="submit()">提交</div>
+      </div>
+    </div>
+  </div>
+  <script>
+    var app = new Vue({
+      el: '#app',
+      data: {
+        title: '帮助与反馈',
+        selectFirst: true,
+        message: ''
+
+      },
+      methods: {
+        changeIndex: function (flag) {
+          this.selectFirst = flag;
+        },
+        submit: function () {
+          if (!this.message) {
+            layer.msg('请填入问题和意见描述');
+            return
+          }
+          httpRequest('POST', 'api_articles/feedbacks/save', {
+            user_id: user.id,
+            title: this.selectFirst ? '功能异常' : '功能改进',
+            content: this.message
+          }).then(function (resp) {
+            layer.msg(resp.msg);
+            setTimeout(function () {
+              history.back();
+            }, 500)
+          })
+        }
+      }
+    })
+
+  </script>
+</body>
+
+</html>

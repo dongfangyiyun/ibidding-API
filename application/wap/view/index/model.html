@@ -1,0 +1,45 @@
+<!-- 新建html模板页 -->
+
+{include file="/index/top" /}
+</head>
+
+<body>
+  <div id="app">
+    <!-- 头部 -->
+    <header class="aui-bar aui-bar-nav aui-bar-light" id="header" style="background-image:none;">
+      <a class="aui-pull-left aui-btn" onclick="javascript:window.history.back(); return false;">
+        <span class="aui-iconfont aui-icon-left"></span>
+      </a>
+      <div class="aui-title" v-text="title"></div>
+      <a class="aui-pull-right aui-btn" onclick="javascript:window.history.back(); return false;">
+        <span class="aui-iconfont aui-icon-right"></span>
+      </a>
+    </header>
+    <!-- 中间页 -->
+    <div class="aui-content">
+
+    </div>
+  </div>
+  <script>
+    var app = new Vue({
+      el: '#app',
+      data: {
+        title: 'title'
+      },
+      methods: {
+
+      },
+      computed: {
+
+      },
+      filters: {
+
+      },
+      mounted: function () {
+
+      }
+    })
+  </script>
+</body>
+
+</html>

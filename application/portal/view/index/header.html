@@ -1,0 +1,172 @@
+<div id="header">
+	<div class="grey lighten-2 blue-nav">
+		<nav class="grey lighten-2 z-depth-0 black-text w1200" style="height: 32px;line-height: 32px">
+			<div class="nav-wraper">
+				<ul class="left hide-no-medand-down">
+					<li class="margin-lr-15">HI!欢迎来到ibidding</li>
+					<li class="margin-lr-15 bt">
+						<i class="iconfont icon-shouji blue-text bt"></i>手机网开创</li>
+				</ul>
+				<ul class="right hide-no-medand-down">
+					<li class="margin-lr-15 bt" @click="gohome()">
+						<i class="iconfont icon-peoplefill blue-text"></i> {{ user.nick_name || '匿名用户' }} </li>
+					<li class="margin-lr-15 bt" @click="gologin()">
+						<i class="iconfont icon-gouwuchefill blue-text"></i>退出登陆</li>
+					<li class="margin-lr-15 bt" @click="gocart()">
+						<i class="iconfont icon-gouwuchefill blue-text"></i> 我的购物车</li>
+					<li class="margin-lr-15 bt" @click="goorder()">
+						<i class="iconfont icon-jilu blue-text"></i> 我的订单</li>
+					<li class="margin-lr-15 bt">
+						<i class="iconfont icon-custom-service blue-text"></i> 联系客服</li>
+				</ul>
+			</div>
+		</nav>
+	</div>
+	<div class="row w1200 margin-top-15 grey-text text-darken-3">
+		<div class="col s3 center" @click="goto('index')">
+			<img src="__static__/portal/img/logo.png" class="margin-top-10">
+			<div class="center margin-top-10">开创智慧商业</div>
+		</div>
+		<div class="col s6">
+			<div class="bor-inp blue center">
+				<input type="" id="inpwords" name="inpwords" placeholder="请输入搜索关键词" style="border: none">
+				<i class="iconfont icon-sousuo dp48" id="clicsearch"></i>
+			</div>
+			<div class="over margin-top-5 margin-left-15" style="margin-left:20px; width: 525px;cursor:default">
+				<div class="left padding-lr-5 biaoqian hoverblue" v-for="(goods_keyword,key) in goods_keywords" :key="key" v-text="goods_keyword.keyword" @click="goSearch(goods_keyword.keyword)" ></div>
+			</div>
+		</div>
+		<div class="col s3">
+			<div class="row tr-icon">
+				<div class="col s4 center margin-top-5">
+					<i>正</i>
+					<p class="margin-top-5">正品保障</p>
+				</div>
+				<div class="col s4 center margin-top-5">
+					<i class="iconfont icon-lightningbshandian"></i>
+					<p class="margin-top-5">闪电发货</p>
+				</div>
+				<div class="col s4 center margin-top-5">
+					<i class="iconfont icon-shouhouwuyou"></i>
+					<p class="margin-top-5">售后无忧</p>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="minwid1200">
+		<div class="light-blue" style="height: 41px;">
+			<div class="row w1200" style="margin-bottom: 0;position: relative;">
+				<div class="col s3 center white-text" style="padding:0">
+					<!-- 下拉导航 -->
+					<div class="nav-ul bt">
+						<div class="nav-li  black" id="navigation" style="height: 41px;line-height: 41px;">
+							<span>所有商品</span>
+							<div class="nav-beijin" style="height: 39px;line-height: 39px;"></div>
+						</div>
+						<div class="nav-li " v-for="(cate,key) in cates" :key="key"  @click="goSearch(cate.name)">
+							<span v-text="cate.name"></span>
+							<div class="nav-beijin black">
+								<div class="line"></div>
+							</div>
+						</div>
+						
+					</div>
+				</div>
+				<a class="col s1 center white-text padding-tt-10" href="/">首页</a>
+				<a class="col s1 center white-text padding-tt-10" href="/portal/index/discount">今日限时购</a>
+				<a class="col s1 center white-text padding-tt-10" href="/portal/index/coupon">活动专区</a>
+				<a class="col s1 center white-text padding-tt-10" href="/">新品上市</a>
+				<a class="col s1 center white-text padding-tt-10" href="/">水果生鲜</a>
+				<a class="col s1 center white-text padding-tt-10" href="/">水果生鲜</a>
+				<a class="col s1 center white-text padding-tt-10" href="/">母婴儿童</a>
+				<a class="col s1 center white-text padding-tt-10" href="/">美容彩妆</a>
+				<a class="col s1 center white-text padding-top-10 relative center" style="padding-bottom:7px;" @click="goto('cart_list')">
+					<i class="iconfont margin-right-10 icon-gouwuche white-text "></i> 购物车
+					<span class="header_cart_num" v-text="carts"></span>
+				</a>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+	var header = new Vue({
+		el: "#header",
+		data: {
+			carts: 2,
+			user: user,
+			cates:[],
+			goods_keywords:[]
+		},
+		methods: {
+			gologin: function () {
+				if (user) {
+					layer.confirm('确认退出登录?', {
+						title: '提示',
+					}, function (index) {
+						layer.close(index);
+						rmStorage(getClientType() + 'User');
+						rmStorage(getClientType() + 'Token');
+						clearStorage(sessionStorage);
+						goto('index')
+					})
+				}
+			},
+			goSearch:function(data){
+				goto('search_list',{keyword:data});
+			},
+			gohome: function () {
+				goto('home');
+			},
+			gocart: function () {
+				goto('cart_list');
+			},
+			goorder: function () {
+				goto('order_list');
+			},
+		},
+		mounted: function () {
+			httpRequest('POST', 'api_goods/goods_cates/lists_tree', {},).then(function(resp){
+				console.log(resp);
+				if (resp.code == 1) {
+					header.cates = resp.data;	
+				}
+				return  httpRequest('POST', 'api_goods/goods_keywords/lists').then(function(resp){
+					header.goods_keywords = resp.data
+				})
+			})
+			}
+	});
+	$('#navigation').click(function () {
+		$('.nav-ul').stop().animate({ height: "460px" }, 500)
+		if ($('.nav-ul').height() == 460) {
+			$('.nav-ul').stop().animate({ height: "41px" }, 500)
+		}
+	});
+	$('#clicsearch').click(function () {
+		var keysear = $("input[name='inpwords']").val();
+		window.location = '/portal/index/search_list?keyword=' + keysear;
+	});
+	$('#inpwords').bind('keyup', function (event) {
+		if (event.keyCode == "13") {
+			var keysear = $("input[name='inpwords']").val();
+			window.location = '/portal/index/search_list?keyword=' + keysear;
+		}
+	});
+	// 轮播参数
+	$('.carousel.carousel-slider').carousel({
+		full_width: true,
+		indicators: true,
+		no_wrap: true
+	});
+	//点击搜索
+	$('.biaoqian').click(function () {
+		var keysear = $(this).text();
+		window.location = '/portal/index/search_list?keyword=' + keysear;
+	});
+	localdata = function () {
+		httpRequest('POST', 'api_goods/carts/lists', {}, ).then(function (resp) {
+			header.carts = resp.data.length;
+		});
+	}
+	localdata();
+</script>

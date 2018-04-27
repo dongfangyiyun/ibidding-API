@@ -1,0 +1,168 @@
+{include file="/index/top" /}
+<style>
+	.container {
+		display: flex;
+		background-color: #fff;
+		align-items: center;
+		width: 1000px;
+		margin: 40px auto 150px auto
+	}
+
+	.container .left {
+		width: 30%;
+		padding: 30px 50px;
+	}
+
+	.container .left img {
+		width: 100%;
+		border: 1px solid #f4f4f4;
+		margin: 5px;
+	}
+
+	.container .right {
+		margin-left: 20px;
+		font-weight: bold;
+		font-size: 14px;
+	}
+
+	.container .right .item {
+		margin-top: 20px;
+	}
+
+	.container .right .item select {
+		color: #1a6da6;
+		border: 2px solid #1a6da6;
+		height: 30px;
+		width: 250px;
+		padding: 0 5px;
+		margin-left: 10px;
+	}
+
+	.container .right .item span {
+		color: #f82010;
+		font-size: 20px;
+		margin-left: 10px;
+	}
+
+	.container .right .item textarea {
+		border: 2px solid #1a6da6;
+		width: 300px;
+		margin-left: 10px;
+		padding: 5px;
+	}
+
+	.container .right .item .submit {
+		color: #fff;
+		background-color: #1a6da6;
+		display: inline-block;
+		height: 35px;
+		line-height: 35px;
+		text-align: center;
+		width: 90px;
+		font-weight: normal;
+		cursor: pointer;
+		margin-left: 70px;
+	}
+</style>
+</head>
+
+<body class="body-bg" style="background-color: #f4f4f4;">
+
+	{include file="/index/header" /}
+
+	<div class="container" id="app">
+		<div class="left">
+			<img :src="goods.thum">
+		</div>
+		<div class="right">
+			<div class="item">
+				<div style="float:left;">订单编号:</div>
+				<span v-text="order.order_no"></span>
+			</div>
+			<div class="item">
+				<div style="float:left;">退款金额:</div>
+				<span v-text="'￥' + goods.real_price" style=""></span>
+			</div>
+			<div class="item">
+				<div style="float:left;">退款原因:</div>
+				<select name="" id="reason" style="display: inline-block;">
+					<option value="">请选择退款原因</option>
+					<option value=1>不想买了</option>
+					<option value=2>质量有问题</option>
+				</select>
+			</div>
+			<div class="item">
+				<div style="float:left;">退款说明:</div>
+				<textarea name="" cols="30" rows="10" id="remark"></textarea>
+			</div>
+			<div class="item">
+				<button class="submit" onclick="submit();">确认退款</button>
+			</div>
+		</div>
+	</div>
+
+	{include file="/index/footer" /}
+</body>
+
+<script type="text/javascript">
+	if (!user) {
+		location = "{:url('Index/login')}"
+	}
+	var order = getStorage('order', sessionStorage);
+	var goods = [];
+	order.order_goods_info.forEach(function(item){
+    	if(item.goods_id == querystring.goodsId){
+    		goods = item;
+    	}
+    })
+	if (!order) {
+		history.back();
+	}
+	var layer;
+	var app = new Vue({
+		el: '#app',
+		data: {
+			order: order
+		},
+		methods: {
+                authentication: function () {
+                    httpRequest('POST', 'api_query/users/auth').then(function (resp) {
+                        var status = resp.data.status;
+                        if (status == 0 || status == 2) {
+                            goto('idcard_auth', {status: status, id: resp.data.id});
+                        } else if (status == 1 || status == 3) {
+                            goto('idcard_info');
+                        }
+                    })
+                }
+            }
+	})
+	submit = function () {
+		var reason = document.getElementById('reason').value;
+		var remark = document.getElementById('remark').value;
+		if (!reason) {
+			layer.msg('请选择退款原因');
+			return;
+		}
+		if (!remark) {
+			layer.msg('请填写退款说明');
+			return;
+		}
+		layer.alert('确定提交退款申请?', { title: '提示' }, function (index) {
+			httpRequest('POST', 'api_orders/return_goods/save', {
+              order_id: order.id,
+              order_goods_id: goods.id,
+              return_type: reason,
+              return_reason: remark,
+              imgs: [],
+            }).then(function (resp) {
+            	layer.msg(resp.msg);
+              setTimeout(function () {
+                goto('order_list', { status: 0 });
+              }, 800)
+            })
+		})
+	}
+</script>
+
+</html>

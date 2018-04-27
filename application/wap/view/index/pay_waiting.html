@@ -1,0 +1,50 @@
+<!-- 新建html模板页 -->
+
+{include file="/index/top" /}
+</head>
+
+<body>
+  <div id="app">
+    <header class="aui-bar aui-bar-nav aui-bar-light" id="header" style="background-image:none;">
+      <div class="aui-title" v-text="title"></div>
+    </header>
+    <div class="aui-content aui-text-center" style="margin: 3rem 0;">
+      <img src="__static__/images/loading-2.gif" style="width: 1.5rem;margin: 0 auto;display:block;" v-show="!isPaySuccess">
+      <i class="aui-iconfont iconfont icon-roundcheckfill" style="color: #21c002;font-size: 1.5rem;" v-show="isPaySuccess"></i>
+      <h2 v-show="!isPaySuccess" class="aui-text-center aui-margin-t-15">支付处理中</h2>
+      <h2 v-show="isPaySuccess" class="aui-text-center aui-margin-t-15">支付成功</h2>
+    </div>
+    <div class="area">
+      <div class="submit" v-if="order_type == 'goods_order_pay'" onclick="goto('order_list',{ status : 0 })">查看我的订单</div>
+      <div class="submit" v-else-if="order_type == 'recharge_order_pay'" onclick="goto('wallet')">查看我的钱包</div>
+    </div>
+  </div>
+  <script>
+    var app = new Vue({
+      el: '#app',
+      data: {
+        title: '支付结果',
+        isPaySuccess: false,
+        order_type: getStorage('pay_order_type')
+      },
+      methods: {
+
+      },
+      mounted: function () {
+        var that = this;
+        var intervalInt = setInterval(function () {
+          httpRequest('POST', 'api_query/pay/is_pay', {
+            order_no: getStorage('pay_order_no')
+          }).then(function (resp) {
+            if (resp.data.is_pay == 1) {
+              that.isPaySuccess = true;
+              clearInterval(intervalInt)
+            }
+          }, {}, false)
+        }, 3000)
+      }
+    })
+  </script>
+</body>
+
+</html>

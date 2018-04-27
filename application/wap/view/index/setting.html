@@ -1,0 +1,210 @@
+<!-- 新建html模板页 -->
+
+{include file="/index/top" /}
+<script src="__static__/wap/aui/script/aui-actionsheet.js"></script>
+</head>
+
+<body>
+  <div id="app">
+    <header class="aui-bar aui-bar-nav aui-bar-light" id="header">
+      <a class="aui-pull-left aui-btn" onclick="goto('home')">
+        <span class="aui-iconfont aui-icon-left"></span>
+      </a>
+      <div class="aui-title">设置</div>
+    </header>
+    <div class="aui-content aui-margin-b-10">
+      <ul class="aui-list aui-list-in aui-margin-b-10">
+        <li class="aui-list-item" @click="fileClick();">
+          <div class="aui-list-item-media">
+            <img :src="user.avatar" class="aui-img-round aui-list-img-sm" id="avatar">
+            <input @change="fileChange($event)" type="file" id="upload_file" style="display: none">
+          </div>
+          <div class="aui-list-item-inner aui-list-item-arrow">
+            <div class="aui-list-item-title"></div>
+            <div class="aui-list-item-right" style="font-size:0.8rem;color:#999;">修改头像</div>
+          </div>
+        </li>
+        <li class="aui-list-item" @click="modify('nickname')">
+          <div class="aui-list-item-inner aui-list-item-arrow">
+            <div class="aui-list-item-title">昵称</div>
+            <div class="aui-list-item-right" style="font-size:0.8rem;color:#999;" v-text="user.nick_name || '匿名用户'"></div>
+          </div>
+        </li>
+        <li class="aui-list-item" @click="modify('gender')">
+          <div class="aui-list-item-inner aui-list-item-arrow">
+            <div class="aui-list-item-title">性别</div>
+            <div class="aui-list-item-right" style="font-size:0.8rem;color:#999;" v-text="genders[user.gender]"></div>
+          </div>
+        </li>
+        <li class="aui-list-item" @click="modify('mobile')">
+          <div class="aui-list-item-inner aui-list-item-arrow">
+            <div class="aui-list-item-title">我的手机号码</div>
+            <div class="aui-list-item-right" style="font-size:0.8rem;color:#999;" v-text="user.mobile"></div>
+          </div>
+        </li>
+        <li class="aui-list-item" @click="passwordSetting()">
+          <div class="aui-list-item-inner aui-list-item-arrow">
+            密码设置
+          </div>
+        </li>
+      </ul>
+
+      <ul class="aui-list aui-list-in aui-margin-b-10">
+        <li class="aui-list-item" onclick="goto('bind_third_setting')">
+          <div class="aui-list-item-inner aui-list-item-arrow">
+            <div class="aui-list-item-title">第三方账号绑定</div>
+          </div>
+        </li>
+      </ul>
+
+      <ul class="aui-list aui-list-in aui-margin-b-10">
+        <li class="aui-list-item" onclick="goto('help_and_option')">
+          <div class="aui-list-item-inner aui-list-item-arrow">
+            <div class="aui-list-item-title">帮助与反馈</div>
+          </div>
+        </li>
+        <li class="aui-list-item">
+          <div class="aui-list-item-inner">
+            <div class="aui-list-item-title">ibidding</div>
+            <div class="aui-list-item-right" style="font-size:0.8rem;color:#999;">v1.2.0</div>
+          </div>
+        </li>
+      </ul>
+      <div class="area">
+        <div class="submit" @click="logout()">退出登录</div>
+      </div>
+    </div>
+  </div>
+  <script>
+    var avatarDom = document.getElementById('avatar');
+    avatarDom.style.cssText += 'height:' + avatarDom.offsetWidth + 'px;';
+    var actionsheet = new auiActionsheet();
+    var app = new Vue({
+      el: '#app',
+      data: {
+        user: user,
+        genders: ['保密', '男', '女']
+      },
+      methods: {
+        logout: function () {
+          layer.confirm('确认退出登录?', {
+            title: '提示',
+          }, function (index) {
+            layer.close(index);
+            rmStorage(getClientType() + 'User');
+            rmStorage(getClientType() + 'Token');
+            clearStorage(sessionStorage);
+            goto('index')
+          })
+        },
+        modify: function (type) {
+          if (type == 'nickname') {
+            layer.prompt({
+              title: '请输入新昵称',
+              formType: 0, //输入框类型，支持0（文本）默认1（密码）2（多行文本）
+              value: app.user.nick_name || '' //初始值
+            }, function (value, index, elem) {
+              app.updateAjax({
+                nick_name: value
+              })
+              layer.close(index);
+            });
+          } else if (type == 'gender') {
+            actionsheet.init({
+              frameBounces: true,//当前页面是否弹动，（主要针对安卓端）
+              title: "请选择性别",
+              buttons: this.genders,
+            }, function (ret) {
+              app.updateAjax({
+                gender: ret.buttonIndex - 1
+              })
+            })
+          } else if (type == 'mobile') {
+            goto('modify_mobile')
+          }
+        },
+        passwordSetting: function () {
+          actionsheet.init({
+            frameBounces: true,//当前页面是否弹动，（主要针对安卓端）
+            title: "请选择",
+            buttons: ['修改登录密码', '修改支付密码'],
+          }, function (ret) {
+            goto('reset_password', {
+              type: ret.buttonIndex
+            })
+          })
+        },
+        updateAjax: function (data) {
+          httpRequest('POST', 'api_users/users/update', data)
+            .then(function (resp) {
+              resp.data.avatar = resp.data.avatar || '__static__/images/avatar.png';
+              app.user = resp.data;
+              setStorage(getClientType() + 'User', resp.data)
+            })
+        },
+        fileClick: function () {
+          document.getElementById('upload_file').click()
+        },
+        //文件发生该变
+        fileChange: function (el) {
+          if (!el.target.files[0].size) return;
+          this.fileList(el.target);
+          el.target.value = ''
+        },
+        //文件列表
+        fileList: function (fileList) {
+          var files = fileList.files;
+          for (var i = 0; i < files.length; i++) {
+            //判断是否为文件夹
+            if (files[i].type != '') {
+              this.fileAdd(files[i]);
+            } else {
+              //文件夹处理
+              this.folders(fileList.items[i]);
+            }
+          }
+        },
+        //文件夹处理
+        folders: function (files) {
+          var _this = this;
+          //判断是否为原生file
+          if (files.kind) {
+            files = files.webkitGetAsEntry();
+          }
+          files.createReader().readEntries(function (file) {
+            for (var i = 0; i < file.length; i++) {
+              if (file[i].isFile) {
+                _this.foldersAdd(file[i]);
+              } else {
+                _this.folders(file[i]);
+              }
+            }
+          })
+        },
+        foldersAdd: function (entry) {
+          var _this = this;
+          entry.file(function (file) {
+            _this.fileAdd(file)
+          })
+        },
+        fileAdd: function (file) {
+          //判断是否为图片文件
+          if (file.type.indexOf('image') == -1) {
+            layer.msg('请选择图片类型的文件')
+          } else {
+            var reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = function () {
+              file.src = this.result;
+              app.updateAjax({
+                avatar: file.src
+              })
+            }
+          }
+        },
+      }
+    })
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,113 @@
+{include file="header" /}
+<style>
+  .custom-tree-node {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 14px;
+    padding-right: 8px;
+  }
+</style>
+
+<body>
+
+  <section class="el-container  is-vertical">
+    {include file="top" /}
+    <section class="el-container">
+      {include file="left" /}
+      <section class="el-container  is-vertical">
+        <main class="el-main" id="main">
+          <div id="app">
+            <fieldset>
+              <legend>菜单列表</legend>
+            </fieldset>
+
+            <el-row>
+              <el-col :span="12">
+                <el-card>
+                  <div slot="header">
+                    <span>菜单信息</span>
+                    <el-button style="float: right; padding: 3px 0" type="text" @click="goAdd">新增菜单</el-button>
+                  </div>
+                  <el-input placeholder="输入关键字进行过滤" v-model="filterText" style="margin-bottom: 20px;" clearable>
+                  </el-input>
+                  <el-tree :data="treeData" :props="defaultProps" :expand-on-click-node="false" default-expand-all :filter-node-method="filterNode"
+                    ref="tree">
+                    <span class="custom-tree-node" slot-scope="{ node, data }">
+                      <span>{{ node.label }}</span>
+                      <span>
+                        <el-button type="text" size="mini" @click="editCate(data)">
+                          <i class="el-icon-edit-outline"></i>
+                        </el-button>
+                        <el-button type="text" size="mini" @click="deleteCate(data)">
+                          <i class="el-icon-delete"></i>
+                        </el-button>
+                      </span>
+                    </span>
+                  </el-tree>
+                </el-card>
+              </el-col>
+            </el-row>
+          </div>
+
+        </main>
+        {include file="footer" /}
+      </section>
+    </section>
+  </section>
+
+
+  <script type="text/javascript">
+    let app = new Vue({
+      el: '#app',
+      data() {
+        return {
+          filterText: '',
+          treeData: [],
+          defaultProps: {
+            children: 'children',
+            label: 'label'
+          },
+        }
+      },
+      methods: {
+        filterNode(value, data) {
+          if (!value) return true;
+          return data.label.indexOf(value) !== -1;
+        },
+        goAdd() {
+          location = location.origin + '/admin/navs/edit';
+        },
+        deleteCate(data) {
+          this.$confirm('确认删除?', '提示').then(() => {
+            httpRequest('POST', 'api_systems/navs/delete', { id: data.id }).then((resp) => {
+              this.$message.success(resp.msg)
+              setTimeout(() => {
+                location.reload();
+              }, 500);
+            })
+          }).catch((e) => {
+            this.$message.info('操作取消');
+          })
+        },
+        editCate(data) {
+          location = location.origin + '/admin/navs/edit' + querystringStringify({ navId: data.id });
+        }
+      },
+      watch: {
+        filterText(val) {
+          this.$refs.tree.filter(val);
+        }
+      },
+      mounted() {
+        httpRequest('POST', 'api_systems/navs/index_tree').then((resp) => {
+          this.treeData = packageTreeData(resp.data);
+        })
+      }
+    })
+
+  </script>
+</body>
+
+</html>

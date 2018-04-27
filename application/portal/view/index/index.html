@@ -1,0 +1,354 @@
+ {include file="/index/top" /}
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<style>
+	.indexgoods-img{height: 140px;}
+	.next-btn{height: 50px;width: 50px;text-align: center;line-height: 46px;opacity: 0.6; font-size: 30px;margin-left: 250px;cursor: pointer;}
+	.last-btn{height: 50px;width: 50px;text-align: center;line-height: 46px;opacity: 0.6; font-size: 30px;cursor: pointer;}
+	.banner-btn{position: absolute;z-index: 99;left: 50%;top: 200px; transform: translate(-50%,-50%)}
+	.banner-btn div:hover{opacity: 0.8;}
+	.nav_li :hover .nav-beijin{opacity: 0.9;}
+</style>
+</head>
+
+<body>
+{include file="/index/header" /}
+<div class="contine minwid1200" id="app">
+	<div class="w1200 banner-btn">
+		<div class="next-btn  white-text black radius50 left" ><</div>
+		<div class="last-btn white-text black radius50 right">></div>
+	</div>
+	<div class="banner white">
+		<div class="carousel carousel-slider" style="height: 420px;width: 1903px;transform: translateX(-50%);left: 50%;">
+		    <a class="carousel-item" href="#one!"> <img  src="__static__/portal/img/banner.png"></a>
+		    <a class="carousel-item" href="#two!"><img  src="__static__/portal/img/banner.png"></a>
+		    <a class="carousel-item" href="#three!"><img  src="__static__/portal/img/banner.png"></a>
+		    <a class="carousel-item" href="#four!"><img  src="__static__/portal/img/banner.png"></a>
+		</div>
+	 </div>
+	 <div class="white widmin1200">
+	 <div class="w1200 row " style="margin-top: 0;" >
+		<div class="col s3">
+			<div class="left grey-text">
+				<i class="iconfont icon-tuihuochuli"></i>
+				100%正品
+			</div>
+			<div class="left light-blue-text margin-left-15">
+				<i class="iconfont icon-zhengpinbaozheng"></i>30天无忧退货
+			</div>
+		</div>
+		<div class="col s4 offset-s5 grey-text text-darken-4 bt">
+			<i class="iconfont icon-laba- blue-text"></i>
+			滴滴做外卖，美团做车，程维，你要战便战！
+		</div>
+	</div>
+</div>
+	<div class="right-nav black white-text">
+		<div class="home_icon center">
+			<i class="iconfont icon-wode bt" @click="gohome()" style="font-size: 24px;"></i>
+		</div>
+		<div class="card_icon margin-tt-10 padding-tt-10 center bt"  @click="gocart()">
+			<i class="iconfont icon-gouwuche1" style="font-size: 24px;"></i>
+			<div class="font-size-14 white-text padding-10" >购物车</div>
+			<div class="blue lighten-1 white-text margin-5 center" style="border-radius: 50px;" v-text="carts"></div>
+		</div>
+		<div class="footer_icon bt">
+			<i class="small material-icons">view_headline</i>
+			<div class="blue padding-5  white-text back-text margin-5" id="last">返回顶部</div>
+		</div>
+	</div>
+	<div class="w1200 left-nav">
+	<div class="navs bt" id="loutinav">
+		<div class=" white blue-text lighten-1 font-size-14 padding-tt-10 active">限时折扣</div>
+		<div class=" white blue-text lighten-1 font-size-14 padding-tt-10" v-for=" (content,key) in contents" :key="key" v-text="content.title">母婴儿童</div>
+		
+		<div class=" white blue-text lighten-1 font-size-14 padding-tt-10">为你推荐</div>
+	</div>
+  </div>
+	<div class="row w1200">
+		<div class="left">
+			 <img src="__static__/portal/img/wankai-1.png" class="responsive-img">
+		</div>
+		<div class="left margin-lr-5">
+			<img src="__static__/portal/img/wankai-2.png" class="responsive-img">
+		</div>
+		<div class="left">
+			<img src="__static__/portal/img/wankai-3.png" class="responsive-img">
+		</div>
+	</div>
+	<div class="w1200">
+
+	<!-- 限时折扣 -->
+	<div class="louti">
+	<div class="artile-title over  margin-tt-10">
+		<div class="left border-left font-size-18 black-text padding-left-15">限时折扣</div>
+		<div class="left font-size-12 margin-top-5 margin-left-15 times grey-text">距结束
+			<span>{{discountActivity.deadline | timeFilter}}</span>
+		</div>
+	</div>
+	<div class="content over">
+		<div class="left" style="width: 220px;">
+			<img src="__static__/portal/img/advet.png" class="responsive-img">
+		</div>
+		<div class="left over wids100">
+			<div class="left wids50 over white" v-for="rule in discountActivity.rule_info" style="margin: 0">
+				<img :src="rule.goods_info.thum" style="width: 190px;float: left;">
+				<div class="left width188  padding-15">
+					<div class="font-size-18 black-text" v-text="rule.goods_info.name"></div>
+					<div class="price font-size-14 red-text margin-tt-15 ">限时价：￥<span class="font-size-18 margin-right-10">{{rule.discount_price}}</span><span class="black-text font-size-14">原价：{{rule.goods_info.sell_price}}</span></div>
+					<div class="waves-effect red btn" @click="goGoodsDetail(rule.goods_id,1)">立即抢购</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="content-footer">
+			<div class="left getjuan">
+				<img src="__static__/portal/img/back-blue.png" class="responsive-img">
+				<div class="getgo bt" @click="goto('coupon')">
+					<div class="font-size-18 margin-btn-15">领卷中心</div>
+					<div class="font-size-14 margin-top-15">GO></div>
+				</div>
+			</div>
+			<div class="left flex width100">
+				<div class="flex1 padding-10 grey lighten-5" style="border-right: 2px solid #e5e5e5;" v-for="coupon in coupons">
+
+					<div class="flex">
+						<div class="red-text font-size-10 red-text margin-15">￥<span class="font-size-20">{{coupon.change_value}}</span></div>
+						<div class="flex1  margin-tt-5">
+							<div class="black-text font-size-14 truncate">满{{coupon.reach_money}}使用</div>
+							<div class=" red btn font-size-12" @click="getCoupon(coupon)" style="height: 28px;line-height: 28px;">立即领取</div>
+							<!-- <div style="cursor:default" class="black-text font-size-12" @click="getCoupon(coupon)">点击领取</div> -->
+						</div>
+					</div>
+					<div class="black-text font-size-14 center">限商城内满减活动类商品使用</div>
+				</div>
+			</div>
+		</div>
+</div>
+		<!-- 母婴儿童 -->
+		<div class="louti" v-for="(content,key) in contents" :key="key">
+		<div class="artile-title over  margin-tt-10">
+			<div class="left border-left-origin font-size-18 black-text padding-left-15 bt"> <span v-text="content.title"></span>
+				<span class="font-size-14 grey-text">热搜词：</span>
+				<span class="font-size-14 grey-text padding-lr-5 muynav-border" v-for="(hot_keyword,keyhot_keyword) in content.hot_keywords" :key="keyhot_keyword" v-text="hot_keyword"></span>
+				<span class="font-size-14 grey-text padding-lr-5">更多</span>
+			</div>
+			<div class="right margin-right-10"><a href="" class="black-text font-size-16">更多好货 ></a></div>
+	     </div>
+	<div class="content over" style="height: 379px">
+		<div class="left" style="width: 220px;">
+			<img :src="content.ad1" class="responsive-img">
+		</div>
+		<div class="left over wids100">
+			<div class="left center muyinwid over white" v-for="(tpone,recKey) in content.goods_info" :key="recKey" v-if="recKey < 10" @click="goGoodsDetail(tpone.id)">
+				<img :src="tpone.thum" class="indexgoods-img">
+				<div class="padding-5 left-align margin-lr-15">
+					<div class="font-size-14 black-text truncate">{{tpone.name}}</div>
+					<div class="red-text font-size-14">￥{{tpone.sell_price}}</div>
+				</div>
+				
+			</div>
+		</div>
+	</div>
+	<div class="content-footer">
+			<img :src="content.ad2">
+    </div>
+    </div>
+    <!-- 为你推荐 -->
+    <div class="louti">
+    	<div class="artile-title over  margin-tt-10">
+			<div class="left border-left-yellow font-size-18 black-text padding-left-15">为你推荐
+				<span class="font-size-14 grey-text">属于你的购物指南</span>
+			</div>
+			<div class="right margin-right-10"><a href="" class="black-text font-size-16">更多好货 ></a></div>
+	     </div>
+	     <div class="row">
+	     	<div class="col s3 white margin-10 goodslist" v-for="(good,key) in goodslist" @click="goGoodsDetail(good.id)">
+	     		<div class="goods-img">
+	     			<img :src="good.thum" class="responsive-img">
+	     		</div>
+	     		<div class="font-size-14 black-text margin-10">
+	     			<div class="margin-btn-10">{{good.name}}</div>
+	     			<div class="over">
+	     				<div class="left">
+	     					<span class="red-text font-size-16">{{good.sell_price}}</span>
+	     					<span class="font-size-10 grey-text">￥{{good.market_price}}</span>
+	     				</div>
+	     				<div class="right font-size-14 grey-text">月销量：{{good.sell_num}}</div>
+	     			</div>
+	     		</div>
+	     	</div>
+	     </div>
+    </div>
+</div>
+</div>	
+<script>
+  var app = new Vue({
+	el: '#app',
+	data: {
+	  title: '首页',
+	  coupons: [],
+	  tuijian:[],
+	  discountActivity: {
+          rule_info: []
+      },
+	  carts:0,
+	  user:user,
+	  contents:[],
+	  goodslist:[]
+	},
+	methods: {
+	  getCoupon: function (coupon) {
+		httpRequest('POST', 'api_users/user_coupons/save', {
+		  activity_coupon_id: coupon.id
+		}).then(resp => {
+		  layer.msg(resp.msg)
+		})
+	  },
+	  goGoods: function (goodsId) {
+          goto('goods_detail', { goodsId: goodsId });
+        },
+	  goGoodsDetail: function (goodsId,isDiscountGoods) {
+	  	if(isDiscountGoods == 1){
+			goto('goods_detail', { goodsId: goodsId ,isDiscountGoods:isDiscountGoods});
+	  	}else{
+	  		goto('goods_detail', { goodsId: goodsId });
+	  	}
+	  },
+	  gohome: function () {
+		goto('home');
+	  },
+	  gocart: function () {
+		goto('cart_list');
+	  },
+	  goorder: function () {
+		goto('order_list');
+      },
+	},
+	computed: {
+
+	},
+	filters: {
+		timeFilter: function (value) {
+          if(!value){
+            return '';
+          }
+          value = Math.floor(value / 1000);
+          var day = Math.floor(value / 86400);
+          value %= 86400;
+          var hour = Math.floor(value / 3600);
+          value %= 3600;
+          var minute = Math.floor(value / 60);
+          var second = value %= 60;
+          return  hour + ': ' + minute + ': ' + second;
+        }
+	},
+	mounted: function () {
+		var that = this;
+		page = 1;
+		httpRequest('POST', 'api_goods/carts/lists',{},).then(function (resp) {
+          that.carts = resp.data.length;
+		  return httpRequest('POST', 'api_query/configs/pc_index',{},)
+        }) .then(function(resp){
+			if (resp.data) {
+				that.contents = resp.data;
+				fns()
+			}
+			return httpRequest('POST', 'api_goods/goods/lists',{
+               goods_cate_id: ''
+      }, {
+          'page-num': page,
+          'page-limit': 10
+        },)
+		}) .then(function(resp){
+			that.goodslist = resp.data
+		})
+        // 获取优惠卷
+        httpRequest('POST', 'api_query/market/coupon',{},).then(function (resp) {
+          that.coupons = resp.data;
+        })
+        // 加载限时折扣
+        httpRequest('POST', 'api_query/market/activity', {}, {}, false).then(function (resp) {
+			console.log(resp);
+			
+          if (resp.data.discount) {
+            // 计算截至时间
+            resp.data.discount[0].deadline = resp.data.discount[0].end_timestamp * 1000 - Date.now();
+            // 限时折扣+
+            resp.data.discount[0].rule_info.forEach(function (item) {
+              item.href = location.origin + '/portal/index/goods_detail?isDiscountGoods=1&goodsId=' + item.goods_id
+            })
+            that.discountActivity = resp.data.discount[0];
+            // 倒计时
+            setInterval(function () {
+              that.discountActivity.deadline -= 1000;
+            }, 1000)
+          }
+        }).catch(function (e) {
+          console.log(e)
+        })
+	}
+  })
+	fns = function(){
+	$(function(){
+        //1.楼梯什么时候显示，800px scroll--->scrollTop
+        $(window).on('scroll',function(){
+            var $scroll=$(this).scrollTop();
+            if($scroll>=800){
+                $('#loutinav').show();
+            }else{
+                $('#loutinav').hide();
+            }
+
+            //4.拖动滚轮，对应的楼梯样式进行匹配
+            $('.louti').each(function(){
+                var $loutitop=$('.louti').eq($(this).index()).offset().top + 400;
+                if($loutitop>$scroll){
+                   $('#loutinav div').removeClass('active');
+                    $('#loutinav div').eq($(this).index()).addClass('active');
+                    return false;//中断循环 
+                };
+            });
+        });
+        //2.获取每个楼梯的offset().top,点击楼梯让对应的内容模块移动到对应的位置  offset().left
+        
+        var $loutili=$('#loutinav div').not('.last');
+        $loutili.on('click',function(){
+            $(this).addClass('active').siblings('div').removeClass('active');
+            var $loutitop=$('.louti').eq($(this).index()).offset().top;
+            //获取每个楼梯的offsetTop值
+            $('html,body').animate({
+                scrollTop:$loutitop
+            })
+        });
+        //3.回到顶部
+        $('#last').on('click',function(){
+
+            $('html,body').animate({//$('html,body')兼容问题body属于chrome
+                scrollTop:0
+            })
+       });
+    })
+		}
+</script>
+{include file="index/footer" /}
+<script>
+	$('.carousel.carousel-slider').carousel({
+		time_constant:200,
+	 	full_width: true,
+	 	indicators:true,
+	 	no_wrap:false
+	 });
+	 $('.next-btn').on('click',function(){
+		$('.carousel').carousel('next');
+
+	 })
+	 $('.last-btn').on('click',function(){
+		$('.carousel').carousel('prev');
+	 })
+	 setInterval(function () {
+		$('.carousel').carousel('prev');
+	 },5000)
+	</script>
+</body>
+
+</html>
