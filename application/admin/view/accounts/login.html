@@ -21,7 +21,7 @@
       <el-col :span="6">
         <el-card style="padding:20px 20px 0px 20px;width:400px;background: rgba(0,0,0,0); border: none;">
           <div slot="header" style="text-align: center;border:none;">
-            <img src="__static__/images/fa-trademark.png" style="max-width: 100%;padding: 10px;box-sizing: border-box;">
+            <h2 style="color: #FFF">iBindding</h2>
           </div>
           <el-form :model="formData" ref="formData" :rules="rules" label-width="60px" label-position="left">
             <el-form-item label="账号" prop="guid">
@@ -31,7 +31,7 @@
               <el-input v-model="formData.password" type="password" placeholder="请输入密码" style="background: rgba(0,0,0,0);" @keyup.native.enter="login"></el-input>
             </el-form-item>
             <el-form-item>
-              <el-button @click.stop="login" icon="el-icon-check" type="success" style="border-radius: 50%;padding: 12px;float: right;"
+              <el-button @click.stop="login" icon="el-icon-check" type="success" style="border-radius: 50%;padding: 12px;margin-left: 103px;"
                 plain></el-button>
             </el-form-item>
           </el-form>

@@ -2,10 +2,10 @@
 return array (
   'basic' => 
   array (
-    'system_name' => 'iBidding',
+    'system_name' => '基于Internet的招投标信息智能推送系统',
     'version' => 'v1.0.0',
     'ibid_version' => 'v1.0.0',
-    'technical_support' => 'JianhaiHao',
+    'technical_support' => 'iBidding',
     'copyright' => 'JianhaiHao',
     'email' => 'jianhaihao@gmail.com',
     'uuid' => '05957446-0add-c1a7-aedb-026a061180cd',
