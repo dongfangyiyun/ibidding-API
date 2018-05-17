@@ -1,0 +1,260 @@
+{include file="header" /}
+
+<body>
+
+  <section class="el-container  is-vertical">
+    {include file="top" /}
+    <section class="el-container">
+      {include file="left" /}
+      <section class="el-container  is-vertical">
+        <main class="el-main" id="main">
+          <div id="app">
+            <fieldset>
+              <legend v-text="title"></legend>
+            </fieldset>
+
+            <el-row :gutter="20">
+              <el-col :span="16">
+                <el-card>
+                  <div slot="header">
+                    <span>规则内容</span>
+                  </div>
+                  <el-form :model="formData" ref="ruleForm" :rules="rules" label-position="left" label-width="120px">
+                    <el-form-item label="规则标题" prop="title">
+                      <el-input v-model="formData.title" clearable></el-input>
+                    </el-form-item>
+                    <el-form-item label="规则类别" prop="type">
+                      <el-input v-model="formData.type" clearable></el-input>
+                    </el-form-item>
+                    <el-form-item label="规则作者" prop="author">
+                      <el-input v-model="formData.author" clearable></el-input>
+                    </el-form-item>
+                    <el-form-item label="规则简介" prop="intro">
+                      <el-input v-model="formData.intro" clearable type="textarea"></el-input>
+                    </el-form-item>
+                    <el-form-item label="规则详情">
+                      <script id="container" type="text/plain"></script>
+                    </el-form-item>
+                    <el-form-item label="状态" prop="status">
+                      <el-radio v-model="formData.status" :label="status[0]">上线</el-radio>
+                      <el-radio v-model="formData.status" :label="status[1]">下线</el-radio>
+                    </el-form-item>
+                    <el-form-item label="规则音频链接" prop="audio_url">
+                      <el-input v-model="formData.audio_url" clearable type="textarea"></el-input>
+                    </el-form-item>
+                    <el-form-item label="规则短视频链接" prop="video_url">
+                      <el-input v-model="formData.video_url" clearable type="textarea"></el-input>
+                    </el-form-item>
+                    <el-form-item>
+                      <el-button type="primary" @click="submitForm('ruleForm')" icon="el-icon-check">提交</el-button>
+                      <el-button type="info" icon="el-icon-d-arrow-left" @click="returnIndex()" plain>返回</el-button>
+                    </el-form-item>
+                  </el-form>
+                </el-card>
+              </el-col>
+              <el-col :span="8">
+                <!-- 缩略图 -->
+                <el-card body-style="text-align: center;">
+                  <div slot="header">
+                    <span>缩略图</span>
+                  </div>
+                  <ul class="el-upload-list el-upload-list--picture-card" v-show="formData.thum">
+                    <li class="el-upload-list__item is-ready">
+                      <img :src="formData.thum" alt="" class="el-upload-list__item-thumbnail">
+                      <span class="el-upload-list__item-actions">
+                        <span class="el-upload-list__item-delete" @click="formData.thum = ''">
+                          <i class="el-icon-delete"></i>
+                        </span>
+                      </span>
+                    </li>
+                  </ul>
+                  <div class="el-upload el-upload--picture-card" @click="fileClick('imgAdd');">
+                    <i class="el-icon-plus"></i>
+                  </div>
+                </el-card>
+                <!-- 图集 -->
+                <el-card body-style="text-align: center;" style="margin-top: 20px;">
+                  <div slot="header">
+                    <span>图集</span>
+                    <el-button style="float: right; padding: 3px 0" type="text" @click="fileClick('imgsAdd');">增加图集图片</el-button>
+                  </div>
+                  <div v-for="(img, imgKey) in formData.imgs" :key="imgKey" style="margin-top:10px;">
+                    <ul class="el-upload-list el-upload-list--picture-card" v-show="img != ''">
+                      <li class="el-upload-list__item is-ready">
+                        <img :src="img" alt="" class="el-upload-list__item-thumbnail">
+                        <span class="el-upload-list__item-actions">
+                          <span class="el-upload-list__item-edit" @click="fileClick('imgEdit', imgKey);">
+                            <i class="el-icon-edit"></i>
+                          </span>
+                          <span class="el-upload-list__item-delete" @click="formData.imgs.splice(imgKey, 1)">
+                            <i class="el-icon-delete"></i>
+                          </span>
+                        </span>
+                      </li>
+                    </ul>
+                  </div>
+                </el-card>
+              </el-col>
+            </el-row>
+            <input @change="fileChange($event)" type="file" id="imgAdd" style="display: none">
+            <input @change="fileChange($event)" type="file" id="imgsAdd" style="display: none" multiple>
+          </div>
+        </main>
+        {include file="footer" /}
+      </section>
+    </section>
+  </section>
+
+  <!-- 百度编辑器 -->
+  <script type="text/javascript" src="__static__/ueditor/ueditor.config.js"></script>
+  <script type="text/javascript" src="__static__/ueditor/ueditor.all.min.js"></script>
+
+  <script type="text/javascript">
+    let ue = UE.getEditor('container');
+    // 取消编辑器的默认宽度
+    ue.ready(() => {
+      document.getElementById('edui1').style.removeProperty('width')
+      document.getElementById('edui1_iframeholder').style.removeProperty('width')
+    });
+
+    let app = new Vue({
+      el: '#app',
+      data: {
+        title: querystring.ruleId ? '编辑规则' : '新增规则',
+        formData: {
+          title: '',
+          type: '',
+          author: '',
+          thum: '',
+          imgs: [],
+          intro: '',
+          audio_url: '',
+          video_url: '',
+          status: 1
+        },
+        status: [1, 2],
+        rules: {
+          title: [
+            { required: true, message: '请输入标题', trigger: 'blur' },
+          ],
+          type: [
+            { required: true, message: '请输入类别', trigger: 'blur' },
+          ]
+        },
+        currentUploadType: '',
+        currentUploadIndex: 0
+      },
+      methods: {
+        submitForm(formName) {
+          this.$refs[formName].validate((valid) => {
+            if (valid) {
+              // 通过校验
+              let data = deepCopy(app.formData);
+              data.content = ue.getContent();
+              console.log(data)
+              let router = querystring.ruleId ? 'api_articles/rules/update' : 'api_articles/rules/save'
+              httpRequest('post', router, data).then((resp) => {
+                this.$message.success(resp.msg);
+                setTimeout(() => {
+                  this.returnIndex();
+                }, 500)
+              });
+            } else {
+              return false;
+            }
+          });
+        },
+        // 返回列表页
+        returnIndex() {
+          location = location.origin + '/admin/rules/index' + querystringStringify({ currentPage: querystring.currentPage });
+        },
+        fileClick(type, index) {
+          this.currentUploadType = type;
+          if (type == 'imgsAdd') {
+            document.getElementById('imgsAdd').click();
+          } else {
+            if (type == 'imgEdit') {
+              this.currentUploadIndex = index;
+            }
+            document.getElementById('imgAdd').click();
+          }
+        },
+        //文件发生该变
+        fileChange(el) {
+          if (!el.target.files[0].size) return;
+          this.fileList(el.target);
+          el.target.value = ''
+        },
+        //文件列表
+        fileList(fileList) {
+          let files = fileList.files;
+          for (let i = 0; i < files.length; i++) {
+            //判断是否为文件夹
+            if (files[i].type != '') {
+              this.fileAdd(files[i]);
+            } else {
+              //文件夹处理
+              this.folders(fileList.items[i]);
+            }
+          }
+        },
+        //文件夹处理
+        folders(files) {
+          //判断是否为原生file
+          if (files.kind) {
+            files = files.webkitGetAsEntry();
+          }
+          files.createReader().readEntries((file) => {
+            for (let i = 0; i < file.length; i++) {
+              if (file[i].isFile) {
+                this.foldersAdd(file[i]);
+              } else {
+                this.folders(file[i]);
+              }
+            }
+          })
+        },
+        foldersAdd(entry) {
+          entry.file(function (file) {
+            this.fileAdd(file)
+          })
+        },
+        fileAdd(file) {
+          //判断是否为图片文件
+          if (file.type.indexOf('image') == -1) {
+            this.$message({
+              type: 'error',
+              message: '请选择图片类型的文件'
+            })
+          } else {
+            let reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = function () {
+              file.src = this.result;
+              if (app.currentUploadType == 'imgAdd') {
+                app.formData.thum = file.src
+              } else if (app.currentUploadType == 'imgsAdd') {
+                app.formData.imgs.push(file.src)
+              } else if (app.currentUploadType == 'imgEdit') {
+                app.$set(app.formData.imgs, app.currentUploadIndex, file.src)
+              }
+            }
+          }
+        },
+      },
+      mounted() {
+        if (querystring.ruleId) {
+          httpRequest('POST', 'api_articles/rules/read', { id: querystring.ruleId }).then((resp) => {
+            this.formData = resp.data;
+            ue.ready(() => {
+              ue.setContent(this.formData.content);
+            });
+          });
+        }
+      }
+    });
+  </script>
+
+</body>
+
+</html>

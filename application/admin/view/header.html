@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>iBidding</title>
+  <!-- admincss样式 -->
+  <link rel="stylesheet" href="__static__/admin/css/admin.css" type="text/css">
+  <!-- 阿里图标库 -->
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_589115_ih58fc1w5fm9529.css" type="text/css">
+  <!-- loading样式 -->
+  <link rel="stylesheet" href="__static__/common/css/loading.css" type="text/css">
+  <!-- jq -->
+  <script src="__static__/jquery-3.2.1.min.js"></script>
+  <!-- vue -->
+  <script src="__static__/vue/vue-2.5.15/vue.min.js" type="text/javascript"></script>
+  <!-- layer -->
+  <script src="__static__/layer-v3.1.1/layer/layer.js" type="text/javascript"></script>
+  <!-- 公共js -->
+  <script src="__static__/common/script/common.js"></script>
+  <script src="__static__/common/script/config.js"></script>
+  <!-- ajax 请求 -->
+  <script src="__static__/axios/axios.min.js"></script>
+  <!-- <script src="__static__/common/script/http.js"></script> -->
+  <script src="__static__/common/script/httpPromise.js"></script>
+  <!-- element -->
+  <link rel="stylesheet" href="__static__/element-ui@2.2.2/lib/theme-chalk/index.css">
+  <script src="__static__/element-ui@2.2.2/lib/index.js"></script>
+
+
+
+  <script type="text/javascript">
+    // 获取版权信息
+    var basic_info = getStorage('basic_info');
+    if (!basic_info) {
+      // 获取当前系统信息
+      httpRequest('post', 'api_systems/params/index', {
+        type: 'basic'
+      }, {}, false).then((resp) => {
+        setStorage('basic_info', resp.data);
+        basic_info = resp.data;
+        // document.title = basic_info.system_name
+      });
+    } else {
+      // document.title = basic_info.system_name
+    }
+
+  </script>
+</head>

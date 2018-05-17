@@ -1,0 +1,755 @@
+{include file="header" /}
+
+<body>
+
+  <section class="el-container  is-vertical">
+    {include file="top" /}
+    <section class="el-container">
+      {include file="left" /}
+      <section class="el-container  is-vertical">
+        <main class="el-main" id="main">
+          <div id="app">
+            <fieldset class="layui-elem-field layui-field-title site-demo-button">
+              <legend v-text="title"></legend>
+            </fieldset>
+
+            <el-tabs v-model="activeTabName" @tab-click="handleTabClick" tab-position="right">
+              <!-- 商品分类 -->
+              <el-tab-pane label="商品分类" name="0">
+                <el-row :gutter="20">
+                  <el-col :span="10">
+                    <el-card>
+                      <div slot="header">
+                        <span>商品分类</span>
+                      </div>
+                      <el-form ref="cateForm">
+                        <el-form-item label="选择商品分类">
+                          <el-cascader change-on-select v-model="goods_cate_ids" :options="goods_cates"></el-cascader>
+                        </el-form-item>
+                      </el-form>
+                      <el-button @click="returnIndex">返回</el-button>
+                      <el-button type="primary" @click="skipTab('1')">下一步</el-button>
+                    </el-card>
+                  </el-col>
+                  <transition name="el-fade-in-linear">
+                    <el-col :span="14" v-show="attr_template.names && attr_template.names.length != 0">
+                      <el-card>
+                        <div slot="header">
+                          <span>商品属性</span>
+                        </div>
+                        <el-form :model="attr_template" ref="attrForm" label-position="left" label-width="120px">
+                          <el-form-item v-for="(name, nameKey) in attr_template.names" :key="nameKey" :label="name.name">
+                            <el-radio v-for="(option ,optionKey) in name.options" :key="optionKey" v-model="goods.goods_attr_info[name.id]" :label="option.id">{{option.option}}</el-radio>
+                          </el-form-item>
+                        </el-form>
+                      </el-card>
+                    </el-col>
+                  </transition>
+                </el-row>
+              </el-tab-pane>
+
+              <!-- 规格参数 -->
+              <el-tab-pane label="规格参数" name="1">
+                <el-row :gutter="20">
+                  <el-col :span="8" v-for="(name, nameKey) in spec_template.names" :key="nameKey">
+                    <el-card>
+                      <div slot="header">
+                        <span>【{{name.name}}】规格项</span>
+                      </div>
+                      <el-form label-position="left" label-width="90">
+                        <el-form-item v-for="(spec, specKey) in goods.goods_spec_info[name.id]" :key="specKey" :label="name.name + '项' + specKey">
+                          <el-input clearable v-model="spec.option" style="width: 65%;"></el-input>
+                          <el-button style="float:right;" v-if="specKey != 0" @click="goods.goods_spec_info[name.id].splice(specKey, 1)">移除</el-button>
+                        </el-form-item>
+                        <el-form-item>
+                          <el-button @click="addSpecItem(goods.goods_spec_info, name.id)">增加{{name.name}}规格项</el-button>
+                        </el-form-item>
+                      </el-form>
+                    </el-card>
+                  </el-col>
+                </el-row>
+                <el-button type="success" style="margin-top: 20px;margin-bottom:20px;" @click="specSetting">设置规格参数</el-button>
+
+                <!-- 规格表格 -->
+                <div class="el-table el-table--fit el-table--border el-table--enable-row-hover el-table--enable-row-transition" style="width: 100%;">
+                  <div class="el-table__body-wrapper is-scrolling-none">
+                    <table cellspacing="0" cellpadding="0" border="0" class="el-table__body">
+                      <thead class="has-gutter">
+                        <tr class="" style="width: 9.5%">
+                          <th colspan="2" rowspan="1" class="is-leaf">
+                            <div class="cell">规格项</div>
+                          </th>
+                          <th colspan="1" rowspan="1" class="is-leaf">
+                            <div class="cell">库存
+                              <i class="el-icon-caret-bottom" style="cursor: pointer;" @click="quickSetSpec('stock')"></i>
+                              <el-input size="mini" v-model="quickSpecData.stock"></el-input>
+                            </div>
+
+                          </th>
+                          <th colspan="1" rowspan="1" class="is-leaf">
+                            <div class="cell">销售价格
+                              <i class="el-icon-caret-bottom" style="cursor: pointer;" @click="quickSetSpec('sell_price')"></i>
+                              <el-input size="mini" v-model="quickSpecData.sell_price"></el-input>
+                            </div>
+                          </th>
+                          <th colspan="1" rowspan="1" class="is-leaf">
+                            <div class="cell">市场价格
+                              <i class="el-icon-caret-bottom" style="cursor: pointer;" @click="quickSetSpec('market_price')"></i>
+                              <el-input size="mini" v-model="quickSpecData.market_price"></el-input>
+                            </div>
+                          </th>
+                          <th colspan="1" rowspan="1" class="is-leaf">
+                            <div class="cell">成本价格
+                              <i class="el-icon-caret-bottom" style="cursor: pointer;" @click="quickSetSpec('cost_price')"></i>
+                              <el-input size="mini" v-model="quickSpecData.cost_price"></el-input>
+                            </div>
+                          </th>
+                          <th colspan="1" rowspan="1" class="is-leaf">
+                            <div class="cell">红包价格
+                              <i class="el-icon-caret-bottom" style="cursor: pointer;" @click="quickSetSpec('red_price')"></i>
+                              <el-input size="mini" v-model="quickSpecData.red_price"></el-input>
+                            </div>
+                          </th>
+                          <th colspan="1" rowspan="1" class="is-leaf">
+                            <div class="cell">商品编码
+                              <i class="el-icon-caret-bottom" style="cursor: pointer;" @click="quickSetSpec('goods_no')"></i>
+                              <el-input size="mini" v-model="quickSpecData.goods_no"></el-input>
+                            </div>
+                          </th>
+                          <th colspan="1" rowspan="1" class="is-leaf">
+                            <div class="cell">商品条码
+                              <i class="el-icon-caret-bottom" style="cursor: pointer;" @click="quickSetSpec('goods_code')"></i>
+                              <el-input size="mini" v-model="quickSpecData.goods_code"></el-input>
+                            </div>
+                          </th>
+                          <th colspan="1" rowspan="1" class="is-leaf">
+                            <div class="cell">重量(g)
+                              <i class="el-icon-caret-bottom" style="cursor: pointer;" @click="quickSetSpec('weight')"></i>
+                              <el-input size="mini" v-model="quickSpecData.weight"></el-input>
+                            </div>
+                          </th>
+                          <th colspan="1" rowspan="1" class="is-leaf">
+                            <div class="cell">缩略图
+                              <i class="el-icon-caret-bottom" style="cursor: pointer;" @click.stop="quickSetSpec('thum')"></i>
+                              <div v-show="quickSpecData.thum" style="text-align: center;" @click="fileClick('quickSpecDataThum')">
+                                <img :src="quickSpecData.thum" style="max-width: 40%;">
+                              </div>
+                              <div v-show="!quickSpecData.thum" style="text-align: center;display:block;" @click="fileClick('quickSpecDataThum')">
+                                <i class="el-icon-upload"></i>
+                              </div>
+                            </div>
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr class="el-table__row" v-for="(dynamicSpec, dynamicSpecKey) in goods.goods_spec_group_info" :key="dynamicSpecKey">
+                          <td class="" style="width: 9.5%" colspan="2">
+                            <div class="cell" style="width:100%">{{dynamicSpec.spec_option_group}}</div>
+                          </td>
+                          <td class="" style="width: 9.5%">
+                            <div class="cell">
+                              <el-input size="mini" v-model="dynamicSpec.stock" style="width:100%"></el-input>
+                            </div>
+                          </td>
+                          <td class="" style="width: 9.5%">
+                            <div class="cell">
+                              <el-input size="mini" v-model="dynamicSpec.sell_price" style="width:100%"></el-input>
+                            </div>
+                          </td>
+                          <td class="" style="width: 9.5%">
+                            <div class="cell">
+                              <el-input size="mini" v-model="dynamicSpec.market_price" style="width:100%"></el-input>
+                            </div>
+                          </td>
+                          <td class="" style="width: 9.5%">
+                            <div class="cell">
+                              <el-input size="mini" v-model="dynamicSpec.cost_price" style="width:100%"></el-input>
+                            </div>
+                          </td>
+                          <td class="" style="width: 9.5%">
+                            <div class="cell">
+                              <el-input size="mini" v-model="dynamicSpec.red_price" style="width:100%"></el-input>
+                            </div>
+                          </td>
+                          <td class="" style="width: 9.5%">
+                            <div class="cell">
+                              <el-input size="mini" v-model="dynamicSpec.goods_no" style="width:100%"></el-input>
+                            </div>
+                          </td>
+                          <td class="" style="width: 9.5%">
+                            <div class="cell">
+                              <el-input size="mini" v-model="dynamicSpec.goods_code" style="width:100%"></el-input>
+                            </div>
+                          </td>
+                          <td class="" style="width: 9.5%">
+                            <div class="cell">
+                              <el-input size="mini" v-model="dynamicSpec.weight" style="width:100%"></el-input>
+                            </div>
+                          </td>
+                          <td class="" style="width: 9.5%" style="text-align: center;" @click="fileClick('dynamicSpecsGroupThum', dynamicSpecKey)">
+                            <div v-show="dynamicSpec.thum" style="text-align: center;">
+                              <img v-show="dynamicSpec.thum" :src="dynamicSpec.thum" style="max-width: 45%;">
+                            </div>
+                            <div style="text-align: center;" v-show="!dynamicSpec.thum">
+                              <i class="el-icon-upload"></i>
+                            </div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <div style="margin-top: 20px;margin-bottom:20px;">
+                  <el-button @click="returnIndex">返回</el-button>
+                  <el-button type="info" @click="skipTab('0')" plain>上一步</el-button>
+                  <el-button type="primary" @click="skipTab('2')">下一步</el-button>
+                </div>
+              </el-tab-pane>
+
+              <!-- 详细信息 -->
+              <el-tab-pane label="基本信息" name="2">
+                <el-row :gutter="20">
+                  <el-col :span="16">
+                    <el-card>
+                      <div slot="header">
+                        <span>商品基本信息</span>
+                      </div>
+                      <el-form :model="goods" ref="ruleForm" :rules="goodsRules" label-position="left" label-width="80px">
+                        <el-form-item label="商品名称" prop="name">
+                          <el-input v-model="goods.name" clearable></el-input>
+                        </el-form-item>
+                        <el-form-item label="商品简介" prop="intro">
+                          <el-input v-model="goods.intro" clearable type="textarea"></el-input>
+                        </el-form-item>
+                        <el-form-item label="商品详情">
+                          <script id="container" type="text/plain"></script>
+                        </el-form-item>
+                        <el-form-item label="商品状态" prop="status">
+                          <el-radio v-model="goods.status" :label="goodsStatus[0]">上线</el-radio>
+                          <el-radio v-model="goods.status" :label="goodsStatus[1]">下线</el-radio>
+                        </el-form-item>
+
+                        <el-row :gutter="10">
+                          <el-col :span="6">
+                            <el-form-item label="销售价格" prop="sell_price" label-width="80px">
+                              <el-input v-model="goods.sell_price" clearable></el-input>
+                            </el-form-item>
+                          </el-col>
+
+                          <el-col :span="6">
+                            <el-form-item label="红包价" prop="red_price">
+                              <el-input v-model="goods.red_price" clearable></el-input>
+                            </el-form-item>
+                          </el-col>
+                          <el-col :span="6">
+                            <el-form-item label="成本价" prop="cost_price">
+                              <el-input v-model="goods.cost_price" clearable></el-input>
+                            </el-form-item>
+                          </el-col>
+                          <el-col :span="6">
+                            <el-form-item label="市场价" prop="market_price">
+                              <el-input v-model="goods.market_price" clearable></el-input>
+                            </el-form-item>
+                          </el-col>
+                        </el-row>
+
+                        <el-row :gutter="10">
+                          <el-col :span="6">
+                            <el-form-item label="库存" prop="stock" label-width="80px">
+                              <el-input v-model="goods.stock" clearable></el-input>
+                            </el-form-item>
+                          </el-col>
+                          <el-col :span="6">
+                            <el-form-item label="重量(g)" prop="weight">
+                              <el-input v-model="goods.weight" clearable></el-input>
+                            </el-form-item>
+                          </el-col>
+                          <el-col :span="6">
+                            <el-form-item label="商品编码" prop="goods_no">
+                              <el-input v-model="goods.goods_no" clearable></el-input>
+                            </el-form-item>
+                          </el-col>
+                          <el-col :span="6">
+                            <el-form-item label="商品条码" prop="goods_code">
+                              <el-input v-model="goods.goods_code" clearable></el-input>
+                            </el-form-item>
+                          </el-col>
+                        </el-row>
+
+                        <!-- 通用设置 -->
+                        <el-row :gutter="10">
+                          <el-col :span="6">
+                            <el-form-item label="销售量" prop="sell_num" label-width="80px">
+                              <el-input v-model="goods.sell_num" clearable></el-input>
+                            </el-form-item>
+                          </el-col>
+                          <el-col :span="6">
+                            <el-form-item label="点击量" prop="click_num">
+                              <el-input v-model="goods.click_num" clearable></el-input>
+                            </el-form-item>
+                          </el-col>
+                          <el-col :span="6">
+                            <el-form-item label="收藏量" prop="collect_num">
+                              <el-input v-model="goods.collect_num" clearable></el-input>
+                            </el-form-item>
+                          </el-col>
+                          <el-col :span="6">
+                            <el-form-item label="商品排序" prop="sort">
+                              <el-input v-model="goods.sort" clearable></el-input>
+                            </el-form-item>
+                          </el-col>
+                        </el-row>
+
+                        <el-form-item label="是否置顶" prop="is_top">
+                          <el-radio v-model="goods.is_top" :label="isTopLabels[0]">是</el-radio>
+                          <el-radio v-model="goods.is_top" :label="isTopLabels[1]">否</el-radio>
+                        </el-form-item>
+                        <el-form-item label="是否为虚拟商品" prop="is_virtual">
+                          <el-radio v-model="goods.is_virtual" :label="isTopLabels[0]">是</el-radio>
+                          <el-radio v-model="goods.is_virtual" :label="isTopLabels[1]">否</el-radio>
+                        </el-form-item>
+
+                        <el-form-item label="评分" prop="score">
+                          <el-rate v-model="goods.score" :texts="scoreTexts" show-text></el-rate>
+                        </el-form-item>
+
+                        <el-form-item label="推荐位" prop="recoList">
+                          <el-checkbox-group v-model="goods.tags">
+                            <el-checkbox label="精品"></el-checkbox>
+                            <el-checkbox label="新品"></el-checkbox>
+                            <el-checkbox label="热销品"></el-checkbox>
+                            <el-checkbox label="折扣"></el-checkbox>
+                            <el-checkbox label="清仓"></el-checkbox>
+                          </el-checkbox-group>
+                        </el-form-item>
+
+                        <el-form-item>
+                          <el-button @click="returnIndex">返回</el-button>
+                          <el-button @click="skipTab('1')" type="info" plain>上一步</el-button>
+                          <el-button type="primary" @click="submit" icon="el-icon-check">提交</el-button>
+                        </el-form-item>
+                      </el-form>
+                    </el-card>
+                  </el-col>
+                  <el-col :span="8">
+                    <!-- 缩略图 -->
+                    <el-card body-style="text-align: center;">
+                      <div slot="header">
+                        <span>缩略图</span>
+                      </div>
+                      <ul class="el-upload-list el-upload-list--picture-card" v-show="goods.thum">
+                        <li class="el-upload-list__item is-ready">
+                          <img :src="goods.thum" alt="" class="el-upload-list__item-thumbnail">
+                          <span class="el-upload-list__item-actions">
+                            <span class="el-upload-list__item-delete" @click="goods.thum = ''">
+                              <i class="el-icon-delete"></i>
+                            </span>
+                          </span>
+                        </li>
+                      </ul>
+                      <div class="el-upload el-upload--picture-card" @click="fileClick('imgAdd');">
+                        <i class="el-icon-plus"></i>
+                      </div>
+                    </el-card>
+                    <!-- 图集 -->
+                    <el-card body-style="text-align: center;" style="margin-top: 20px;">
+                      <div slot="header">
+                        <span>图集</span>
+                        <el-button style="float: right; padding: 3px 0" type="text" @click="fileClick('imgsAdd');">增加图集图片</el-button>
+                      </div>
+                      <div v-for="(img, imgKey) in goods.imgs" :key="imgKey" style="margin-top:10px;">
+                        <ul class="el-upload-list el-upload-list--picture-card" v-show="img != ''">
+                          <li class="el-upload-list__item is-ready">
+                            <img :src="img" alt="" class="el-upload-list__item-thumbnail">
+                            <span class="el-upload-list__item-actions">
+                              <span class="el-upload-list__item-edit" @click="fileClick('imgEdit', imgKey);">
+                                <i class="el-icon-edit"></i>
+                              </span>
+                              <span class="el-upload-list__item-delete" @click="goods.imgs.splice(imgKey, 1)">
+                                <i class="el-icon-delete"></i>
+                              </span>
+                            </span>
+                          </li>
+                        </ul>
+                      </div>
+                    </el-card>
+                  </el-col>
+                </el-row>
+              </el-tab-pane>
+            </el-tabs>
+            <input @change="fileChange($event)" type="file" id="imgAdd" style="display: none">
+            <input @change="fileChange($event)" type="file" id="imgsAdd" style="display: none" multiple>
+          </div>
+        </main>
+        {include file="footer" /}
+      </section>
+    </section>
+  </section>
+
+  <!-- 百度编辑器start -->
+  <script type="text/javascript" src="__static__/ueditor/ueditor.config.js"></script>
+  <script type="text/javascript" src="__static__/ueditor/ueditor.all.js"></script>
+  <!-- 百度编辑器end -->
+
+  <script type="text/javascript">
+    let ue = UE.getEditor('container');
+    // 取消编辑器的默认宽度
+    ue.ready(() => {
+      document.getElementById('edui1').style.removeProperty('width')
+    });
+
+    let app = new Vue({
+      el: '#app',
+      data() {
+        return {
+          title: querystring.goodsId ? '编辑商品' : '新增商品',
+          activeTabName: '0', //tab选中标签
+          goods_cate_ids: [], //选中分类id集合,包括选中父分类
+          goods_cates: [],  //分类
+          // 属性模板
+          attr_template: {
+            id: '',
+            names: []
+          },
+          // 规格模板
+          spec_template: {
+            id: '',
+            names: []
+          },
+          // 最终的商品信息
+          goods: {
+            goods_attr_info: {},  //选中的属性值集合
+            goods_spec_info: {}, //增加的规格选项
+            goods_cate_id: '',
+            name: '',
+            intro: '',
+            stock: 0,
+            sell_price: 0,
+            market_price: 0,
+            cost_price: 0,
+            red_price: 0,
+            weight: 0,
+            goods_no: '0',
+            goods_code: '0',
+            sell_num: 0,
+            click_num: 0,
+            collect_num: 0,
+            sort: 0,
+            score: 5,
+            thum: '',
+            imgs: [],
+            status: 1,
+            tags: [],
+            is_top: 1,
+            is_virtual: 0,
+            goods_spec_group_info: [],  //动态规格组合表
+          },
+          // 指定选项labels
+          isTopLabels: [1, 0],
+          // 评论星级辅助说明
+          scoreTexts: ['1星', '2星', '3星', '4星', '5星'],
+          // 商品状态待选
+          goodsStatus: [1, 2],
+          // 商品基本信息表单校验
+          goodsRules: {
+            name: [
+              { required: true, message: '请输入商品名称', trigger: 'blur' },
+            ],
+          },
+          // 规格快速选项
+          quickSpecData: {
+            stock: 0,
+            sell_price: 0,
+            market_price: 0,
+            cost_price: 0,
+            red_price: 0,
+            weight: 0,
+            goods_no: '0',
+            goods_code: '0',
+            thum: ''
+          },
+          // 上传图片类型
+          currentUploadType: '',
+          // 上传图片位置
+          currentUploadIndex: 0,
+        }
+      },
+      methods: {
+        // tab切换
+        handleTabClick(tab, event) {
+          this.skipTab(tab.name)
+        },
+        // 调tab页
+        skipTab(tabName) {
+          if (tabName == '1') {
+            this.validateCate() && (this.activeTabName = tabName);
+            if (!this.spec_template.names || this.spec_template.names.length == 0) {
+              this.$message({
+                type: 'info',
+                message: '该分类下没有规格'
+              })
+              setTimeout(() => {
+                this.activeTabName = '2'
+              }, 300)
+            }
+          }
+          if (tabName == '2') {
+            this.validateCate() && (this.activeTabName = tabName);
+            this.validateSpecItems() && (this.activeTabName = tabName);
+          } else if (tabName == '0') {
+            this.activeTabName = tabName
+          }
+        },
+        // 提交
+        submit() {
+          if (this.spec_template.id && this.goods.goods_spec_group_info.length == 0) {
+            this.$message.warning('请设置规格参数');
+            this.activeTabName = '1';
+            return;
+          }
+          if (this.goods.imgs.length == 0) {
+            this.$message.warning('请设置商品图集信息');
+            return;
+          }
+          if (!this.goods.thum) {
+            this.$message.warning('请设置商品缩略图');
+            return;
+          }
+          this.$refs.ruleForm.validate((valid) => {
+            if (valid) {
+              console.log(this.goods);
+              this.goods.desc = ue.getContent();
+              let router = querystring.goodsId ? 'api_goods/goods/update' : 'api_goods/goods/save';
+              httpRequest('POST', router, this.goods).then((resp) => {
+                this.$message.success(resp.msg)
+                setTimeout(() => {
+                  this.returnIndex();
+                }, 500);
+              })
+            } else {
+              return false;
+            }
+          })
+        },
+        // 5个小时才组合出来，以此注释纪念！！！2018-3-24 22:50 ---wgj
+        specSetting() {
+          if (this.validateSpecItems()) {
+            // 对所有的规格项进行组合
+            let pre = []; //前一次的组合结果
+            this.spec_template.names.forEach((name, index) => {
+              let cur = [];  //当前次的组合结果
+              this.goods.goods_spec_info[name.id].forEach((specItem) => {
+                if (index == 0) { //第一次直接保存
+                  // pre.push(specItem.id)
+                  pre.push({
+                    spec_option_ids: specItem.id,
+                    spec_option_group: specItem.option,
+                    stock: 0,
+                    sell_price: 0,
+                    market_price: 0,
+                    cost_price: 0,
+                    red_price: 0,
+                    weight: 0,
+                    goods_no: '0',
+                    goods_code: '0',
+                    thum: ''
+                  })
+                } else {
+                  // 非第一次则拼上前一次组合的id
+                  pre.forEach((h) => {
+                    // cur.push(h + '_' + specItem.id);
+                    cur.push({
+                      spec_option_ids: h.spec_option_ids + '_' + specItem.id,
+                      spec_option_group: h.spec_option_group + '_' + specItem.option,
+                      stock: 0,
+                      sell_price: 0,
+                      market_price: 0,
+                      cost_price: 0,
+                      red_price: 0,
+                      weight: 0,
+                      goods_no: '0',
+                      goods_code: '0',
+                      thum: ''
+                    })
+                  })
+                }
+              })
+              if (index != 0) {
+                // 将当前次的组合归档，继续进行下一组的遍历
+                pre = deepCopy(cur);
+              }
+            })
+            this.goods.goods_spec_group_info = pre;
+          }
+        },
+        // 校验商品类目
+        validateCate() {
+          if (this.goods_cate_ids.length === 0) {
+            this.$message.warning('请选择商品分类');
+            setTimeout(() => {
+              this.activeTabName = '0';
+            }, 500)
+            return false;
+          }
+          return true;
+        },
+        // 校验规格项
+        validateSpecItems() {
+          for (let i = 0; i < this.spec_template.names.length; i++) {
+            let nameId = this.spec_template.names[i].id
+            // 校验规格项
+            if (!this.goods.goods_spec_info[nameId]) {
+              this.$message.warning('请至少添加1项' + this.spec_template.names[i].name + '规格')
+              setTimeout(() => {
+                this.activeTabName = '1';
+              }, 500)
+              return false;
+            }
+            // 校验规格项数据    
+            for (let j = 0; j < this.goods.goods_spec_info[nameId].length; j++) {
+              if (!this.goods.goods_spec_info[nameId][j].option) {
+                this.$message.warning('请输入' + this.spec_template.names[i].name + '第' + j + '项数据')
+                setTimeout(() => {
+                  this.activeTabName = '1';
+                }, 500)
+                return false;
+              }
+            }
+          }
+          return true;
+        },
+        // 增加规格项
+        addSpecItem(goodsSpec, nameId) {
+          if (!goodsSpec[nameId]) {
+            this.$set(goodsSpec, nameId, [])
+          }
+          goodsSpec[nameId].push({
+            option: '',
+            id: Date.now() + Math.floor(Math.random() * 1000)
+          })
+        },
+        // 快速设置规格数据
+        quickSetSpec(type) {
+          this.goods.goods_spec_group_info.forEach((t) => {
+            t[type] = this.quickSpecData[type]
+          })
+        },
+        // 返回列表页
+        returnIndex() {
+          location = location.origin + '/admin/goods/index' + querystringStringify({ currentPage: querystring.currentPage });
+        },
+        fileClick(type, index) {
+          this.currentUploadType = type;
+          if (type == 'imgsAdd') {
+            document.getElementById('imgsAdd').click();
+          } else {
+            if (type == 'imgEdit' || type == 'dynamicSpecsGroupThum' || type == 'quickSpecDataThum') {
+              this.currentUploadIndex = index;
+            }
+            document.getElementById('imgAdd').click();
+          }
+        },
+        //文件发生该变
+        fileChange(el) {
+          if (!el.target.files[0].size) return;
+          this.fileList(el.target);
+          el.target.value = ''
+        },
+        //文件列表
+        fileList(fileList) {
+          let files = fileList.files;
+          for (let i = 0; i < files.length; i++) {
+            //判断是否为文件夹
+            if (files[i].type != '') {
+              this.fileAdd(files[i]);
+            } else {
+              //文件夹处理
+              this.folders(fileList.items[i]);
+            }
+          }
+        },
+        //文件夹处理
+        folders(files) {
+          //判断是否为原生file
+          if (files.kind) {
+            files = files.webkitGetAsEntry();
+          }
+          files.createReader().readEntries((file) => {
+            for (let i = 0; i < file.length; i++) {
+              if (file[i].isFile) {
+                this.foldersAdd(file[i]);
+              } else {
+                this.folders(file[i]);
+              }
+            }
+          })
+        },
+        foldersAdd(entry) {
+          entry.file((file) => {
+            this.fileAdd(file)
+          })
+        },
+        fileAdd(file) {
+          //判断是否为图片文件
+          if (file.type.indexOf('image') == -1) {
+            this.$message.error('请选择图片类型的文件');
+          } else {
+            var reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = function () {
+              file.src = this.result;
+              if (app.currentUploadType == 'imgAdd') {
+                app.goods.thum = file.src
+              } else if (app.currentUploadType == 'imgsAdd') {
+                app.goods.imgs.push(file.src)
+              } else if (app.currentUploadType == 'imgEdit') {
+                app.$set(app.goods.imgs, app.currentUploadIndex, file.src)
+              } else if (app.currentUploadType == 'dynamicSpecsGroupThum') {
+                app.goods.goods_spec_group_info[app.currentUploadIndex].thum = file.src;
+              } else if (app.currentUploadType == 'quickSpecDataThum') {
+                app.quickSpecData.thum = file.src
+              }
+            }
+          }
+        },
+      },
+      watch: {
+        // 观察选择类目
+        goods_cate_ids() {
+          this.goods.goods_cate_id = this.goods_cate_ids[this.goods_cate_ids.length - 1];
+          this.goods.goods_attr_info = {};
+          this.goods.goods_spec_info = {};
+          this.goods.goods_spec_group_info = [];
+          // 获取商品分类对应的属性和规格
+          httpRequest('post', 'api_query/goods_cates/template', { 'goods_cate_id': this.goods.goods_cate_id }).then((resp) => {
+            this.attr_template = resp.data.attr_template;
+            this.spec_template = resp.data.spec_template;
+          });
+        }
+      },
+      mounted() {
+        // 查询分类
+        httpRequest('post', 'api_goods/goods_cates/index_tree')
+          .then((resp) => {
+            this.goods_cates = packageCascaderData(resp.data);
+            if (querystring.goodsId) {
+              // 查询商品
+              return httpRequest('POST', 'api_goods/goods/read', { id: querystring.goodsId })
+                .then((resp) => {
+                  this.goods_cate_ids = packageCascaderSelecteData(this.goods_cates, resp.data.goods_cate_id);
+                  // 这个地方先这样解决，以后再想办法改进
+                  setTimeout(() => {
+                    this.goods = resp.data;
+                    ue.ready(() => {
+                      ue.setContent(resp.data.desc)
+                    });
+                  }, 200);
+                })
+            }
+          })
+      }
+    })
+  </script>
+</body>
+
+</html>

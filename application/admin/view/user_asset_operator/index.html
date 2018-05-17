@@ -1,0 +1,85 @@
+{include file="header" /}
+
+<body>
+
+  <section class="el-container  is-vertical">
+    {include file="top" /}
+    <section class="el-container">
+      {include file="left" /}
+      <section class="el-container  is-vertical">
+        <main class="el-main" id="main">
+
+          <div id="app">
+            <fieldset>
+              <legend>会员资产操作</legend>
+            </fieldset>
+            <el-row>
+              <el-col :span="12">
+                <el-card>
+                  <div slot="header">
+                    <span>会员充值</span>
+                  </div>
+                  <el-form :model="rechargeData" ref="rechargeForm" label-position="left" label-width="120px">
+                    <el-form-item label="会员ID" prop="user_id" :rules="[{ required: true, message: '请输入会员ID', trigger: 'blur' }]">
+                      <el-input v-model="rechargeData.user_id"></el-input>
+                    </el-form-item>
+                    <el-form-item label="充值金额" prop="money" :rules="[{ required: true, message: '请输入充值金额', trigger: 'blur' }]">
+                      <el-input v-model="rechargeData.money"></el-input>
+                    </el-form-item>
+                    <el-form-item>
+                      <el-button type="primary" @click="submitForm('rechargeForm')" icon="el-icon-check">提交</el-button>
+                    </el-form-item>
+                  </el-form>
+                </el-card>
+              </el-col>
+            </el-row>
+          </div>
+        </main>
+        {include file="footer" /}
+      </section>
+    </section>
+  </section>
+
+  <script type="text/javascript">
+    let app = new Vue({
+      el: '#app',
+      data() {
+        return {
+          rechargeData: {
+            user_id: '',
+            money: ''
+          }
+        }
+      },
+      methods: {
+        // 提交参数信息
+        submitForm(formName) {
+          this.$refs[formName].validate((valid) => {
+            if (valid) {
+              this.$confirm('确认修改?', '提示').then(() => {
+                httpRequest('POST', 'api_users/user_recharges/save_by_admin', {
+                  type: 9,
+                  money: this.rechargeData.money,
+                  asset_type: 'money',
+                  user_id: this.rechargeData.user_id
+                }).then(resp => {
+                  this.$message.success(resp.msg);
+                })
+              }).catch((e) => {
+                this.$message.info('操作取消');
+              })
+            } else {
+              return false;
+            }
+          })
+
+        },
+      },
+      mounted() {
+
+      }
+    })
+  </script>
+</body>
+
+</html>

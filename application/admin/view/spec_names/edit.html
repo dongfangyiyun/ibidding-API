@@ -1,0 +1,104 @@
+{include file="header" /}
+
+<body>
+
+  <section class="el-container  is-vertical">
+    {include file="top" /}
+    <section class="el-container">
+      {include file="left" /}
+      <section class="el-container  is-vertical">
+        <main class="el-main" id="main">
+          <div id="app">
+            <fieldset>
+              <legend v-text="title"></legend>
+            </fieldset>
+            <el-row>
+              <el-col :span="12">
+                <el-card>
+                  <div slot="header">
+                    <span>规格项</span>
+                  </div>
+                  <el-form :model="formData" ref="ruleForm" :rules="rules" label-position="left" label-width="120px">
+                    <el-form-item label="规格项名称" prop="name">
+                      <el-input v-model="formData.name" clearable></el-input>
+                    </el-form-item>
+                    <el-form-item label="规格项排序" prop="sort">
+                      <el-input v-model="formData.sort" clearable></el-input>
+                    </el-form-item>
+                    <el-form-item>
+                      <el-button type="primary" @click="submitForm('ruleForm')" icon="el-icon-check">提交</el-button>
+                      <el-button type="info" icon="el-icon-d-arrow-left" @click="returnIndex()" plain>返回</el-button>
+                    </el-form-item>
+                  </el-form>
+                </el-card>
+              </el-col>
+            </el-row>
+          </div>
+        </main>
+        {include file="footer" /}
+      </section>
+    </section>
+  </section>
+
+  <script type="text/javascript">
+    let app = new Vue({
+      el: '#app',
+      data: {
+        title: '【' + decodeURIComponent(querystring.templateName) + '】规格项模板项' + (querystring.specOptionId ? '修改' : '添加'),
+        formData: {
+          name: '',
+          sort: 0,
+        },
+        // 验证器 校验规则参见 https://github.com/yiminghe/async-validator
+        rules: {
+          name: [
+            { required: true, message: '请输入规格项名称', trigger: 'blur' },
+          ],
+        }
+      },
+      methods: {
+        // 提交表单
+        submitForm(formName) {
+          this.$refs[formName].validate((valid) => {
+            if (valid) {
+              // 通过校验
+              let data = deepCopy(app.formData);
+              console.log(data);
+              data.spec_template_id = querystring.templateId;
+              let router = querystring.specOptionId ? 'api_goods/spec_names/update' : 'api_goods/spec_names/save';
+              httpRequest('POST', router, data).then((resp) => {
+                this.$message.success(resp.msg);
+                setTimeout(() => {
+                  this.returnIndex();
+                }, 500)
+              })
+            } else {
+              return false;
+            }
+          });
+        },
+        // 返回列表页
+        returnIndex() {
+          location = location.origin + '/admin/spec_names/index' + querystringStringify({
+            templateId: querystring.templateId,
+            templateName: querystring.templateName,
+            currentTemplatePage: querystring.currentTemplatePage,
+            currentPage: querystring.currentPage
+          });
+        }
+      },
+      mounted() {
+        if (querystring.specOptionId) {
+          // 获取当前规格项项
+          httpRequest('POST', 'api_goods/spec_names/read', { id: querystring.specOptionId }).then((resp) => {
+            this.formData = resp.data;
+          });
+        }
+      }
+    })
+
+  </script>
+
+</body>
+
+</html>

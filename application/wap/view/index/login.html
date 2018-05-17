@@ -1,0 +1,103 @@
+{include file="/index/top" /}
+<script src="__static__/common/css/ali_icon/iconfont.js"></script>
+</head>
+
+<body>
+  <div id="app">
+    <header class="aui-bar aui-bar-nav aui-bar-light" id="header" style="background-color:#f4f4f4!important;">
+      <a class="aui-pull-left aui-btn" onclick="goto('index')">
+        <span class="aui-iconfont aui-icon-left" style="color:#333!important;"></span>
+      </a>
+      <div class="aui-title" v-text="title" style="color:#333!important;"></div>
+    </header>
+    <div class="area aui-text-center">
+      <img :src="login_logo" style="width:65%;margin:2.5rem auto 0 auto;margin-bottom: 2rem;">
+      <div class="mix">
+        <i class="aui-iconfont aui-icon-mobile"></i>
+        <input id="mobile" type="text" class="input" v-model="mobile" pattern="[0-9]*" onkeyup="value=value.replace(/[^\d]/g,'')"
+          placeholder="输入手机号码">
+      </div>
+      <div class="mix">
+        <i class="aui-iconfont aui-icon-lock"></i>
+        <input type="password" class="input" v-model="password" placeholder="输入登录密码">
+      </div>
+      <div class="submit" @click="doLogin()">登录</div>
+      <div class="other">
+        <p style="float:left;" onclick="goto('reset_password', {type: 1})">忘记密码?</p>
+        <p style="float:right;" onclick="goto('register')">没有账号?立即注册</p>
+      </div>
+      <div class="third">第三方登录</div>
+      <div class="icon">
+        <svg style="width: 1.5rem;height: 1.5rem;" aria-hidden="true" @click="qqLogin();">
+          <use xlink:href="#icon-social-qq"></use>
+        </svg>
+        <i class="iconfont icon-gongzhonghao" v-if="atWechatEnvironment" @click="wechatLogin();" style="color: #09bb07;font-size: 1.5rem;"></i>
+      </div>
+    </div>
+  </div>
+  <script>
+    var app = new Vue({
+      el: '#app',
+      data: {
+        title: '登录',
+        mobile: '',
+        password: '',
+        atWechatEnvironment: isWeiXin(),
+        login_logo: '',
+      },
+      methods: {
+        doLogin: function () {
+          if (!variTelephone(this.mobile)) {
+            layer.msg('请填写正确的手机号码');
+            return;
+          }
+          if (!this.password) {
+            layer.msg('请填写密码');
+            return;
+          }
+          httpRequest('POST', 'api_users/user_accounts/login', {
+            mobile: this.mobile,
+            password: this.password,
+          }).then(function (resp) {
+            resp.data.user.avatar = resp.data.user.avatar || '__static__/images/avatar.png';
+            user = resp.data.user;
+            token = resp.data.token;
+            setStorage(getClientType() + 'User', resp.data.user);
+            setStorage(getClientType() + 'Token', resp.data.token);
+            layer.msg(resp.msg);
+            setTimeout(function () {
+              goto('home');
+            }, 500)
+          })
+        },
+        // 微信登录
+        wechatLogin: function () {
+          setStorage('thirdType', 'third_wechat');
+          if (this.atWechatEnvironment) {
+            // 在微信浏览器内部
+            httpRequest('POST', 'api_systems/Oauth/wechat_wx').then(function (resp) {
+              location = resp.data;
+            })
+          } else {
+            //非微信浏览器
+          }
+        },
+        // qq登录
+        qqLogin: function () {
+          setStorage('thirdType', 'third_qq');
+          httpRequest('POST', 'api_systems/Oauth/qq_pc').then(function (resp) {
+            location = resp.data;
+          })
+        }
+      },
+      mounted: function () {
+        var that = this;
+        httpRequest('POST', 'api_query/configs/wap_logo').then(function (resp) {
+          that.login_logo = resp.data.login_logo || '__static__/wap/images/wap_logo.png';
+        })
+      }
+    });
+  </script>
+</body>
+
+</html>

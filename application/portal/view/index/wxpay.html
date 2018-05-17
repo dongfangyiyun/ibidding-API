@@ -1,0 +1,64 @@
+{include file="/index/top" /}
+<script src="__static__/common/js/qrcode.min.js"></script>
+</head>
+
+<body class="body-bg">
+
+	{include file="/index/header" /}
+	<div class="wechat-boundary"></div>
+	<div class="wechat-payment-remind w1200 clearfix">
+		<div class="left">
+			<div class="order-number" id="number"></div>
+		</div>
+		<div class="right" id="price"></div>
+	</div>
+
+	<div class="scan-qr-code clearfix">
+		<div class="left">
+			<div class="img" id="qrcode">
+
+			</div>
+			<p>请使用微信扫一扫扫描二维码支付</p>
+		</div>
+		<div class="right">
+			<img src="__static__/portal/images/phone-img.png" />
+		</div>
+	</div>
+	{include file="/index/footer" /}
+</body>
+<script>
+	var layer;
+	var order = JSON.parse(sessionStorage.getItem('orderInfo'));
+	layui.use(['layer'], function () {
+		layer = layui.layer;
+		if (!order) {
+			layer.msg('参数错误');
+			setTimeout(function () { location = "/portal" }, 300)
+		}
+		document.getElementById('number').textContent = '订单编号:' + order.order_no;
+		document.getElementById('price').textContent = '￥' + order.total_money;
+		//获取支付二维码链接
+		httpRequest('POST', 'pay/wechat_pay_qrcode', {
+			order_no: order.order_no
+		}, function (resp) {
+			new QRCode(document.getElementById("qrcode"), resp.data);
+
+			//查询订单装填
+			var intervalInt = setInterval(function () {
+				httpRequest('POST', 'query/order_is_pay', {
+					order_no: order.order_no
+				}, function (resp) {
+					if (resp.data.is_pay == 1) {
+						layer.msg('支付成功');
+						setTimeout(function () {
+							location = "{:url('Index/orders')}"
+						}, 500)
+					}
+				})
+			}, 3000)
+		})
+		initFooter();
+	})
+</script>
+
+</html>

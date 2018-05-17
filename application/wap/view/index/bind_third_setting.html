@@ -1,0 +1,110 @@
+<!-- 新建html模板页 -->
+
+{include file="/index/top" /}
+<script src="__static__/common/css/ali_icon/iconfont.js"></script>
+</head>
+
+<body>
+  <div id="app">
+    <!-- 头部 -->
+    <header class="aui-bar aui-bar-nav aui-bar-light" id="header" style="background-image:none;">
+      <a class="aui-pull-left aui-btn" onclick="goto('setting')">
+        <span class="aui-iconfont aui-icon-left"></span>
+      </a>
+      <div class="aui-title" v-text="title"></div>
+    </header>
+    <!-- 中间页 -->
+    <div class="aui-content">
+      <div class="aui-content aui-margin-b-15">
+        <ul class="aui-list aui-list-in">
+          <li class="aui-list-item">
+            <div class="aui-list-item-label-icon">
+              <i class="iconfont icon-gongzhonghao" style="color: #09bb07;font-size: 1.5rem;"></i>
+            </div>
+            <div class="aui-list-item-inner aui-list-item-arrow">
+              <div class="aui-list-item-title">微信</div>
+              <div class="aui-list-item-right">
+                <div style="font-size:0.7rem;" @click="noBind('wechat')" v-if="thirdStatus.wechat_openid">解绑</div>
+                <div style="font-size:0.7rem;" @click="bind('third_wechat')" v-else>绑定</div>
+              </div>
+            </div>
+          </li>
+          <li class="aui-list-item">
+            <div class="aui-list-item-label-icon">
+              <svg style="width: 1.5rem;height: 1.5rem;" aria-hidden="true" @click="qqLogin();">
+                <use xlink:href="#icon-social-qq"></use>
+              </svg>
+            </div>
+            <div class="aui-list-item-inner aui-list-item-arrow">
+              <div class="aui-list-item-title">QQ</div>
+              <div class="aui-list-item-right">
+                <div style="font-size:0.7rem;" @click="noBind('qq')" v-if="thirdStatus.qq_openid">解绑</div>
+                <div style="font-size:0.7rem;" @click="bind('third_qq')" v-else>绑定</div>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <script>
+    var app = new Vue({
+      el: '#app',
+      data: {
+        title: '第三方账号绑定',
+        atWechatEnvironment: isWeiXin(),
+        thirdStatus: {
+          qq_openid: '',
+          wechat_openid: ''
+        }
+      },
+      methods: {
+        bind: function (type) {
+          setStorage('thirdType', type)
+          if (type == 'third_wechat') {
+            if (this.atWechatEnvironment) {
+              // 在微信浏览器内部
+              httpRequest('POST', 'api_systems/Oauth/wechat_wx').then(function (resp) {
+                location = resp.data;
+              })
+            } else {
+              //非微信浏览器
+            }
+          } else if (type == "third_qq") {
+            httpRequest('POST', 'api_systems/Oauth/qq_pc').then(function (resp) {
+              location = resp.data;
+            })
+          }
+        },
+        noBind: function (type) {
+          layer.confirm('确定解绑?', { title: '提示' }, function (index) {
+            layer.close(index);
+            httpRequest('POST', 'api_users/binding/delete', {
+              openid_type: type
+            }).then(function (resp) {
+              layer.msg(resp.msg);
+              setTimeout(function () {
+                location.reload();
+              }, 50)
+            })
+          })
+        }
+      },
+      computed: {
+
+      },
+      filters: {
+
+      },
+      mounted: function () {
+        var that = this;
+        //查询所有绑定状态
+        httpRequest('POST', 'api_query/oauth/binding').then(function (resp) {
+          that.thirdStatus = resp.data;
+        })
+      }
+    })
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,163 @@
+{include file="/index/top" /}
+<script src="__static__/common/css/ali_icon/iconfont.js"></script>
+<style>
+	body,html{background-color:#fff; }
+	.login-ti-border-left{border-left: 1px solid #dedede}
+	.logo-input{background-color: #fff!important;margin: 0!important;border:none!important;padding-left:10px!important;}
+	.logo-get{border: 1px solid #e5e5e5;border-radius: 5px;}
+	.logo-content{ background: url(__static__/portal/img/logo_banner.png) center no-repeat}
+	.logo-perm-icon{margin: auto 10px ; border-top-right-radius: 5px!important;border-bottom-right-radius: 5px!important;}
+	.logo-remore{height: 45px;border-top-right-radius: 3px!important;border-bottom-right-radius: 3px!important;}
+	.logp-btn{border-radius: 5px;}
+	.login-crad{margin: 40px 0 80px;}
+	.login-card-ti{border-bottom: 1px solid #eee;margin-bottom: 30px!important}
+  .login-border-right{border-right:1px solid #333;font-size: 12px;}
+</style>
+</head>
+
+<body>
+	<div id="app">
+		<div class="white padding-tt-15">
+	<div class="w1200 over">
+	<div class="over">
+		<div class="left margin-right-10" onclick="goto('index')" style="cursor: pointer;">
+			<div class="center text-ligthen-1 font-size-20 padding-10 margin-5">iBidding</div>
+		</div>
+		<div class="login-ti-border-left left grey-text text-ligthen-1 font-size-20 padding-10 margin-5">欢迎登录</div>
+	</div>
+	</div>
+</div>
+<div class="minwid1200" >
+	<div class="w1200 over">
+		<div class="white login-crad" style="width: 50%;text-align: center;margin: 0 auto;">
+			<div class="font-size-18 font-w blue-text margin-tt-15 center padding-btn-15 login-card-ti">账户登录</div>
+			<div class="margin-15 flex  logo-get blue">
+				<div class="logo-perm-icon blue"><i class="iconfont icon-peoplefill white-text" style="font-size: 24px;"></i></div>
+				<input type="text"    v-model="mobile" pattern="[0-9]*" onkeyup="value=value.replace(/[^\d]/g,'')"  class="flex1 logo-input" placeholder="请输入手机号">
+				<div class="logo-remore white" @click="setinput()"><i class="inline-black margin-10 iconfont icon-guanbi2fill"></i></div>
+			</div>
+			<div class="margin-15 flex logo-get grey lighten-3">
+					<div class="logo-perm-icon"><i class="iconfont icon-erji-anquanfuwukaitongqingkuang  blue-text" style="font-size: 24px;"></i></div>
+					<input type="password" v-model="password" @keyup.enter="doLogin()" class="flex1 logo-input" placeholder="请输入密码">
+					<div class="logo-remore white"></div>
+			</div>
+			<!-- <div class="over margin-15"> -->
+				<!-- <div class="right grey-text bt" onclick="goto('reset_password')">忘记密码？</div> -->
+			<!-- </div> -->
+			<div class="white-text blue font-size-14 padding-10 center margin-15 logp-btn bt" @click="doLogin()">登录</div>
+			<div class="over">
+				<div class="left over">
+					<div class="right grey-text margin-left-15" onclick="goto('reset_password')" style="cursor: pointer;">忘记密码？</div>
+					<!-- <div class="left margin-right-15" style="margin-left: 15px;">
+							<svg style="width: 30px;height: 30px;float: left;margin-right:5px; " aria-hidden="true" @click="qqLogin();">
+								<use xlink:href="#icon-social-qq"></use>
+							</svg>
+						<span class="font-size-14 black-text margin-5 inline-black">QQ</span>
+					</div>
+					<div class="left" @click="wxLogin();">
+						<i class="iconfont icon-gongzhonghao left margin-right-5" style="color:#09bb07;font-size: 34px;height: 38px;line-height: 38px;"></i>
+						<span  class="font-size-14 black-text margin-5 inline-black">微信</span>
+					</div> -->
+				</div>
+				<div class="right red-text margin-right-15" >
+					<a href="{:URL('index/register')}">
+						立即注册
+					</a> 
+				</div>
+			</div>
+
+		</div>
+	</div>
+</div>
+<!-- <div class="margin-tt-15 center">
+	<div class="over black-text inline-black margin--5">
+		<div class="left login-border-right margin-left-15  padding-right-15 pointer" v-for="(blogroll,key) in blogrolls" :key="key" v-text="blogroll.name" @click="gogoblogroll(blogroll.href)"></div>
+	</div>
+	<div class="black-text margin-tt-10">网络文化经营许可证：浙网文[2016]0155-055号 网开亿面公司版权所有©1997-2018 </div>
+</div> -->
+</div>
+</body>
+
+<script>
+	 
+	var app = new Vue({
+	el: '#app',
+	data: {
+	title: '登录',
+	mobile: '',
+	password: '',
+	atWechatEnvironment: isWeiXin(),
+	logos:'',
+	blogrolls:''
+	},
+	methods: {
+		gogoblogroll:function(href){
+			window.open(href)
+		},
+		setinput:function(){
+			this.mobile = '';
+			this.password = ''
+		},
+	doLogin: function () { 
+	  if (!variTelephone(this.mobile)) {
+	    layer.msg('请填写正确的手机号码');
+	    return;
+	  }
+	  if (!this.password) {
+	    layer.msg('请填写密码');
+	    return;
+	  }
+	  httpRequest('POST', 'api_users/user_accounts/login', {
+	    mobile: this.mobile,
+	    password: this.password,
+	  },function (resp) {
+	    resp.data.user.avatar = resp.data.user.avatar || '__static__/images/avatar.png';
+	    user = resp.data.user;
+	    token = resp.data.token;
+	    setStorage(getClientType() + 'User', resp.data.user);
+	    setStorage(getClientType() + 'Token', resp.data.token);
+	    layer.msg(resp.msg);
+	    setTimeout(function () {
+	       goto('index')
+	    }, 500)
+	  })
+	},
+	// 微信登录
+	wxLogin: function () {
+	  setStorage('thirdType', 'third_wechat');
+	  if (this.atWechatEnvironment) {
+	    // 在微信浏览器内部
+	    httpRequest('POST', 'api_systems/Oauth/wechat_wx',{},function (resp) {
+	      location = resp.data;
+	    })
+	  } else {
+			//非微信浏览器
+			httpRequest('POST', 'api_systems/oauth/wechat_qrcode',{},function (resp) {
+			location = resp.data;
+	  })
+		};
+	},
+	// qq登录
+	qqLogin: function () {
+	  setStorage('thirdType', 'third_qq');
+	  httpRequest('POST', 'api_systems/Oauth/qq_pc',{},function (resp) {
+			location = resp.data;
+	  })
+	}
+	},
+	mounted:function(){
+		// 加载logo
+		httpRequest('POST', 'api_query/configs/pc_logo',{},function(resp){
+				if (resp.code == 1) {
+					app.logos = resp.data;	
+				}
+			})
+			// 底部
+				httpRequest('post', 'api_articles/friendly_links/lists', { type: "foots" }, function (resp) {
+				app.blogrolls = resp.data
+			});
+	}
+	}); 
+</script>
+
+</html>

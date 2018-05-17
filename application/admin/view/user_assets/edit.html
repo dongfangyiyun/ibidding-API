@@ -1,0 +1,66 @@
+{include file="header" /}
+
+<body>
+  <section class="el-container  is-vertical">
+    {include file="top" /}
+    <section class="el-container">
+      {include file="left" /}
+      <section class="el-container  is-vertical">
+        <main class="el-main" id="main">
+          <div id="app">
+            <fieldset>
+              <legend>会员资产记录详情</legend>
+            </fieldset>
+            <el-row :gutter="20">
+              <!-- 会员基本信息 -->
+              <el-col :span="16">
+                <el-card>
+                  <div slot="header">
+                    <span>资产记录信息</span>
+                  </div>
+                  <el-form :model="formData" ref="ruleForm" label-position="left" label-width="120px">
+                    <el-form-item label="会员ID" prop="user_id">
+                      <el-input v-model="formData.user_id" readonly></el-input>
+                    </el-form-item>
+                    <el-form-item label="余额" prop="money">
+                      <el-input v-model="formData.money" readonly></el-input>
+                    </el-form-item>
+                    <el-form-item label="积分" prop="score">
+                      <el-input v-model="formData.score" readonly></el-input>
+                    </el-form-item>
+                    <el-form-item>
+                      <el-button type="info" icon="el-icon-d-arrow-left" @click="returnIndex()" plain>返回</el-button>
+                    </el-form-item>
+                  </el-form>
+                </el-card>
+              </el-col>
+            </el-row>
+          </div>
+        </main>
+        {include file="footer" /}
+      </section>
+    </section>
+  </section>
+  <script type="text/javascript">
+    var app = new Vue({
+      el: '#app',
+      data: {
+        formData: {},
+      },
+      methods: {
+        // 返回列表页
+        returnIndex() {
+          location = location.origin + '/admin/user_assets/index' + querystringStringify({ currentPage: querystring.currentPage });
+        },
+      },
+      mounted() {
+        httpRequest('POST', 'api_users/user_assets/read', { id: querystring.assetId }).then((resp) => {
+          this.formData = resp.data;
+        })
+      }
+    });
+    layui.use(['element'])
+  </script>
+</body>
+
+</html>

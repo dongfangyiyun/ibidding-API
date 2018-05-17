@@ -1,0 +1,98 @@
+{include file="header" /}
+
+<body>
+
+  <section class="el-container  is-vertical">
+    {include file="top" /}
+    <section class="el-container">
+      {include file="left" /}
+      <section class="el-container  is-vertical">
+        <main class="el-main" id="main">
+          <div id="this">
+            <fieldset>
+              <legend v-text="title"></legend>
+            </fieldset>
+            <el-row>
+              <el-col :span="12">
+                <el-card>
+                  <div slot="header">
+                    <span>规格模板信息</span>
+                  </div>
+                  <el-form :model="formData" ref="ruleForm" :rules="rules" label-position="left" label-width="120px">
+                    <el-form-item label="规格模板名称" prop="template_name">
+                      <el-input v-model="formData.template_name" clearable></el-input>
+                    </el-form-item>
+                    <el-form-item label="规格模板简介" prop="intro">
+                      <el-input v-model="formData.intro" clearable></el-input>
+                    </el-form-item>
+                    <el-form-item>
+                      <el-button type="primary" @click="submitForm('ruleForm')" icon="el-icon-check">提交</el-button>
+                      <el-button type="info" icon="el-icon-d-arrow-left" @click="returnIndex()" plain>返回</el-button>
+                    </el-form-item>
+                  </el-form>
+                </el-card>
+              </el-col>
+            </el-row>
+          </div>
+
+        </main>
+        {include file="footer" /}
+      </section>
+    </section>
+  </section>
+
+
+  <script type="text/javascript">
+    let app = new Vue({
+      el: '#this',
+      data: {
+        title: querystring.templateId ? '修改模板' : '新增模板',
+        formData: {
+          template_name: '',
+          intro: '',
+        },
+        // 验证器 校验规则参见 https://github.com/yiminghe/async-validator
+        rules: {
+          template_name: [
+            { required: true, message: '请输入规格模板名称', trigger: 'blur' },
+          ],
+        }
+      },
+      methods: {
+        // 提交表单
+        submitForm(formName) {
+          this.$refs[formName].validate((valid) => {
+            if (valid) {
+              // 通过校验
+              let data = deepCopy(this.formData);
+              console.log(data);
+              let router = querystring.templateId ? 'api_goods/spec_templates/update' : 'api_goods/spec_templates/save';
+              httpRequest('POST', router, data).then((resp) => {
+                this.$message.success(resp.msg)
+                setTimeout(() => {
+                  this.returnIndex();
+                }, 500)
+              });
+            } else {
+              return false;
+            }
+          });
+        },
+        // 返回列表页
+        returnIndex() {
+          location = location.origin + '/admin/spec_templates/index' + querystringStringify({ currentPage: querystring.currentPage });
+        }
+      },
+      mounted() {
+        if (querystring.templateId) {
+          // 获取当前模型
+          httpRequest('POST', 'api_goods/spec_templates/read', { id: querystring.templateId }).then((resp) => {
+            this.formData = resp.data;
+          });
+        }
+      }
+    })
+  </script>
+</body>
+
+</html>

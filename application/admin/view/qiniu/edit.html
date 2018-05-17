@@ -1,0 +1,92 @@
+{include file="header" /}
+
+<body>
+
+  <section class="el-container  is-vertical">
+    {include file="top" /}
+    <section class="el-container">
+      {include file="left" /}
+      <section class="el-container  is-vertical">
+        <main class="el-main" id="main">
+
+          <div id="app">
+            <fieldset>
+              <legend>编辑文件</legend>
+            </fieldset>
+            <el-row>
+              <el-col :span="12">
+                <el-card>
+                  <div slot="header">
+                    <span>文件信息</span>
+                  </div>
+                  <el-form :model="formData" ref="ruleForm" label-position="left" label-width="120px">
+                    <el-form-item label="文件名称" prop="file_name">
+                      <el-input v-model="formData.file_name" readonly></el-input>
+                    </el-form-item>
+                    <el-form-item label="文件类型" prop="file_type">
+                      <el-input v-model="formData.file_type" readonly></el-input>
+                    </el-form-item>
+                    <el-form-item label="文件大小" prop="file_size">
+                      <el-input v-model="formData.file_size" readonly></el-input>
+                    </el-form-item>
+                    <el-form-item label="文件地址" prop="file_url">
+                      <el-input v-model="formData.file_url" readonly></el-input>
+                    </el-form-item>
+                    <el-form-item label="上传时间" prop="create_time">
+                      <el-input v-model="formData.create_time" readonly></el-input>
+                    </el-form-item>
+                    <el-form-item label="文件说明" prop="desc">
+                      <el-input v-model="formData.desc" clearable type="textarea"></el-input>
+                    </el-form-item>
+                    <el-form-item>
+                      <el-button type="primary" @click="submitForm()" icon="el-icon-check">提交</el-button>
+                      <el-button type="info" icon="el-icon-d-arrow-left" @click="returnIndex()" plain>返回</el-button>
+                    </el-form-item>
+                  </el-form>
+                </el-card>
+              </el-col>
+            </el-row>
+          </div>
+        </main>
+        {include file="footer" /}
+      </section>
+    </section>
+  </section>
+
+  <script type="text/javascript">
+    var app = new Vue({
+      el: '#app',
+      data: {
+        formData: {
+          file_name: '',
+        },
+      },
+      methods: {
+        // 提交表单
+        submitForm(formName) {
+          let data = deepCopy(app.formData);
+          console.log(data);
+          httpRequest('POST', 'api_systems/qiniu/update', data).then((resp) => {
+            this.$message.success(resp.msg);
+            setTimeout(() => {
+              this.returnIndex();
+            }, 500);
+          });
+        },
+        // 返回列表页
+        returnIndex() {
+          location = location.origin + '/admin/qiniu/index' + querystringStringify({ currentPage: querystring.currentPage });
+        }
+      },
+      mounted() {
+        // 获取当前文件信息
+        httpRequest('POST', 'api_systems/qiniu/read', { id: querystring.fileId }).then((resp) => {
+          this.formData = resp.data;
+        });
+      }
+    })
+  </script>
+
+</body>
+
+</html>

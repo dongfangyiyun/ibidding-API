@@ -1,0 +1,153 @@
+<!-- 新建html模板页 -->
+
+{include file="/index/top" /}
+<style>
+  .search-div {
+    margin-top: .3rem;
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .search-key {
+    background-color: #eee;
+    padding: .2rem .5rem;
+    border-radius: 5px;
+    margin-bottom: .3rem;
+    margin-right: .3rem;
+    color: #555;
+  }
+
+  body {
+    background: #fff;
+  }
+</style>
+</head>
+
+<body>
+  <div id="app">
+    <!-- 头部 -->
+    <header class="aui-bar aui-bar-nav aui-bar-light" id="header">
+      <a class="aui-pull-left aui-btn" onclick="history.back();">
+        <span class="aui-iconfont aui-icon-left"></span>
+      </a>
+      <div class="aui-title" style="left:2rem; right: 0rem;">
+        <div class="aui-searchbar aui-bg-white" id="search">
+          <div class="aui-searchbar-input aui-border-radius aui-bg-default">
+            <i class="aui-iconfont aui-icon-search"></i>
+            <input type="search" placeholder="请输入搜索内容" id="search-input" onkeyup="searchKeyup(event)">
+            <div class="aui-searchbar-clear-btn">
+              <i class="aui-iconfont aui-icon-close"></i>
+            </div>
+          </div>
+          <div class="aui-searchbar-btn" tapmode>取消</div>
+        </div>
+      </div>
+    </header>
+    <!-- 中间页 -->
+    <div class="aui-content aui-bg-white aui-padded-t-10" style="padding: 0 1.5rem;">
+      <div class="aui-text-pray" v-if="user">
+        <span class="aui-font-size-14">历史搜索</span>
+        <i class="iconfont icon-shanchu aui-pull-right" @click="deleteKeywords"></i>
+      </div>
+      <div class="search-div" v-if="user">
+        <div class="search-key aui-font-size-12" v-for="(keyword, key) in keywords" :key="key" @click="search(keyword)">{{keyword}}</div>
+      </div>
+      <div class="aui-text-pray aui-padded-t-10">
+        <span class="aui-font-size-14">热门搜索</span>
+      </div>
+      <div class="search-div">
+        <div class="search-key aui-font-size-12" v-for="(hot, key) in hots" @click="search(hot.keyword)">{{hot.keyword}}</div>
+      </div>
+    </div>
+  </div>
+  <script>
+    var app = new Vue({
+      el: '#app',
+      data: {
+        title: 'title',
+        user: user,
+        keywords: [],
+        hots: []
+      },
+      methods: {
+        deleteKeywords: function () {
+          layer.alert('确定删除历史搜索?', { title: '提示' }, function (index) {
+            layer.close(index)
+            httpRequest('POST', 'api_users/user_goods_keywords/delete')
+              .then(function (resp) {
+                app.keywords = [];
+              })
+          })
+        },
+        search: function (keyword) {
+          goto('goods_list_model', { keyword: keyword })
+        }
+      },
+      computed: {
+
+      },
+      filters: {
+
+      },
+      mounted: function () {
+        // 热门搜索
+        httpRequest('POST', 'api_goods/goods_keywords/lists')
+          .then(function (resp) {
+            app.hots = resp.data;
+          });
+        if (user) {
+          // 历史搜索
+          httpRequest('POST', 'api_users/user_goods_keywords/read')
+            .then(function (resp) {
+              app.keywords = resp.data ? resp.data.keywords : [];
+            })
+        }
+      }
+    })
+    function searchKeyup(event) {
+      if (event.keyCode == 13) {
+        searchBarBtn.click()
+      }
+    }
+
+    var searchBar = document.querySelector(".aui-searchbar");
+    var searchBarInput = document.querySelector(".aui-searchbar input");
+    var searchBarBtn = document.querySelector(".aui-searchbar .aui-searchbar-btn");
+    var searchBarClearBtn = document.querySelector(".aui-searchbar .aui-searchbar-clear-btn");
+    if (searchBar) {
+      searchBarInput.onclick = function () {
+        searchBarBtn.style.marginRight = 0;
+      }
+      searchBarInput.oninput = function () {
+        if (this.value.length) {
+          searchBarClearBtn.style.display = 'block';
+          searchBarBtn.classList.add("aui-text-default");
+          searchBarBtn.textContent = "搜索";
+        } else {
+          searchBarClearBtn.style.display = 'none';
+          searchBarBtn.classList.remove("aui-text-info");
+          searchBarBtn.textContent = "取消";
+        }
+      }
+    }
+    searchBarClearBtn.onclick = function () {
+      this.style.display = 'none';
+      searchBarInput.value = '';
+      searchBarBtn.classList.remove("aui-text-info");
+      searchBarBtn.textContent = "取消";
+    }
+    searchBarBtn.onclick = function () {
+      var keywords = searchBarInput.value;
+      if (keywords.length) {
+        searchBarInput.blur();
+        app.search(keywords)
+      } else {
+        this.style.marginRight = "-" + this.offsetWidth + "px";
+        searchBarInput.value = '';
+        searchBarInput.blur();
+      }
+    }
+  </script>
+</body>
+
+</html>

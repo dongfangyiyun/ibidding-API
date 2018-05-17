@@ -1,0 +1,87 @@
+{include file="header" /}
+
+<body>
+  <section class="el-container  is-vertical">
+    {include file="top" /}
+    <section class="el-container">
+      {include file="left" /}
+      <section class="el-container  is-vertical">
+        <main class="el-main" id="main">
+          <div id="app">
+            <fieldset>
+              <legend>会员提现详情</legend>
+            </fieldset>
+            <el-row :gutter="20">
+              <!-- 会员基本信息 -->
+              <el-col :span="16">
+                <el-card>
+                  <div slot="header">
+                    <span>提现信息</span>
+                  </div>
+                  <el-form :model="formData" ref="ruleForm" label-position="left" label-width="120px">
+                    <el-form-item label="会员ID" prop="user_id">
+                      <el-input v-model="formData.user_id" readonly></el-input>
+                    </el-form-item>
+                    <el-form-item label="提现订单号" prop="order_no">
+                      <el-input v-model="formData.order_no" readonly></el-input>
+                    </el-form-item>
+                    <el-form-item label="提现资产类型" prop="asset_type">
+                      <el-input v-model="formData.asset_type" readonly></el-input>
+                    </el-form-item>
+                    <el-form-item label="提现类别" prop="type">
+                      <el-input v-model="formData.type" readonly></el-input>
+                    </el-form-item>
+                    <el-form-item label="提现金额" prop="money">
+                      <el-input v-model="formData.money" readonly></el-input>
+                    </el-form-item>
+                    <el-form-item label="提现至银行卡号" prop="card_number">
+                      <el-input v-model="formData.card_number" readonly></el-input>
+                    </el-form-item>
+                    <el-form-item label="提现至银行的名称" prop="bank_name">
+                      <el-input v-model="formData.bank_name" readonly></el-input>
+                    </el-form-item>
+                    <el-form-item label="持卡人姓名" prop="card_holder">
+                      <el-input v-model="formData.card_holder" readonly></el-input>
+                    </el-form-item>
+                    <el-form-item label="审核状态" prop="address">
+                      <el-radio v-model="formData.status" :label="defaultStatus[0]">审核中</el-radio>
+                      <el-radio v-model="formData.status" :label="defaultStatus[1]">未通过审核</el-radio>
+                      <el-radio v-model="formData.status" :label="defaultStatus[2]">通过审核</el-radio>
+                    </el-form-item>
+                    <el-form-item>
+                      <el-button type="info" icon="el-icon-d-arrow-left" @click="returnIndex()" plain>返回</el-button>
+                    </el-form-item>
+                  </el-form>
+                </el-card>
+              </el-col>
+            </el-row>
+          </div>
+        </main>
+        {include file="footer" /}
+      </section>
+    </section>
+  </section>
+  <script type="text/javascript">
+    var app = new Vue({
+      el: '#app',
+      data: {
+        formData: {},
+        defaultStatus: [1, 2, 3]
+      },
+      methods: {
+        // 返回列表页
+        returnIndex() {
+          location = location.origin + '/admin/user_drawcashs/index' + querystringStringify({ currentPage: querystring.currentPage });
+        },
+      },
+      mounted() {
+        httpRequest('POST', 'api_users/user_drawcashs/read', { id: querystring.drawcashId }).then((resp) => {
+          this.formData = resp.data;
+        })
+      }
+    });
+    layui.use(['element'])
+  </script>
+</body>
+
+</html>

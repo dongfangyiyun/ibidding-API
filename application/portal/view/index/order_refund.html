@@ -1,0 +1,168 @@
+{include file="/index/top" /}
+<style>
+	.container {
+		overflow: hidden;
+		background-color: #fff;
+		align-items: center;
+		width: 1200px;
+		margin: 50px auto 50px auto
+	}
+
+	.container .left {
+		padding: 30px 50px;
+	}
+
+	.container .left img {
+		width: 100%;
+		border: 1px solid #f4f4f4;
+		margin: 5px;
+	}
+
+	.container .left {
+		margin-left: 20px;
+		font-size: 14px;
+	}
+
+	.container .left .item {
+		margin-top: 20px;
+	}
+
+	.container .left .item select {
+		color: #616161 !important;
+		border: 1px solid #9e9e9e !important;
+		height: 30px;
+		width: 250px;
+		padding: 0 5px;
+		margin-left: 10px;
+		outline: 0;
+	}
+
+	.container .left .item span {
+		color: #f82010;
+		font-size: 16px;
+		margin-left: 10px;
+	}
+
+	.container .left .item textarea {
+		border: 1px solid #9e9e9e;
+		width: 500px;
+		height: 100px;
+		padding: 5px;
+		color: #424242 !important;
+	}
+
+	.container .left .item .submit {
+		color: #fff;
+		background-color: #108ee9;
+		display: inline-block;
+		height: 35px;
+		line-height: 35px;
+		text-align: center;
+		width: 90px;
+		font-weight: normal;
+		cursor: pointer;
+		float: right;
+	}
+</style>
+</head>
+
+<body class="body-bg" style="background-color: #f4f4f4;">
+
+	{include file="/index/header" /}
+
+	<div class="container" id="app">
+		<div class="border-btn margin-15 padding-btn-10 grey-text text-darken-3 font-size-16" style="width: 100%">申请退款</div>
+		<div class="left" style="width: 35%;">
+			<img :src="goods.thum">
+		</div>
+		<div class="left">
+			<div class="item">
+				<div class=" grey-text text-darken-3" style="float: left;">订单编号:</div>
+				<span v-text="order.order_no"></span>
+			</div>
+			<div class="item">
+				<div style="float:left; " class=" grey-text text-darken-3">退款金额:</div>
+				<span v-text="'￥' + goods.real_price" style=""></span>
+			</div>
+			<div class="item">
+				<div style="float:left;" class=" grey-text text-darken-3">退款原因:</div>
+				<select name="" id="reason" style="display: inline-block;">
+					<option value="">请选择退款原因</option>
+					<option value=1>不想买了</option>
+					<option value=2>质量有问题</option>
+				</select>
+			</div>
+			<div class="item">
+				<textarea name="" cols="30" rows="10" id="remark" placeholder="请输入退款说明"></textarea>
+			</div>
+			<div class="item">
+				<button class="submit" onclick="submit();">确认退款</button>
+			</div>
+		</div>
+	</div>
+
+	{include file="/index/footer" /}
+</body>
+
+<script type="text/javascript">
+	if (!user) {
+		location = "{:url('Index/login')}"
+	}
+	var order = getStorage('order', sessionStorage);
+	var goods = [];
+	order.order_goods_info.forEach(function(item){
+    	if(item.goods_id == querystring.goodsId){
+    		goods = item;
+    	}
+    })
+	if (!order) {
+		history.back();
+	}
+	var layer;
+	var app = new Vue({
+		el: '#app',
+		data: {
+			order: order
+		},
+		methods: {
+                authentication: function () {
+                    httpRequest('POST', 'api_query/users/auth',{},function (resp) {
+                        var status = resp.data.status;
+                        if (status == 0 || status == 2) {
+                            goto('idcard_auth', {status: status, id: resp.data.id});
+                        } else if (status == 1 || status == 3) {
+                            goto('idcard_info');
+                        }
+                    })
+                }
+            }
+	})
+	submit = function () {
+		var reason = document.getElementById('reason').value;
+		var remark = document.getElementById('remark').value;
+		if (!reason) {
+			layer.msg('请选择退款原因');
+			return;
+		}
+		if (!remark) {
+			layer.msg('请填写退款说明');
+			return;
+		}
+		layer.alert('确定提交退款申请?', { title: '提示' }, function (index) {
+			httpRequest('POST', 'api_orders/return_goods/save', {
+              order_id: order.id,
+              order_goods_id: goods.id,
+              return_type: reason,
+              return_reason: remark,
+              imgs: [],
+            },function (resp) {
+            	layer.msg(resp.msg);
+              setTimeout(function () {
+                goto('order_list', { status: 0 });
+              }, 800)
+            })
+		})
+	}
+</script>
+
+</html>

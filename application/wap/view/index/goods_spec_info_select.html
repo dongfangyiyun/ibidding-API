@@ -1,0 +1,101 @@
+<!-- 新建html模板页 -->
+
+{include file="/index/top" /}
+
+</head>
+
+<body>
+  <div id="app">
+    <!-- 中间页 -->
+    <div class="aui-row aui-padded-10">
+      <!-- 缩略图 -->
+      <div class="aui-col-xs-6">
+        <img :src="select_spec_group_info.thum || goods.thum" class="aui-padded-15">
+      </div>
+      <!-- 价格和库存 -->
+      <div class="aui-col-xs-6 aui-padded-10">
+        <h2 class="aui-text-price">
+          <span style="font-size: 0.6rem;">￥</span>
+          <span class="aui-font-size-20" style="letter-spacing:.1rem;" v-text="select_spec_group_info.sell_price || goods.sell_price"></span>
+        </h2>
+        <h4 class="aui-text-default" v-text="'库存: ' + (select_spec_group_info.stock || goods.stock)"></h4>
+      </div>
+    </div>
+    <!-- 规格选项 -->
+    <div class="aui-content" style="margin-bottom:2.6rem;">
+      <div class="aui-row aui-padded-5" v-for="(name, nameKey) in spec_template.names" :key="nameKey">
+        <h3 v-text="name.name" class="aui-font-size-12"></h3>
+        <div class="aui-col-xs-3 aui-padded-t-5 aui-padded-b-5 aui-margin-t-5 aui-font-size-12 aui-text-center" v-for="(option, optionKey) in goods.goods_spec_info[name.id]"
+          :key="optionKey" v-text="option.option" @click="selectSpec(option, name)" :class="[{'aui-bg-info': option.isSelected},{'aui-text-white': option.isSelected}]"></div>
+      </div>
+    </div>
+    <footer class="aui-bar aui-bar-tab">
+      <div class="aui-bar-tab-item aui-padded-l-15 aui-padded-r-15" @click="submit">
+        <div class="aui-btn aui-btn-block aui-btn-sm aui-btn-info">确定</div>
+      </div>
+    </footer>
+  </div>
+  <script>
+    var index = parent.layer.getFrameIndex(window.name);
+    var app = new Vue({
+      el: '#app',
+      data: {
+        // 商品信息
+        goods: JSON.parse(JSON.stringify(parent.app.goods)),
+        // 商品规格模板信息
+        spec_template: parent.app.spec_template,
+        // 选择的规格组信息
+        select_spec_group_info: JSON.parse(JSON.stringify(parent.app.select_spec_group_info))
+      },
+      methods: {
+        // 选择规格
+        selectSpec: function (option, name) {
+          this.goods.goods_spec_info[name.id].forEach(function (item) {
+            Vue.set(item, 'isSelected', false);
+          })
+          Vue.set(option, 'isSelected', true);
+
+          // 组合已经选择的规格项，进行自然序排序，与对应的规格组进行对比
+          var ids = [];
+          for (var key in this.goods.goods_spec_info) {
+            this.goods.goods_spec_info[key].forEach(function (item) {
+              if (item.isSelected) {
+                ids.push(item.id)
+              }
+            })
+          }
+          ids = ids.sort().toString();
+          this.goods.goods_spec_group_info.forEach(function (item) {
+            if (ids == item.spec_option_ids) {
+              app.select_spec_group_info = item;
+            }
+          })
+        },
+        // 确定
+        submit: function () {
+          for (var i = 0; i < this.spec_template.names.length; i++) {
+            var name = this.spec_template.names[i];
+            // 如果有一个规格项没有选择
+            if (!this.goods.goods_spec_info[name.id].some(function (item) {
+              return item.isSelected;
+            })) {
+              layer.msg('请选择【' + name.name + '】规格项')
+              return;
+            }
+          }
+
+          parent.app.select_spec_group_info = JSON.parse(JSON.stringify(this.select_spec_group_info));
+          parent.app.goods = JSON.parse(JSON.stringify(this.goods));
+          if (parent.app.selectSpecAfter == 'addCart') {
+            parent.app.addCart();
+          } else if (parent.app.selectSpecAfter == 'buy') {
+            parent.app.buy();
+          }
+          parent.layer.close(index);
+        }
+      }
+    })
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,165 @@
+{include file="/index/top" /}
+</head>
+
+<body class="body-bg">
+	{include file="/index/header" /}
+
+	<div class="personal-center-top w1200 clearfix">
+		<div class="left">
+			<div class="img">
+				<img src="__static__/portal/images/grzx.png" />
+			</div>
+			<div class="name">个人中心</div>
+			<div class="english">personal</div>
+		</div>
+		<div class="right">
+			<ul>
+				<li class="active">
+					<a>账户安全</a>
+				</li>
+			</ul>
+		</div>
+	</div>
+	<div class="account-security-bottom clearfix w1200">
+		<div class="left">
+			<div class="head-portrait">
+				<img id="avatar" src="" />
+			</div>
+			<div class="my-nav">
+				<ul>
+					<li>
+						<a href="{:url('Index/orders')}">我的订单</a>
+					</li>
+					<li>
+						<a href="{:url('Index/comments')}">我的评价</a>
+					</li>
+					<li>
+						<a href="{:url('Index/addresses')}">收货地址</a>
+					</li>
+					<li>
+						<a href="{:url('Index/carts')}">我的购物车</a>
+					</li>
+					<li>
+						<a href="{:url('Index/collections')}">我的收藏</a>
+					</li>
+					<li class="active">
+						<a href="{:url('Index/userinfo')}">账户安全</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+		<div class="right">
+			<div class="top">
+				<div class="title">
+					基本信息
+				</div>
+				<div class="info clearfix">
+					<div class="img">
+						<img id="img" src="" />
+					</div>
+					<div class="text-info">
+						<div class="userid">手机号 :&nbsp;&nbsp;
+							<span id="telephone"></span>
+						</div>
+						<div class="name">昵称 :&nbsp;&nbsp;
+							<span id="username"></span>
+						</div>
+						<div class="sex">性别 :&nbsp;&nbsp;
+							<span id="gendar"></span>
+						</div>
+					</div>
+					<div class="edit" style="cursor: pointer;" onclick="modify()">
+						<i class="fa fa-edit"></i>
+						<span>编辑</span>
+					</div>
+				</div>
+			</div>
+			<div class="bottom">
+				<div class="title">安全服务</div>
+				<div class="row clearfix">
+					<div class="icon">
+						<img src="__static__/portal/images/gou.png" />
+					</div>
+					<div class="name">登入密码</div>
+					<p class="smalltext">安全性高的密码可以使账户更安全。建议您定期更换密码，且设置一个 包含数字和字幕，长度6位数以上的密码。
+					</p>
+					<a class="update" href="javascript:modifyPassword();">修改</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	{include file="/index/footer" /}
+</body>
+<script>
+	if (!user) {
+		location = "{:url('Index/login')}"
+	}
+	//获取头像
+	document.getElementById('avatar').setAttribute('src', user.avatar)
+	layui.use(['layer'], function () {
+		var layer = layui.layer;
+		initFooter();
+	})
+	document.getElementById('telephone').textContent = user.mobile;
+	document.getElementById('username').textContent = user.nick_name;
+	document.getElementById('gendar').textContent = user.gender;
+	document.getElementById('img').setAttribute('src', user.avatar);
+
+	//修改密码
+	var oldPassword;
+	var newPassword;
+	modifyPassword = function () {
+		layer.prompt({
+			formType: 1,
+			title: '请输入原密码'
+		}, function (value, index, elem) {
+			oldPassword = value;
+			layer.close(index);
+			layer.prompt({
+				formType: 1,
+				title: '请输入新密码'
+			}, function (value2, index2, elem) {
+				newPassword = value2;
+				if (!variPassword(newPassword)) {
+					layer.msg('密码限制6-20位大小写字母数字组合');
+				} else {
+					$.ajax({
+						type: 'post',
+						url: host + 'users/mod_password',
+						headers: {
+							token: localStorage.getItem('token')
+						},
+						data: packagePostData({
+							old_password: oldPassword,
+							new_password: newPassword
+						}),
+						success: function (resp) {
+							debugger;
+							layer.close(index2);
+							layer.msg(resp.msg);
+							if (resp.code == -9) {
+								refreshToken();
+							} else if (resp.code == -1) {
+								setTimeout(function () { location = "{:url('Index/login')}" }, 500);
+							} else if (resp.code == 1) {
+								localStorage.clear();
+								setTimeout(function () { location = "{:url('Index/login')}" }, 500);
+							}
+						},
+						error: function () {
+							layer.msg('网络错误');
+							layer.close(index2);
+						}
+					})
+				}
+			})
+		})
+	}
+	modify = function () {
+		setTimeout(function () {
+			location = "{:url('Index/userinfo_edit')}"
+		}, 300)
+	}
+</script>
+
+</html>

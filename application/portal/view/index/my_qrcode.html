@@ -1,0 +1,63 @@
+<!-- 新建html模板页 -->
+{include file="/index/top" /}
+<script src="__static__/common/script/qrcode.min.js"></script>
+<style>
+  #qrcode {
+    position: absolute;
+    top: 28%;
+    left: 50%;
+    z-index: 9999;
+    transform: translate(-50%, 0);
+    padding: 5px 5px;
+    background-color: #fff;
+    border-radius: 0.2rem;
+  }
+
+  #qrcode img {
+    padding: 5px 5px;
+  }
+
+  .aui-bar.aui-bar-light {
+    background-image: none;
+  }
+</style>
+</head>
+
+<body>
+  <div id="app">
+    
+    <div id="qrcode">
+    </div>
+  </div>
+  <script>
+    var app = new Vue({
+      el: '#app',
+      data: {
+        title: '我的二维码',
+        order_no:querystring.order_no,
+        qrcode:querystring.qrcode
+      },
+      methods:{
+
+      },
+      mounted: function () {
+        console.log(querystring.order_no);
+        new QRCode(document.getElementById("qrcode"), decodeURIComponent(querystring.qrcode));
+        var intervalInt = setInterval(function () {
+          httpRequest('POST', 'api_query/pay/is_pay', {
+            order_no: querystring.order_no
+          },function (resp) {
+            if (resp.data.is_pay == 1) {
+              layer.msg("支付成功");
+              setTimeout(() => {
+                    goto('pay_waiting')
+                  }, 500);
+            }
+          })
+        }, 3000)
+      }
+    })
+  </script>
+</body>
+
+</html>

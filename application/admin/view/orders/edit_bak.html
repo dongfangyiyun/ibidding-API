@@ -1,0 +1,349 @@
+{include file="header" /}
+<style>
+  .order-text {
+    color: #606266 !important;
+    font-size: 14px;
+  }
+</style>
+
+<body>
+
+  <section class="el-container  is-vertical">
+    {include file="top" /}
+    <section class="el-container">
+      {include file="left" /}
+      <section class="el-container  is-vertical">
+        <main class="el-main" id="main">
+          <div id="app">
+            <fieldset>
+              <legend>订单详情</legend>
+            </fieldset>
+
+            <!-- 会员基本信息 -->
+            <el-row :gutter="40" class="order-text">
+              <el-col :span="12">
+                <el-card>
+                  <div slot="header">
+                    <span>基本信息</span>
+                    <el-button style="float: right; padding: 3px 0" type="text" @click="returnIndex();">返回</el-button>
+                  </div>
+                  <!-- 订单号 -->
+                  <el-row style="padding: 10px;">
+                    <el-col :span="4">订单号</el-col>
+                    <el-col :span="20" v-text="order.order_no"></el-col>
+                  </el-row>
+                  <el-row style="padding: 10px;">
+                    <el-col :span="4">状态</el-col>
+                    <el-col :span="20">
+                      <el-tag size="mini" v-if="order.status == 1">待付款</el-tag>
+                      <el-tag size="mini" type="danger" v-else-if="order.status == 2">待发货</el-tag>
+                      <el-tag size="mini" type="warning" v-else-if="order.status == 3">待签收</el-tag>
+                      <el-tag size="mini" type="success" v-else-if="order.status == 4">已完成</el-tag>
+                      <el-tag size="mini" type="info" v-else-if="order.status == 9">已取消</el-tag>
+                    </el-col>
+                  </el-row>
+                  <el-row style="padding: 10px;">
+                    <el-col :span="4">订单价格</el-col>
+                    <el-col :span="20">
+                      <div>商品总价:
+                        <span style="font-weight: bold;color: #df0303" v-text="'￥' + order.goods_money"></span>
+                      </div>
+                      <div>
+                        运费总价:
+                        <span style="font-weight: bold;color: #df0303" v-text="'￥' + order.freight_money"></span>
+                      </div>
+                      <div> 合计:
+                        <span style="font-weight: bold;color: #df0303" v-text="'￥' + order.total_money"></span>
+                      </div>
+                    </el-col>
+                  </el-row>
+                  <el-row style="padding: 10px;">
+                    <el-col :span="4">收货信息</el-col>
+                    <el-col :span="20">
+                      <div>收货人:
+                        <span v-text="order.consignee_name"></span>
+                      </div>
+                      <div>联系电话:
+                        <span v-text="order.mobile"></span>
+                      </div>
+                      <div>收货地址:
+                        <span v-text="order.address"></span>
+                      </div>
+                    </el-col>
+                  </el-row>
+                  <el-row style="padding: 10px;">
+                    <el-col :span="4">时间节点</el-col>
+                    <el-col :span="20">
+                      <div>订单创建时间:
+                        <span v-text="order.create_time"></span>
+                      </div>
+                      <div v-if="order.pay_time">订单支付时间:
+                        <span v-text="order.pay_time"></span>
+                        <!-- <i v-show="order.pay_type == 1" class="aui-iconfont iconfont icon-zhifubao" style="font-size: 1.5rem;color: #0ae"></i>
+                        <i v-show="order.pay_type == 2" class="aui-iconfont iconfont icon-weixinzhifu" style="font-size: 1.5rem;color:#09bb07;"></i>
+                        <i v-show="order.pay_type == 3" class="aui-iconfont iconfont icon-yue" style="font-size: 1.5rem;color: #eb661b;"></i> -->
+                      </div>
+                      <div v-else-if="order.deliver_time">发货时间:
+                        <span v-text="order.deliver_time"></span>
+                      </div>
+                      <div v-else-if="order.finish_time">确认收货时间:
+                        <span v-text="order.finish_time"></span>
+                      </div>
+                      <div v-else-if="order.cancel_time">取消订单时间:
+                        <span v-text="order.cancel_time"></span>
+                      </div>
+                    </el-col>
+                  </el-row>
+                  <el-row style="padding: 10px;">
+                    <el-col :span="4">买家留言</el-col>
+                    <el-col :span="20">
+                      <div v-text="order.memo"></div>
+                    </el-col>
+                  </el-row>
+                </el-card>
+              </el-col>
+              <el-col :span="12" v-if="order.status && order.status != 1 && order.status != 9">
+                <el-card>
+                  <el-form :model="deliverFormData" ref="deliverForm" label-position="left" label-width="120px" :rules="deliverFormRules">
+                    <el-form-item label="快递方式" prop="express_type">
+                      <el-select v-model="deliverFormData.express_type">
+                        <el-option :label="option.label" :value="option.value" v-for="(option, key) in options" :key="key"></el-option>
+                      </el-select>
+                    </el-form-item>
+                    <el-form-item label="快递单号" prop="express_no">
+                      <el-input v-model="deliverFormData.express_no"></el-input>
+                    </el-form-item>
+                    <el-form-item>
+                      <el-button @click="deliver('save')" v-if="order.status == 2">发货</el-button>
+                      <el-button @click="deliver('update')" v-if="order.status == 3">更新发货信息</el-button>
+                      <el-button @click="query()" v-if="order.status == 3 || order.status == 4">查询物流</el-button>
+                    </el-form-item>
+                  </el-form>
+                </el-card>
+              </el-col>
+            </el-row>
+            <!-- 商品列表 -->
+            <el-row style="margin-top: 20px;">
+              <el-col>
+                <el-card>
+                  <div slot="header">
+                    <span>商品信息</span>
+                  </div>
+                  <el-table :data="order.order_goods_info" stripe border>
+                    <el-table-column prop="goods_id" label="商品id" width="80"></el-table-column>
+                    <el-table-column prop="thum" label="缩略图">
+                      <template slot-scope="scope">
+                        <img :src="scope.row.thum" style="max-width: 40%; ">
+                      </template>
+                    </el-table-column>
+                    <el-table-column prop="name" label="商品名称"></el-table-column>
+                    <el-table-column prop="name" label="规格">
+                      <template slot-scope="scope">
+                        <el-tag size="mini" v-show="scope.row.spec_group_id == 0 && scope.row.standard">{{scope.row.standard}}</el-tag>
+                        <el-tag size="mini" v-show="scope.row.spec_group_id != 0">{{scope.row.spec_group_info}}</el-tag>
+                      </template>
+                    </el-table-column>
+                    <el-table-column prop="sell_price" label="单价(￥)">
+
+                    </el-table-column>
+                    <el-table-column prop="weight" label="重量(kg)"></el-table-column>
+                    <el-table-column prop="num" label="数量"></el-table-column>
+                  </el-table>
+                </el-card>
+              </el-col>
+            </el-row>
+            <!-- 订单操作 -->
+            <el-row style="margin-top: 20px;">
+              <el-button type="info" icon="el-icon-d-arrow-left" @click="returnIndex()" plain>返回</el-button>
+              <el-button plain>打印订单</el-button>
+              <el-button plain type="primary" v-if="order.status == 3" @click="signFor()">帮助签收</el-button>
+            </el-row>
+
+          </div>
+
+        </main>
+        {include file="footer" /}
+      </section>
+    </section>
+  </section>
+
+  <script type="text/javascript">
+    var app = new Vue({
+      el: '#app',
+      data: {
+        order: {
+          order_no: '',
+          status: '',
+          create_time: '',
+          pay_time: '',
+          deliver_time: '',
+          finish_time: '',
+          cancel_time: '',
+          memo: '',
+          total_money: '',
+          freight_money: '',
+          goods_money: '',
+          order_goods_info: [],
+          pay_type: ''
+        },
+        deliverFormData: {
+          express_type: '',
+          express_no: ''
+        },
+        options: [
+          {
+            value: 'SF',
+            label: '顺丰速运'
+          },
+          {
+            value: 'HTKY',
+            label: '百世快递'
+          },
+          {
+            value: 'ZTO',
+            label: '中通快递'
+          },
+          {
+            value: 'STO',
+            label: '申通快递'
+          },
+          {
+            value: 'YTO',
+            label: '圆通快递'
+          },
+          {
+            value: 'YD',
+            label: '韵达速递'
+          },
+          {
+            value: 'YZPY',
+            label: '邮政快递包裹'
+          },
+          {
+            value: 'EMS',
+            label: 'EMS'
+          },
+          {
+            value: 'HHTT',
+            label: '天天快递'
+          },
+          {
+            value: 'JD',
+            label: '京东物流'
+          },
+          {
+            value: 'QFKD',
+            label: '全峰快递'
+          },
+          {
+            value: 'GTO',
+            label: '国通快递'
+          },
+          {
+            value: 'UC',
+            label: '优速快递'
+          },
+          {
+            value: 'DBL',
+            label: '德邦物流'
+          },
+          {
+            value: 'FAST',
+            label: '快捷快递'
+          },
+          {
+            value: 'ZJS',
+            label: '宅急送'
+          }
+        ],
+        deliverFormRules: {
+          express_type: [
+            { required: true, message: '请选择快递方式', trigger: 'blur' },
+          ],
+          express_no: [
+            { required: true, message: '请输入快递单号', trigger: 'blur' },
+          ]
+        }
+      },
+      methods: {
+        // 返回列表页
+        returnIndex() {
+          location = location.origin + '/admin/orders/index' + querystringStringify({ currentPage: querystring.currentPage });
+        },
+        // 发货
+        deliver(type) {
+          this.$refs.deliverForm.validate((valid) => {
+            if (valid) {
+              this.$confirm('确认操作?', '提示', {
+                confirmButtonText: '确认',
+                cancelButtonText: '取消'
+              }).then(() => {
+                httpRequest('POST', 'api_orders/deliver_goods/' + type, {
+                  order_id: this.order.id,
+                  express_type: this.deliverFormData.express_type,
+                  express_no: this.deliverFormData.express_no
+                }).then(resp => {
+                  this.$message({
+                    type: 'success',
+                    message: resp.msg
+                  });
+                  setTimeout(() => {
+                    location.reload();
+                  }, 500);
+                })
+              }).catch((e) => {
+                console.log(e)
+                this.$message({
+                  type: 'info',
+                  message: '操作取消'
+                })
+              })
+            } else {
+              return false;
+            }
+          })
+        },
+        // 帮助签收
+        signFor() {
+          this.$confirm('确认帮助签收?', '提示', {
+            confirmButtonText: '确认',
+            cancelButtonText: '取消'
+          }).then(() => {
+            httpRequest('POST', 'api_orders/sign_orders/admin_sign', {
+              order_id: this.order.id
+            }).then(resp => {
+              this.$message({
+                type: 'success',
+                message: resp.msg
+              });
+              setTimeout(() => {
+                location.reload();
+              }, 500);
+            })
+          }).catch((e) => {
+            console.log(e)
+            this.$message({
+              type: 'info',
+              message: '取消操作'
+            })
+          })
+        },
+        // 查询物流
+        query() {
+          location = location.origin + '/admin/transport/index' + querystringStringify({ express_type: this.deliverFormData.express_type, express_no: this.deliverFormData.express_no })
+        }
+      },
+      mounted() {
+        httpRequest('POST', 'api_orders/orders/read', { id: querystring.orderId }).then((resp) => {
+          this.order = resp.data;
+          this.deliverFormData.express_type = app.order.express_type;
+          this.deliverFormData.express_no = app.order.express_no;
+        })
+      }
+    });
+
+  </script>
+
+</body>
+
+</html>

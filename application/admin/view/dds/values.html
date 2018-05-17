@@ -1,0 +1,148 @@
+{include file="header" /}
+
+
+<body>
+
+  <section class="el-container  is-vertical">
+    {include file="top" /}
+    <section class="el-container">
+      {include file="left" /}
+      <section class="el-container  is-vertical">
+        <main class="el-main" id="main">
+          <div id="app">
+            <fieldset>
+              <legend v-text="'【' + dd.name + '】模型'"></legend>
+            </fieldset>
+            <!-- 按钮操作 -->
+            <el-card style="margin-bottom: 10px;">
+              <div slot="header">
+                <span>模型数据操作</span>
+              </div>
+              <el-button @click="goAdd()" icon="el-icon-plus" type="primary" size="medium">新增数据</el-button>
+              <el-button type="info" icon="el-icon-d-arrow-left" @click="returnIndex()" size="medium" plain>返回</el-button>
+            </el-card>
+            <!-- 列表 -->
+            <el-card>
+              <div slot="header">
+                <span>模型数据列表</span>
+              </div>
+              <!-- 表格 -->
+              <template>
+                <el-table :data="tableData" stripe style="margin-top: 10px;">
+                  <el-table-column v-for="(key, index) in keys" :key="index" :prop="key.abbr" :label="key.attr">
+                    <template slot-scope="scope">
+                      <span v-if="key.type == 1">{{scope.row[key.abbr]}}</span>
+                      <img v-else-if="key.type == 2" :src="scope.row[key.abbr]" style="max-width: 45%; padding: 10px;">
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="操作" width="380">
+                    <template slot-scope="scope">
+                      <el-button @click="handleClick(scope.row, 'edit')" type="primary" size="small" icon="el-icon-edit-outline" plain></el-button>
+                      <el-button @click="handleClick(scope.row, 'del')" type="danger" size="small" icon="el-icon-delete" plain></el-button>
+                    </template>
+                  </el-table-column>
+                </el-table>
+              </template>
+              <!-- 分页 -->
+              <template>
+                <div class="block" style="margin-top: 20px;">
+                  <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="pageSize"
+                    :page-size="currentPageSize" layout="total, sizes, prev, pager, next, jumper" :total="total">
+                  </el-pagination>
+                </div>
+              </template>
+            </el-card>
+          </div>
+
+        </main>
+        {include file="footer" /}
+      </section>
+    </section>
+  </section>
+
+  <script type="text/javascript">
+    var app = new Vue({
+      el: '#app',
+      data: {
+        // 模型基本信息
+        dd: {
+          name: decodeURIComponent(querystring.ddName),
+        },
+        keys: [], //属性集合
+        tableData: [],  //表格数据
+        currentPage: parseInt(querystring.currentPage) || 1, //当前页
+        currentPageSize: 20,  //当前页容量
+        pageSize: [20, 40, 60, 80, 100, 200], //分页大小
+        total: 0, //总页数
+        multipleSelection: [],  //多选项
+        searchType: '', //搜索类型
+        searchCondition: '' //搜搜条件
+      },
+      methods: {
+        // 点击代理
+        handleClick(data, type) {
+          if (type == 'del') {
+            this.$confirm('确认删除?', '提示').then(() => {
+              httpRequest('POST', 'api_systems/dds/del_table_data', {
+                table_name: querystring.ddTableName,
+                id: data.id
+              }).then((resp) => {
+                this.$message.success(resp.msg)
+                this.tableData.splice(this.tableData.indexOf(data), 1);
+              })
+            }).catch(() => {
+              this.$message.info('操作取消');
+            })
+          } else if (type === 'edit') {
+            location = location.origin + '/admin/dds/edit_value' + querystringStringify({ ddName: querystring.ddName, ddTableName: querystring.ddTableName, currentDdsPage: querystring.currentDdsPage, valueId: data.id, currentPage: this.currentPage });
+          }
+        },
+        // 跳页
+        handleCurrentChange(val) {
+          this.currentPage = val;
+          this.loadTableData();
+        },
+        // 改变页容量
+        handleSizeChange(val) {
+          this.currentPageSize = val;
+          this.loadTableData();
+        },
+        // 新增
+        goAdd() {
+          location = location.origin + '/admin/dds/edit_value' + querystringStringify({ ddName: querystring.ddName, ddTableName: querystring.ddTableName, currentDdsPage: querystring.currentDdsPage, currentPage: this.currentPage });
+        },
+        // 返回列表页
+        returnIndex() {
+          location = location.origin + '/admin/dds/index' + querystringStringify({ currentPage: querystring.currentDdsPage });
+        },
+        // 加载数据
+        loadTableData() {
+          httpRequest('POST', 'api_systems/dds/all_table_data', {
+            table_name: querystring.ddTableName
+          }, {
+              'page-num': this.currentPage,
+              'page-limit': this.currentPageSize
+            }).then((resp) => {
+              this.tableData = resp.data;
+              this.total = resp.page.data_count || 0;
+            })
+        }
+      },
+      filters: {
+
+      },
+      mounted() {
+        httpRequest('POST', 'api_systems/dds/table_info', {
+          table_name: querystring.ddTableName
+        }).then((resp) => {
+          this.keys = resp.data;
+          this.loadTableData();
+        })
+      }
+    });
+
+
+  </script>
+</body>
+
+</html>

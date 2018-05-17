@@ -1,0 +1,94 @@
+{include file="header" /}
+
+<body>
+  <section class="el-container  is-vertical">
+    {include file="top" /}
+    <section class="el-container">
+      {include file="left" /}
+      <section class="el-container  is-vertical">
+        <main class="el-main" id="main">
+          <div id="app">
+            <fieldset>
+              <legend>会员地址详情</legend>
+            </fieldset>
+            <el-row :gutter="20">
+              <!-- 会员基本信息 -->
+              <el-col :span="16">
+                <el-card>
+                  <div slot="header">
+                    <span>地址信息</span>
+                    <el-button style="float: right; padding: 3px 0" type="text" @click="returnIndex();">返回</el-button>
+                  </div>
+                  <el-form :model="formData" ref="ruleForm" label-position="left" label-width="100px">
+                    <el-form-item label="地址ID" prop="id">
+                      <el-input v-model.number="formData.id" readonly></el-input>
+                    </el-form-item>
+                    <el-form-item label="会员ID" prop="user_id">
+                      <el-input v-model="formData.user_id" readonly></el-input>
+                    </el-form-item>
+                    <el-form-item label="收货人姓名" prop="consignee_name">
+                      <el-input v-model="formData.consignee_name" readonly></el-input>
+                    </el-form-item>
+                    <el-form-item label="收货人手机" prop="mobile">
+                      <el-input v-model="formData.mobile" readonly></el-input>
+                    </el-form-item>
+                    <el-form-item label="省份" prop="province">
+                      <el-input v-model="formData.province" readonly></el-input>
+                    </el-form-item>
+                    <el-form-item label="城市" prop="area">
+                      <el-input v-model="formData.area" readonly></el-input>
+                    </el-form-item>
+                    <el-form-item label="地区" prop="address">
+                      <el-input v-model="formData.address" readonly></el-input>
+                    </el-form-item>
+                    <el-form-item label="详细信息" prop="address">
+                      <el-input v-model="formData.address" type="textarea" readonly></el-input>
+                    </el-form-item>
+                    <el-form-item label="是否默认" prop="address">
+                      <el-radio v-model="formData.is_default" :label="defaultStatus[0]">是</el-radio>
+                      <el-radio v-model="formData.is_default" :label="defaultStatus[1]">否</el-radio>
+                    </el-form-item>
+                  </el-form>
+                </el-card>
+              </el-col>
+            </el-row>
+          </div>
+        </main>
+        {include file="footer" /}
+      </section>
+    </section>
+  </section>
+  <script type="text/javascript">
+    var app = new Vue({
+      el: '#app',
+      data: {
+        formData: {
+          id: '',
+          user_id: '',
+          consignee_name: '',
+          mobile: '',
+          province: '',
+          city: '',
+          area: '',
+          address: '',
+          is_default: 1
+        },
+        defaultStatus: [1, 0]
+      },
+      methods: {
+        // 返回列表页
+        returnIndex() {
+          location = location.origin + '/admin/addresses/index' + querystringStringify({ currentPage: querystring.currentPage });
+        },
+      },
+      mounted() {
+        httpRequest('POST', 'api_users/addresses/read', { id: querystring.addressId }).then((resp) => {
+          this.formData = resp.data;
+        })
+      }
+    });
+    layui.use(['element'])
+  </script>
+</body>
+
+</html>

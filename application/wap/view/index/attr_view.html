@@ -1,0 +1,46 @@
+<!-- 商品属性预览页 -->
+
+{include file="/index/top" /}
+</head>
+
+<body>
+  <div id="app">
+    <!-- 中间页 -->
+    <div class="aui-content">
+      <ul class="aui-list aui-list-in">
+        <li class="aui-list-item" v-for="(name, key) in attr_template.names" :key="key">
+          <div class="aui-list-item-inner">
+            <div class="aui-list-item-title aui-font-size-14" v-text="name.name"></div>
+            <!-- <el-radio v-for="(option ,optionKey) in name.options" :key="optionKey" v-model="goods.goods_attr_info[name.id]" :label="option.id">{{option.option}}</el-radio> -->
+            <div class="aui-list-item-right" v-for="(option, oKey) in name.options" :key="oKey" v-if="goods.goods_attr_info[name.id] == option.id">{{option.option}}</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <script>
+    var index = parent.layer.getFrameIndex(window.name);
+    var app = new Vue({
+      el: '#app',
+      data: {
+        title: 'title',
+        attr_template: parent.app.attr_template,
+        goods: parent.app.goods
+      },
+      methods: {
+
+      },
+      computed: {
+
+      },
+      filters: {
+
+      },
+      mounted: function () {
+
+      }
+    })
+  </script>
+</body>
+
+</html>

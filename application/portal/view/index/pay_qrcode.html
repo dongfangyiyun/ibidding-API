@@ -1,0 +1,58 @@
+{include file="/index/top" /}
+<script src="__static__/common/script/qrcode.min.js"></script>
+</head>
+<style>
+	body,
+	html {
+		background: #333!important;
+		height: 100%;
+	}
+
+	#my_qu {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		width: 400px;
+		height: 400px;
+		background: #fff;
+		padding: 50px;
+	}
+
+	#my_qu img {
+		height: 100%;
+		width: 100%;
+	}
+</style>
+
+<body class="body-bg">
+	<div id="app">
+		<div id="my_qu">
+
+		</div>
+	</div>
+</body>
+
+</html>
+<script type="text/javascript">
+	if (!user) {
+		location = "{:url('Index/login')}"
+	}
+	httpRequest('post', 'api_orders/pay/wechat_pay_qrcode', {
+		order_no: querystring.order_no,
+	},function (resp) {
+		if (resp.code == 1) {
+			new QRCode(document.getElementById("my_qu"), resp.data);
+			 setInterval(function(){
+				httpRequest('POST', 'api_query/pay/is_pay', {
+				order_no: querystring.order_no
+			},function(resp){
+				if (resp.data.is_pay == 1) {
+					goto('pay_waiting')
+                   clearInterval(intervalInt)
+               }
+			})
+			},300)
+		}
+	})
+</script>

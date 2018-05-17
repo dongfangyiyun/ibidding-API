@@ -1,0 +1,56 @@
+<!-- 新建html模板页 -->
+
+{include file="/index/top" /}
+<style>
+  .content img {
+    max-width: 99%;
+  }
+</style>
+</head>
+
+<body>
+  <div id="app">
+    <header class="aui-bar aui-bar-nav aui-bar-light" id="header" style="background-image:none;">
+      <a class="aui-pull-left aui-btn" onclick="javascript:window.history.back(); return false;">
+        <span class="aui-iconfont aui-icon-left"></span>
+      </a>
+      <div class="aui-title" v-text="title"></div>
+    </header>
+    <div class="aui-content aui-padded-10">
+      <h3 v-text="article.title" style="font-weight: bold;"></h3>
+      <div class="aui-row aui-padded-t-10 aui-padded-b-10" style="line-height:1rem;">
+        <div class="aui-col-xs-4">
+          <div class="aui-font-size-12" v-text="article.update_time"></div>
+        </div>
+        <div class="aui-col-xs-4">
+          <div class="aui-font-size-12 aui-text-center" v-text="article.author"></div>
+        </div>
+        <div class="aui-col-xs-4" v-if="article.click_num">
+          <div class="aui-font-size-12 aui-text-right" v-text="'阅读量: ' + article.click_num"></div>
+        </div>
+      </div>
+      <div class="content aui-padded-t-10 aui-padded-b-10 aui-font-size-14" v-html="article.content"></div>
+    </div>
+  </div>
+  <script>
+    var app = new Vue({
+      el: '#app',
+      data: {
+        title: '详情',
+        article: {
+          update_time: '',
+          author: '',
+          click_num: ''
+        }
+      },
+      mounted: function () {
+        var that = this;
+        httpRequest('POST', 'api_articles/' + querystring.type + '/read', { id: querystring.articleId }).then(function (resp) {
+          that.article = resp.data;
+        })
+      }
+    })
+  </script>
+</body>
+
+</html>

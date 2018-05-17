@@ -1,0 +1,109 @@
+<!-- 新建html模板页 -->
+
+{include file="/index/top" /}
+</head>
+
+<body>
+  <div id="app">
+    <section class="aui-content" style="margin-bottom:2.5rem;">
+      <div v-if="haveNoData" class="aui-col-xs-12 aui-text-center" style="margin-top:30%;">
+        <img src="__static__/wap/images/no_content.png" style="width:18%;margin:0 auto;">
+        <h5 style="margin-top:1rem;" class="aui-font-size-14">啊哦,这里什么都没有~</h5>
+      </div>
+      <div v-else class="aui-card-list" v-for="(address,key) in addresses" :key="key">
+        <div @click="selectAddress(address)">
+          <div class="aui-card-list-header aui-font-size-14" v-text="' ' + address.consignee_name + ' ' + address.mobile">
+          </div>
+          <div class="aui-card-list-content-padded aui-padded-t-0 text-light" v-text="address.province + address.city + address.area + address.address"></div>
+        </div>
+        <div class="aui-card-list-footer aui-border-t">
+          <div @click="setDefaultAddress(address)" v-show="address.is_default == 1">
+            <i class="aui-iconfont iconfont icon-roundcheckfill aui-margin-r-5 aui-font-size-15 aui-text-info"></i>默认地址
+          </div>
+          <div @click="setDefaultAddress(address)" v-show="address.is_default != 1">
+            <i class="aui-iconfont iconfont icon-roundcheckfill aui-margin-r-5 aui-font-size-15" style="color: #ccc"></i>默认地址
+          </div>
+          <div>
+            <div @click="modifyAddress(address)" style="display:inline;">
+              <i class="aui-iconfont iconfont icon-icon- aui-margin-r-5 aui-font-size-15"></i>编辑</div>
+            <div @click="delAddress(address)" style="display:inline;">
+              <i class="aui-iconfont iconfont icon-shanchu aui-margin-r-5 aui-margin-l-15 aui-font-size-15"></i>删除</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="aui-bar aui-bar-tab">
+      <div class="aui-bar-tab-item aui-padded-l-15 aui-padded-r-15" onclick="goto('address_edit_select')">
+        <div class="aui-btn aui-btn-block aui-btn-sm aui-btn-info">新增地址</div>
+      </div>
+    </footer>
+  </div>
+  <script>
+    var index = parent.layer.getFrameIndex(window.name);
+    // 滚动到底部的事件
+    var app = new Vue({
+      el: '#app',
+      data: {
+        addresses: [],
+        haveNoData: false
+      },
+      methods: {
+        //设置默认地址
+        setDefaultAddress: function (address) {
+          httpRequest('POST', 'api_users/addresses/set_default', {
+            is_default: 1,
+            id: address.id
+          }).then(function (resp) {
+            layer.msg(resp.msg);
+            app.addresses.forEach(function (item) {
+              item.id == address.id ? (item.is_default = 1) : (item.is_default = 0)
+            })
+          })
+        },
+        //修改地址
+        modifyAddress: function (address) {
+          goto('address_edit_select', {
+            addressId: address.id
+          })
+        },
+        //删除地址
+        delAddress: function (address) {
+          layer.alert('确定删除地址?', { title: '提示' }, function (index) {
+            layer.close(index)
+            httpRequest('POST', 'api_users/addresses/delete', { id: address.id }).then(function (resp) {
+              location.reload();
+            })
+          })
+        },
+        // 选择地址
+        selectAddress: function (address) {
+          parent.app.address = JSON.parse(JSON.stringify(address))
+          parent.layer.close(index);
+        }
+      },
+      mounted: function () {
+
+      }
+    })
+    loadData = function () {
+      httpRequest('POST', 'api_users/addresses/lists', {}, {
+        'page-num': 1,
+        'page-limit': 100
+      }).
+        then(function (resp) {
+          if (resp.data.length > 0) {
+            resp.data.forEach(function (item) {
+              app.haveNoData = false;
+              app.addresses.push(item);
+            })
+          } else {
+            app.haveNoData = true;
+          }
+        });
+    }
+    loadData();
+  </script>
+</body>
+
+</html>

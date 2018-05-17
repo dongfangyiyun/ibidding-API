@@ -1,0 +1,205 @@
+{include file="header" /}
+
+<body>
+
+  <section class="el-container  is-vertical">
+    {include file="top" /}
+    <section class="el-container">
+      {include file="left" /}
+      <section class="el-container  is-vertical">
+        <main class="el-main" id="main">
+
+          <div id="app">
+            <fieldset>
+              <legend v-text="title"></legend>
+            </fieldset>
+            <el-row :gutter="20">
+              <el-col :span="12">
+                <el-card>
+                  <div slot="header">
+                    <span>分类基本信息</span>
+                  </div>
+                  <el-form :model="formData" ref="ruleForm" :rules="rules" label-position="left" label-width="100px">
+                    <el-form-item label="分类名称" prop="name">
+                      <el-input v-model="formData.name" clearable></el-input>
+                    </el-form-item>
+                    <el-form-item label="选择父分类" prop="pid">
+                      <el-cascader change-on-select v-model="type_ids" :options="types" expand-trigger="hover"></el-cascader>
+                    </el-form-item>
+                    <el-form-item label="分类描述" prop="desc">
+                      <el-input v-model="formData.desc" clearable type="textarea"></el-input>
+                    </el-form-item>
+                    <el-form-item>
+                      <el-button type="primary" @click="submitForm('ruleForm')" icon="el-icon-check">提交</el-button>
+                      <el-button type="info" icon="el-icon-d-arrow-left" @click="returnIndex()" plain>返回</el-button>
+                    </el-form-item>
+                  </el-form>
+                </el-card>
+              </el-col>
+              <el-col :span="8">
+                <el-card body-style="text-align: center;">
+                  <div slot="header">
+                    <span>轮播图缩略图</span>
+                  </div>
+                  <ul class="el-upload-list el-upload-list--picture-card" v-show="formData.thum">
+                    <li class="el-upload-list__item is-ready">
+                      <img :src="formData.thum" alt="" class="el-upload-list__item-thumbnail">
+                      <span class="el-upload-list__item-actions">
+                        <span class="el-upload-list__item-delete" @click="formData.thum = ''">
+                          <i class="el-icon-delete"></i>
+                        </span>
+                      </span>
+                    </li>
+                  </ul>
+                  <div class="el-upload el-upload--picture-card" @click="fileClick('imgAdd');">
+                    <i class="el-icon-plus"></i>
+                  </div>
+                </el-card>
+              </el-col>
+            </el-row>
+            <input @change="fileChange($event)" type="file" id="imgAdd" style="display: none">
+          </div>
+        </main>
+        {include file="footer" /}
+      </section>
+    </section>
+  </section>
+
+  <script type="text/javascript">
+
+    let app = new Vue({
+      el: '#app',
+      data: {
+        title: querystring.typeId ? '修改分类' : '新增分类',
+        formData: {
+          name: '',
+          pid: '',
+          desc: '',
+          thum: ''
+        },
+        type_ids: [],
+        types: [],
+        // 验证器 校验规则参见 https://github.com/yiminghe/async-validator
+        rules: {
+          name: [
+            { required: true, message: '请输入类目名称', trigger: 'blur' },
+          ],
+          pid: [
+            { required: true, message: '请选择父分类', trigger: 'blur' },
+          ],
+        }
+      },
+      watch: {
+        type_ids(value) {
+          this.formData.pid = value[value.length - 1];
+        }
+      },
+      methods: {
+        // 提交表单
+        submitForm(formName) {
+          this.$refs[formName].validate((valid) => {
+            if (valid) {
+              // 通过校验
+              let data = deepCopy(app.formData);
+              console.log(data)
+              let router = querystring.typeId ? 'api_articles/article_types/update' : 'api_articles/article_types/save';
+              httpRequest('POST', router, data).then((resp) => {
+                this.$message.success(resp.msg)
+                setTimeout(() => {
+                  this.returnIndex();
+                }, 500);
+              })
+            } else {
+              return false;
+            }
+          });
+        },
+        // 返回列表页
+        returnIndex() {
+          location = location.origin + '/admin/article_types/index';
+        },
+        fileClick(type, index) {
+          document.getElementById('imgAdd').click();
+        },
+        //文件发生该变
+        fileChange(el) {
+          if (!el.target.files[0].size) return;
+          this.fileList(el.target);
+          el.target.value = ''
+        },
+        //文件列表
+        fileList(fileList) {
+          let files = fileList.files;
+          for (let i = 0; i < files.length; i++) {
+            //判断是否为文件夹
+            if (files[i].type != '') {
+              this.fileAdd(files[i]);
+            } else {
+              //文件夹处理
+              this.folders(fileList.items[i]);
+            }
+          }
+        },
+        //文件夹处理
+        folders(files) {
+          //判断是否为原生file
+          if (files.kind) {
+            files = files.webkitGetAsEntry();
+          }
+          files.createReader().readEntries((file) => {
+            for (let i = 0; i < file.length; i++) {
+              if (file[i].isFile) {
+                this.foldersAdd(file[i]);
+              } else {
+                this.folders(file[i]);
+              }
+            }
+          })
+        },
+        foldersAdd(entry) {
+          entry.file(function (file) {
+            this.fileAdd(file)
+          })
+        },
+        fileAdd(file) {
+          //判断是否为图片文件
+          if (file.type.indexOf('image') == -1) {
+            this.$message({
+              type: 'error',
+              message: '请选择图片类型的文件'
+            })
+          } else {
+            let reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = function () {
+              app.formData.thum = this.result
+            }
+          }
+        },
+      },
+      mounted() {
+        // 查询所有分类
+        httpRequest('POST', 'api_articles/article_types/index_tree')
+          .then((resp) => {
+            this.types = packageCascaderData(resp.data);
+            this.types.unshift({
+              label: '顶级分类',
+              value: 0
+            });
+            if (querystring.typeId) {
+              // 查询当前分类
+              httpRequest('POST', 'api_articles/article_types/read', { id: querystring.typeId }).then((resp) => {
+                this.formData = resp.data;
+                // 组装级联选中数据
+                this.type_ids = packageCascaderSelecteData(this.types, this.formData.pid);
+              })
+            }
+          })
+      }
+    })
+
+  </script>
+
+</body>
+
+</html>

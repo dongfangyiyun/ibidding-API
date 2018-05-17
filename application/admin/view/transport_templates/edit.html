@@ -1,0 +1,201 @@
+{include file="header" /}
+
+<body>
+  <section class="el-container  is-vertical">
+    {include file="top" /}
+    <section class="el-container">
+      {include file="left" /}
+      <section class="el-container  is-vertical">
+        <main class="el-main" id="main">
+          <div id="app">
+            <fieldset>
+              <legend>新增运费模板</legend>
+            </fieldset>
+            <el-row :gutter="20">
+              <el-col :span="12">
+                <el-card>
+                  <div slot="header">
+                    <span>运费模板信息</span>
+                  </div>
+                  <el-form :model="formData" ref="ruleForm" :rules="rules" label-position="left" label-width="120px">
+                    <el-form-item label="模板名称" prop="template_name">
+                      <el-input v-model="formData.template_name" clearable></el-input>
+                    </el-form-item>
+                    <el-form-item label="模板简介" prop="intro">
+                      <el-input v-model="formData.intro" clearable></el-input>
+                    </el-form-item>
+                    <el-form-item label="首重量(kg)" prop="basic_weight">
+                      <el-input v-model="formData.basic_weight" clearable></el-input>
+                    </el-form-item>
+                    <el-form-item label="收费(￥)" prop="basic_price">
+                      <el-input v-model="formData.basic_price" clearable></el-input>
+                    </el-form-item>
+                    <el-form-item label="续重量(kg)" prop="add_weight">
+                      <el-input v-model="formData.add_weight" clearable></el-input>
+                    </el-form-item>
+                    <el-form-item label="续费($)" prop="add_price">
+                      <el-input v-model="formData.add_price" clearable></el-input>
+                    </el-form-item>
+                    <el-form-item label="是否开启" prop="status">
+                      <el-radio v-model="formData.status" :label="statusLabels[0]">是</el-radio>
+                      <el-radio v-model="formData.status" :label="statusLabels[1]">否</el-radio>
+                    </el-form-item>
+                    <el-form-item>
+                      <el-button type="primary" @click="submitForm('ruleForm')" icon="el-icon-check">提交</el-button>
+                      <el-button type="info" icon="el-icon-d-arrow-left" @click="returnIndex()" plain>返回</el-button>
+                    </el-form-item>
+                  </el-form>
+                </el-card>
+              </el-col>
+              <el-col :span="12">
+                <el-card>
+                  <div slot="header">
+                    <span>可配送地区设置</span>
+                    <el-button v-show="!isSelectedAll" type="text" style="float:right;" size="mini" @click="selectAll()">全选</el-button>
+                    <el-button v-show="isSelectedAll" type="text" style="float:right;" size="mini" @click="selectAll()">取消全选</el-button>
+                  </div>
+                  <el-input placeholder="搜索地区" v-model="filterText" style="margin-bottom: 10px;" prefix-icon="el-icon-search"></el-input>
+                  <!-- node-key为每个节点的唯一标识符，设置此属性才通过tree的getCheckedKeys获得已勾选菜单的id -->
+                  <el-tree :data="treeData" show-checkbox="true" node-key="id" ref="tree" :filter-node-method="filterNode"></el-tree>
+                </el-card>
+              </el-col>
+            </el-row>
+          </div>
+        </main>
+        {include file="footer" /}
+      </section>
+    </section>
+  </section>
+
+  <script type="text/javascript">
+    var app = new Vue({
+      el: '#app',
+      data: {
+        formData: {
+          template_name: '',
+          status: 1,
+        },
+        treeData: [],
+        treeDataIds: [],
+        filterText: '',
+        isSelectedAll: false,
+        statusLabels: [1, 2],
+        // 验证器 校验规则参见 https://github.com/yiminghe/async-validator
+        rules: {
+          template_name: [
+            { required: true, message: '请输入模板名称', trigger: 'blur' },
+          ],
+          basic_weight: [
+            { required: true, message: '请填写首重量', trigger: 'blur' },
+          ],
+          basic_price: [
+            { required: true, message: '请填写首费', trigger: 'blur' },
+          ],
+          add_weight: [
+            { required: true, message: '请填写续重量', trigger: 'blur' },
+          ],
+          add_price: [
+            { required: true, message: '请填写续费', trigger: 'blur' },
+          ],
+        }
+      },
+      watch: {
+        filterText(val) {
+          this.$refs.treeData.filter(val);
+        },
+
+      },
+      methods: {
+        // 提交表单
+        submitForm(formName) {
+          this.$refs[formName].validate((valid) => {
+            if (valid) {
+              // 通过校验
+              let data = deepCopy(this.formData);
+              data.area_codes = this.$refs.tree.getCheckedKeys() || [];
+              console.log(data);
+              let router = querystring.templateId ? 'api_goods/transport_templates/update' : 'api_goods/transport_templates/save';
+              httpRequest('POST', router, data).then((resp) => {
+                this.$message.success(resp.msg);
+                setTimeout(() => {
+                  this.returnIndex()
+                }, 500)
+              });
+            } else {
+              return false;
+            }
+          });
+        },
+        // 返回列表页
+        returnIndex() {
+          location = location.origin + '/admin/transport_templates/index' + querystringStringify({ currentPage: querystring.currentPage });
+        },
+        selectAll() {
+          if (this.isSelectedAll) {
+            this.$refs.tree.setCheckedKeys([])
+          } else {
+            this.$refs.tree.setCheckedKeys(this.treeDataIds)
+          }
+          this.isSelectedAll = !this.isSelectedAll;
+        },
+        filterNode(value, data) {
+          if (!value) return true;
+          return data.label.indexOf(value) !== -1;
+        },
+      },
+      mounted() {
+        // 获取所有省市县
+        httpRequest('POST', 'api_systems/regions/index')
+          .then((resp) => {
+            let treeData = [];
+            // 遍历省
+            resp.data.forEach((p) => {
+              this.treeDataIds.push(p.id)
+              let province = {
+                id: p.id,
+                label: p.name
+              };
+              if (p.citys) {
+                province.children = [];
+                //遍历市
+                p.citys.forEach((c) => {
+                  this.treeDataIds.push(c.id)
+                  let city = {
+                    id: c.id,
+                    label: c.name
+                  }
+                  if (c.areas) {
+                    city.children = [];
+                    // 遍历县
+                    c.areas.forEach((a) => {
+                      this.treeDataIds.push(a.id)
+                      let area = {
+                        id: a.id,
+                        label: a.name
+                      }
+                      city.children.push(area)
+                    })
+                  }
+                  province.children.push(city)
+                })
+              }
+              treeData.push(province)
+            })
+            this.treeData = treeData;
+
+            if (querystring.templateId) {
+              // 获取当前模型
+              httpRequest('POST', 'api_goods/transport_templates/read', { id: querystring.templateId }).then((resp) => {
+                this.formData = resp.data;
+                this.$refs.tree.setCheckedKeys(resp.data.area_codes)
+              });
+            } else {
+              this.$refs.tree.setCheckedKeys(this.treeDataIds)
+            }
+          })
+      }
+    })
+  </script>
+</body>
+
+</html>

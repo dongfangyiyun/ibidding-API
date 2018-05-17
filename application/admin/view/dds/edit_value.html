@@ -1,0 +1,175 @@
+{include file="header" /}
+
+<body>
+
+  <section class="el-container  is-vertical">
+    {include file="top" /}
+    <section class="el-container">
+      {include file="left" /}
+      <section class="el-container  is-vertical">
+        <main class="el-main" id="main">
+
+          <div id="app">
+            <fieldset>
+              <legend v-text="title"></legend>
+            </fieldset>
+            <el-row>
+              <el-col :span="12">
+                <el-card>
+                  <div slot="header">
+                    <span>数据信息</span>
+                  </div>
+                  <el-form label-position="left" label-width="120px">
+                    <el-form-item :label="key.attr" :prop="key.abbr" v-for="(key, index) in keys" :key="index">
+                      <el-input v-if="key.type == 1" v-model="formData[key['abbr']]" clearable></el-input>
+                      <div v-else>
+                        <ul class="el-upload-list el-upload-list--picture-card" v-show="formData[key['abbr']]">
+                          <li class="el-upload-list__item is-ready">
+                            <img :src="formData[key['abbr']]" alt="" class="el-upload-list__item-thumbnail">
+                            <span class="el-upload-list__item-actions">
+                              <span class="el-upload-list__item-delete" @click="formData[key['abbr']] = ''">
+                                <i class="el-icon-delete"></i>
+                              </span>
+                            </span>
+                          </li>
+                        </ul>
+                        <div class="el-upload el-upload--picture-card" @click="fileClick(key['abbr']);">
+                          <i class="el-icon-plus"></i>
+                        </div>
+                      </div>
+                    </el-form-item>
+                    <el-form-item>
+                      <el-button type="primary" @click="submitForm('ruleForm')" icon="el-icon-check">提交</el-button>
+                      <el-button type="info" icon="el-icon-d-arrow-left" @click="returnIndex()" plain>返回</el-button>
+                    </el-form-item>
+                  </el-form>
+                </el-card>
+              </el-col>
+            </el-row>
+            <input @change="fileChange($event)" type="file" id="upload_file" style="display: none">
+          </div>
+        </main>
+        {include file="footer" /}
+      </section>
+    </section>
+  </section>
+
+
+  <script type="text/javascript">
+    let app = new Vue({
+      el: '#app',
+      data: {
+        title: querystring.valueId ? '【' + decodeURIComponent(querystring.ddName) + '】模型修改数据' : '【' + decodeURIComponent(querystring.ddName) + '】模型添加数据',
+        // 属性集合
+        keys: [],
+        // 表单数据
+        formData: {},
+        // 当前选择属性，用于动态添加图片
+        currentAbbr: ''
+      },
+      methods: {
+        // 提交表单
+        submitForm(formName) {
+          let data = deepCopy(this.formData);
+          console.log(data);
+          data.table_name = querystring.ddTableName;
+          let router = querystring.valueId ? 'api_systems/dds/mod_table_data' : 'api_systems/dds/add_table_data';
+          httpRequest('POST', router, data).then((resp) => {
+            this.$message.success(resp.msg);
+            setTimeout(() => {
+              this.returnIndex();
+            }, 500);
+          })
+        },
+        // 返回列表页
+        returnIndex() {
+          location = location.origin + '/admin/dds/values' + querystringStringify({ ddName: querystring.ddName, ddTableName: querystring.ddTableName, currentDdsPage: querystring.currentDdsPage, currentPage: querystring.currentPage });
+        },
+        fileClick(abbr) {
+          this.currentAbbr = abbr;
+          document.getElementById('upload_file').click()
+        },
+        //文件发生该变
+        fileChange(el) {
+          if (!el.target.files[0].size) return;
+          this.fileList(el.target);
+          el.target.value = ''
+        },
+        //文件列表
+        fileList(fileList) {
+          var files = fileList.files;
+          for (var i = 0; i < files.length; i++) {
+            //判断是否为文件夹
+            if (files[i].type != '') {
+              this.fileAdd(files[i]);
+            } else {
+              //文件夹处理
+              this.folders(fileList.items[i]);
+            }
+          }
+        },
+        //文件夹处理
+        folders(files) {
+          var _this = this;
+          //判断是否为原生file
+          if (files.kind) {
+            files = files.webkitGetAsEntry();
+          }
+          files.createReader().readEntries(function (file) {
+            for (var i = 0; i < file.length; i++) {
+              if (file[i].isFile) {
+                _this.foldersAdd(file[i]);
+              } else {
+                _this.folders(file[i]);
+              }
+            }
+          })
+        },
+        foldersAdd(entry) {
+          var _this = this;
+          entry.file(function (file) {
+            _this.fileAdd(file)
+          })
+        },
+        fileAdd(file) {
+          //判断是否为图片文件
+          if (file.type.indexOf('image') == -1) {
+            app.$message({
+              type: 'error',
+              message: '请选择图片类型的文件'
+            })
+          } else {
+            var reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = function () {
+              file.src = this.result;
+              app.$set(app.formData, app.currentAbbr, file.src)
+            }
+          }
+        }
+      },
+      mounted() {
+        // 查询表信息
+        httpRequest('POST', 'api_systems/dds/table_info', {
+          table_name: querystring.ddTableName
+        })
+          .then((resp) => {
+            this.keys = resp.data;
+            if (querystring.valueId) {
+              // 查询值信息
+              httpRequest('POST', 'api_systems/dds/id_table_data', {
+                table_name: querystring.ddTableName,
+                id: querystring.valueId
+              }).then((resp) => {
+                this.formData = resp.data;
+              })
+            }
+          })
+      }
+    })
+
+  </script>
+
+</body>
+
+</html>

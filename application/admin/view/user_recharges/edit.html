@@ -1,0 +1,88 @@
+{include file="header" /}
+
+<body>
+  <section class="el-container  is-vertical">
+    {include file="top" /}
+    <section class="el-container">
+      {include file="left" /}
+      <section class="el-container  is-vertical">
+        <main class="el-main" id="main">
+          <div id="app">
+            <fieldset>
+              <legend>会员充值详情</legend>
+            </fieldset>
+            <el-row :gutter="20">
+              <!-- 会员基本信息 -->
+              <el-col :span="16">
+                <el-card>
+                  <div slot="header">
+                    <span>充值信息</span>
+                  </div>
+                  <el-form :model="formData" ref="ruleForm" label-position="left" label-width="120px">
+                    <el-form-item label="会员ID" prop="user_id">
+                      <el-input v-model="formData.user_id" readonly></el-input>
+                    </el-form-item>
+                    <el-form-item label="充值订单号" prop="order_no">
+                      <el-input v-model="formData.order_no" readonly></el-input>
+                    </el-form-item>
+                    <el-form-item label="充值资产类型" prop="asset_type">
+                      <el-input v-model="formData.asset_type" readonly></el-input>
+                    </el-form-item>
+                    <el-form-item label="充值类别" prop="type">
+                      <el-input v-model="formData.type" readonly></el-input>
+                    </el-form-item>
+                    <el-form-item label="充值金额" prop="money">
+                      <el-input v-model="formData.money" readonly></el-input>
+                    </el-form-item>
+                    <el-form-item label="是否支付" prop="is_pay">
+                      <el-radio v-model="formData.is_pay" :label="defaultPay[0]">是</el-radio>
+                      <el-radio v-model="formData.is_pay" :label="defaultPay[1]">否</el-radio>
+                    </el-form-item>
+                    <el-form-item label="支付类型" prop="pay_type">
+                      <el-input v-model="formData.pay_type" readonly></el-input>
+                    </el-form-item>
+                    <el-form-item label="支付时间" prop="pay_time">
+                      <el-input v-model="formData.pay_time" readonly></el-input>
+                    </el-form-item>
+                    <el-form-item label="审核状态" prop="address">
+                      <el-radio v-model="formData.status" :label="defaultStatus[0]">审核中</el-radio>
+                      <el-radio v-model="formData.status" :label="defaultStatus[1]">未通过审核</el-radio>
+                      <el-radio v-model="formData.status" :label="defaultStatus[2]">通过审核</el-radio>
+                    </el-form-item>
+                    <el-form-item>
+                      <el-button type="info" icon="el-icon-d-arrow-left" @click="returnIndex()" plain>返回</el-button>
+                    </el-form-item>
+                  </el-form>
+                </el-card>
+              </el-col>
+            </el-row>
+          </div>
+        </main>
+        {include file="footer" /}
+      </section>
+    </section>
+  </section>
+  <script type="text/javascript">
+    var app = new Vue({
+      el: '#app',
+      data: {
+        formData: {},
+        defaultPay: [1, 0],
+        defaultStatus: [1, 2, 3]
+      },
+      methods: {
+        // 返回列表页
+        returnIndex() {
+          location = location.origin + '/admin/user_recharge/index' + querystringStringify({ currentPage: querystring.currentPage });
+        },
+      },
+      mounted() {
+        httpRequest('POST', 'api_users/user_recharge/read', { id: querystring.rechargeId }).then((resp) => {
+          this.formData = resp.data;
+        })
+      }
+    });
+  </script>
+</body>
+
+</html>

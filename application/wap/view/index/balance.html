@@ -1,0 +1,89 @@
+<!-- 新建html模板页 -->
+
+{include file="/index/top" /}
+<style>
+  .content {
+    background-color: #ffc640;
+    border: .4rem solid #f9e8bf;
+    border-radius: 2rem;
+
+  }
+
+  .content .button {
+    width: 100%;
+    padding: 0rem 2rem 2rem 2rem;
+    box-sizing: border-box;
+    margin: 1.5rem 0rem 0rem 0rem;
+    ;
+  }
+
+  .content .button:after {
+    display: block;
+    content: "";
+    clear: both;
+  }
+
+  .content .button .pay {
+    float: left;
+    margin: 0 auto;
+    height: 2.4rem;
+    line-height: 2.4rem;
+    text-align: center;
+    border-radius: 2.5rem;
+    background: linear-gradient(to bottom, #4c91ea, #2d85e2, #0a78d9);
+    color: #fff;
+    width: 47%
+  }
+
+  .content .button .pay:active {
+    background: linear-gradient(to bottom, #2d85e2, #2d85e2, #2d85e2);
+  }
+
+  .content .button .pick {
+    float: right;
+    height: 2.4rem;
+    line-height: 2.4rem;
+    text-align: center;
+    border-radius: 2.5rem;
+    background: linear-gradient(to bottom, #fefefe, #f3f2f2, #f6f5f5);
+    color: #000;
+    width: 47%
+  }
+
+  .content .button .pick:active {
+    background: linear-gradient(to bottom, #f3f2f2, #f3f2f2, #f3f2f2)
+  }
+</style>
+</head>
+
+<body>
+  <div id="app">
+    <header class="aui-bar aui-bar-nav aui-bar-light" id="header" style="background-image:none;">
+      <a class="aui-pull-left aui-btn" onclick="javascript:window.history.back(); return false;">
+        <span class="aui-iconfont aui-icon-left"></span>
+      </a>
+      <div class="aui-title" v-text="title"></div>
+    </header>
+    <div class="content aui-text-center" style="margin: 2.5rem 1.5rem 0 1.5rem;">
+      <h3 style="padding-top: 4rem;">账户余额(元)</h3>
+      <h1 style="padding-bottom:2.5rem;font-size:2.5rem;">￥12000</h1>
+      <div class="button">
+        <div class="pay" onclick="goto('recharge')">充值</div>
+        <div class="pick" onclick="goto('withdraw')">提现</div>
+      </div>
+    </div>
+  </div>
+  <script>
+    var app = new Vue({
+      el: '#app',
+      data: {
+        title: '我的余额'
+      },
+      methods: {
+
+      }
+    })
+  </script>
+</body>
+
+</html>

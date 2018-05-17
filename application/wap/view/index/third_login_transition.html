@@ -1,0 +1,91 @@
+<!-- 新建html模板页 -->
+
+{include file="/index/top" /}
+</head>
+
+<body>
+  <div id="app">
+    <!-- 头部 -->
+    <header class="aui-bar aui-bar-nav aui-bar-light" id="header" style="background-image:none;">
+      <div class="aui-title" v-text="title"></div>
+    </header>
+    <!-- 中间页 -->
+    <div class="aui-content" v-if="openid && !user">
+      <ul class="aui-list aui-list-inner">
+        <li class="aui-list-item" @click="go('bind_mobile')">
+          <div class="aui-list-item-inner aui-list-item-arrow">
+            <div class="aui-list-item-title">绑定已有账号</div>
+          </div>
+        </li>
+        <li class="aui-list-item" @click="go('register')">
+          <div class="aui-list-item-inner aui-list-item-arrow">
+            <div class="aui-list-item-title">绑定新账号</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <script>
+    var thirdType = getStorage('thirdType')
+    var app = new Vue({
+      el: '#app',
+      data: {
+        title: '请选择',
+        openid: '',
+        user: user,
+      },
+      methods: {
+        go: function (router) {
+          if (this.openid) {
+            goto(router, { openid: this.openid })
+          }
+        }
+      },
+      mounted: function () {
+        var that = this;
+        var router = '';
+        var openid_type = '';
+        if (thirdType == 'third_qq') {
+          router = 'api_systems/oauth/qq_get_openid_pc';
+          openid_type = 'qq';
+        } else if(thirdType == 'third_wechat') {
+          router = 'api_systems/oauth/wechat_get_openid';
+          openid_type = 'wechat';
+        }
+        // 通过code换取openid
+        httpRequest('POST', router, {
+          code: querystring.code
+        }).then(function (resp) {
+          if (resp.data.openid) {
+            that.openid = resp.data.openid;
+            // 如果是已经登录用户绑定第三方账号，则直接调用接口绑定
+            if(user){
+              httpRequest('POST', 'api_users/binding/save_in_login', {
+                openid_type: openid_type,
+                openid:resp.data.openid
+              }).then(function(resp){
+                layer.msg(resp.msg);
+                setTimeout(function(){
+                  goto('bind_third_setting');
+                }, 500)
+              })
+            }
+          } else {
+            resp.data.user.avatar = resp.data.user.avatar || '__static__/images/avatar.png';
+            user = resp.data.user;
+            token = resp.data.token;
+            setStorage(getClientType() + 'User', resp.data.user);
+            setStorage(getClientType() + 'Token', resp.data.token);
+            layer.msg(resp.msg);
+            setTimeout(function () {
+              goto('home');
+            }, 500)
+          }
+        })
+      }
+    })
+
+  </script>
+</body>
+
+</html>

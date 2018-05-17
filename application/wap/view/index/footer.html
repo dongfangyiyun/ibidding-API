@@ -1,0 +1,20 @@
+<footer class="aui-bar aui-bar-tab" id="footer">
+  <div class="aui-bar-tab-item" onclick="goto('index')" :class="{'aui-active' : (activeFooterIndex == 1 )}">
+    <i class="aui-iconfont iconfont icon-shouye"></i>
+    <div class="aui-bar-tab-label">首页</div>
+  </div>
+  <div class="aui-bar-tab-item" onclick="goto('goods_list')" :class="{'aui-active' : (activeFooterIndex == 2 )}">
+    <i class="aui-iconfont iconfont icon-leimupinleifenleileibie"></i>
+    <div class="aui-bar-tab-label">商品</div>
+  </div>
+  <div class="aui-bar-tab-item" onclick="goto('cart_list')" :class="{'aui-active' : (activeFooterIndex == 3 )}">
+    <!-- <div class="aui-badge">99</div> -->
+    <i class="aui-iconfont iconfont icon-gouwuche"></i>
+    <div class="aui-bar-tab-label">购物车</div>
+  </div>
+  <div class="aui-bar-tab-item" onclick="goto('home')" :class="{'aui-active' : (activeFooterIndex == 4 )}">
+    <!-- <div class="aui-dot"></div> -->
+    <i class="aui-iconfont iconfont icon-people"></i>
+    <div class="aui-bar-tab-label">我的</div>
+  </div>
+</footer>
