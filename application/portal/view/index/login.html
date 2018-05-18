@@ -18,64 +18,64 @@
 <body>
 	<div id="app">
 		<div class="white padding-tt-15">
-	<div class="w1200 over">
-	<div class="over">
-		<div class="left margin-right-10" onclick="goto('index')" style="cursor: pointer;">
-			<div class="center text-ligthen-1 font-size-20 padding-10 margin-5">iBidding</div>
-		</div>
-		<div class="login-ti-border-left left grey-text text-ligthen-1 font-size-20 padding-10 margin-5">欢迎登录</div>
-	</div>
-	</div>
-</div>
-<div class="minwid1200" >
-	<div class="w1200 over">
-		<div class="white login-crad" style="width: 50%;text-align: center;margin: 0 auto;">
-			<div class="font-size-18 font-w blue-text margin-tt-15 center padding-btn-15 login-card-ti">账户登录</div>
-			<div class="margin-15 flex  logo-get blue">
-				<div class="logo-perm-icon blue"><i class="iconfont icon-peoplefill white-text" style="font-size: 24px;"></i></div>
-				<input type="text"    v-model="mobile" pattern="[0-9]*" onkeyup="value=value.replace(/[^\d]/g,'')"  class="flex1 logo-input" placeholder="请输入手机号">
-				<div class="logo-remore white" @click="setinput()"><i class="inline-black margin-10 iconfont icon-guanbi2fill"></i></div>
-			</div>
-			<div class="margin-15 flex logo-get grey lighten-3">
-					<div class="logo-perm-icon"><i class="iconfont icon-erji-anquanfuwukaitongqingkuang  blue-text" style="font-size: 24px;"></i></div>
-					<input type="password" v-model="password" @keyup.enter="doLogin()" class="flex1 logo-input" placeholder="请输入密码">
-					<div class="logo-remore white"></div>
-			</div>
-			<!-- <div class="over margin-15"> -->
-				<!-- <div class="right grey-text bt" onclick="goto('reset_password')">忘记密码？</div> -->
-			<!-- </div> -->
-			<div class="white-text blue font-size-14 padding-10 center margin-15 logp-btn bt" @click="doLogin()">登录</div>
+			<div class="w1200 over">
 			<div class="over">
-				<div class="left over">
-					<div class="right grey-text margin-left-15" onclick="goto('reset_password')" style="cursor: pointer;">忘记密码？</div>
-					<!-- <div class="left margin-right-15" style="margin-left: 15px;">
-							<svg style="width: 30px;height: 30px;float: left;margin-right:5px; " aria-hidden="true" @click="qqLogin();">
-								<use xlink:href="#icon-social-qq"></use>
-							</svg>
-						<span class="font-size-14 black-text margin-5 inline-black">QQ</span>
-					</div>
-					<div class="left" @click="wxLogin();">
-						<i class="iconfont icon-gongzhonghao left margin-right-5" style="color:#09bb07;font-size: 34px;height: 38px;line-height: 38px;"></i>
-						<span  class="font-size-14 black-text margin-5 inline-black">微信</span>
-					</div> -->
+				<div class="left margin-right-10" onclick="goto('index')" style="cursor: pointer;">
+					<div class="center text-ligthen-1 font-size-20 padding-10 margin-5">iBidding</div>
 				</div>
-				<div class="right red-text margin-right-15" >
-					<a href="{:URL('index/register')}">
-						立即注册
-					</a> 
+				<div class="login-ti-border-left left grey-text text-ligthen-1 font-size-20 padding-10 margin-5">欢迎登录</div>
+			</div>
+			</div>
+		</div>
+		<div class="w1200 margin-tt-15 white" >
+			<div class="over regoster-content">
+				<div class="white login-crad" style="width: 50%;text-align: center;margin: 0 auto;">
+					<div class="font-size-18 font-w blue-text margin-tt-15 center padding-btn-15 login-card-ti">账户登录</div>
+					<div class="margin-15 flex  logo-get blue">
+						<div class="logo-perm-icon blue"><i class="iconfont icon-peoplefill white-text" style="font-size: 24px;"></i></div>
+						<input type="text"    v-model="mobile" pattern="[0-9]*" onkeyup="value=value.replace(/[^\d]/g,'')"  class="flex1 logo-input" placeholder="请输入手机号">
+						<div class="logo-remore white" @click="setinput()"><i class="inline-black margin-10 iconfont icon-guanbi2fill"></i></div>
+					</div>
+					<div class="margin-15 flex logo-get grey lighten-3">
+							<div class="logo-perm-icon"><i class="iconfont icon-erji-anquanfuwukaitongqingkuang  blue-text" style="font-size: 24px;"></i></div>
+							<input type="password" v-model="password" @keyup.enter="doLogin()" class="flex1 logo-input" placeholder="请输入密码">
+							<div class="logo-remore white"></div>
+					</div>
+					<!-- <div class="over margin-15"> -->
+						<!-- <div class="right grey-text bt" onclick="goto('reset_password')">忘记密码？</div> -->
+					<!-- </div> -->
+					<div class="white-text blue font-size-14 padding-10 center margin-15 logp-btn bt" @click="doLogin()">登录</div>
+					<div class="over">
+						<div class="left over">
+							<div class="right grey-text margin-left-15" onclick="goto('reset_password')" style="cursor: pointer;">忘记密码？</div>
+							<!-- <div class="left margin-right-15" style="margin-left: 15px;">
+									<svg style="width: 30px;height: 30px;float: left;margin-right:5px; " aria-hidden="true" @click="qqLogin();">
+										<use xlink:href="#icon-social-qq"></use>
+									</svg>
+								<span class="font-size-14 black-text margin-5 inline-black">QQ</span>
+							</div>
+							<div class="left" @click="wxLogin();">
+								<i class="iconfont icon-gongzhonghao left margin-right-5" style="color:#09bb07;font-size: 34px;height: 38px;line-height: 38px;"></i>
+								<span  class="font-size-14 black-text margin-5 inline-black">微信</span>
+							</div> -->
+						</div>
+						<div class="right red-text margin-right-15" >
+							<a href="{:URL('index/register')}">
+								立即注册
+							</a> 
+						</div>
+					</div>
+
 				</div>
 			</div>
-
+		</div>
+		<div class="margin-top-15 padding-tt-15 center white">
+			<!-- <div class="over black-text inline-black margin--5">
+				<div class="left login-border-right margin-left-15  padding-right-15 pointer" v-for="(blogroll,key) in blogrolls" :key="key" v-text="blogroll.name" @click="gogoblogroll(blogroll.href)"></div>
+			</div> -->
+			<div class="black-text margin-tt-10">E-mail：jianhaihao@gmail.com</div>
 		</div>
 	</div>
-</div>
-<!-- <div class="margin-tt-15 center">
-	<div class="over black-text inline-black margin--5">
-		<div class="left login-border-right margin-left-15  padding-right-15 pointer" v-for="(blogroll,key) in blogrolls" :key="key" v-text="blogroll.name" @click="gogoblogroll(blogroll.href)"></div>
-	</div>
-	<div class="black-text margin-tt-10">网络文化经营许可证：浙网文[2016]0155-055号 网开亿面公司版权所有©1997-2018 </div>
-</div> -->
-</div>
 </body>
 
 <script>

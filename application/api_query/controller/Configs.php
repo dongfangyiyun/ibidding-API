@@ -50,7 +50,6 @@ class Configs extends Rest
         foreach ($data as $key => $value) {
             $data[$key]['ad1']          = $data[$key]['ad1'] ? get_host() . $data[$key]['ad1'] : '';
             $data[$key]['ad2']          = $data[$key]['ad2'] ? get_host() . $data[$key]['ad2'] : '';
-            $data[$key]['goods_info']   = model('goods')->getAll(['id' => ['in', $value['goods_ids']]]);
             $data[$key]['hot_keywords'] = explode(',', $value['hot_keywords']);
         }
 

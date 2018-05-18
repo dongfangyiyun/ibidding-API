@@ -1,5 +1,5 @@
 <div id="foot">
-  <div class="foot white minwid1200 over">
+ <!--  <div class="foot white minwid1200 over">
     <div class="w1200 row margin-top-15">
       <div class="col s3 over black-text margin-tt-15">
         <div class="left margin-lr-15">
@@ -89,14 +89,14 @@
         </div>
       </div>
     </div>
-  </div>
+  </div> -->
   <div class=" padding-tt-15 center white-text minwid1200 font-size-12" style="background: #282828;">
-    <div class="margin-tt-5">
+   <!--  <div class="margin-tt-5">
       <span class="border-right-white padding-lr-15 bt" v-for="(blogroll,key) in blogrolls" :key="key" v-text="blogroll.name" @click="gogoblogroll(blogroll.href)"></span>
-    </div>
+    </div> -->
     <div class="white-text margin-tt-15">
-      <span class="margin-right-15">技术支持：网开亿面</span>
-      <span class="margin-left-15">网开亿面公司版权所有@1997-2018</span>
+      <span class="margin-left-15">基于Internet的招投标信息智能推送系统 </span>&copy;
+      <span class="margin-right-15">jianhaihao@gmail.com</span>
     </div>
   </div>
 </div>
@@ -118,24 +118,24 @@
     },
     mounted: function () {
       var that = this;
-      httpRequest('post', 'api_articles/friendly_links/lists', { type: "foots" }, function (resp) {
-        that.blogrolls = resp.data
-        httpRequest('post', 'api_articles/friendly_links/lists', { type: "footli" }, function (resp) {
-          resp.data.forEach(function (item) {
-            if (item.position == 1) {
-              that.blogrolls1.push(item)
-            } else if (item.position == 2) {
-              that.blogrolls2.push(item)
-            } else if (item.position == 3) {
-              that.blogrolls3.push(item)
-            } else {
-              that.blogrolls4.push(item)
-            }
-          })
-        })
-      })
-      new QRCode(document.getElementById("wximg"), "https://weibo.com/wancll?from=feed&loc=at&nick=%E7%BD%91%E5%BC%80%E4%BA%BF%E9%9D%A2%E7%A7%91%E6%8A%80&noscale_head=1&is_all=1");
-      new QRCode(document.getElementById("woimg"), "https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=MzI2ODYyOTY2MQ==&scene=124#wechat_redirect");
+      // httpRequest('post', 'api_articles/friendly_links/lists', { type: "foots" }, function (resp) {
+      //   that.blogrolls = resp.data
+      //   httpRequest('post', 'api_articles/friendly_links/lists', { type: "footli" }, function (resp) {
+      //     resp.data.forEach(function (item) {
+      //       if (item.position == 1) {
+      //         that.blogrolls1.push(item)
+      //       } else if (item.position == 2) {
+      //         that.blogrolls2.push(item)
+      //       } else if (item.position == 3) {
+      //         that.blogrolls3.push(item)
+      //       } else {
+      //         that.blogrolls4.push(item)
+      //       }
+      //     })
+      //   })
+      // })
+      // new QRCode(document.getElementById("wximg"), "https://weibo.com/wancll?from=feed&loc=at&nick=%E7%BD%91%E5%BC%80%E4%BA%BF%E9%9D%A2%E7%A7%91%E6%8A%80&noscale_head=1&is_all=1");
+      // new QRCode(document.getElementById("woimg"), "https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=MzI2ODYyOTY2MQ==&scene=124#wechat_redirect");
     }
   })
   var footerData = JSON.parse(sessionStorage.getItem('footerData'));
@@ -166,24 +166,24 @@
     }
   }
 
-  htmlConcat = function () {
-    var html = '';
-    footerData.bottomAds.forEach(function (item) {
-      html += '<li><a href="' + item.href + '"><img src="' + item.thum + '"></a></li>'
-    })
-    document.getElementById('bottom-posts').innerHTML = html;
+  // htmlConcat = function () {
+  //   var html = '';
+  //   footerData.bottomAds.forEach(function (item) {
+  //     html += '<li><a href="' + item.href + '"><img src="' + item.thum + '"></a></li>'
+  //   })
+  //   document.getElementById('bottom-posts').innerHTML = html;
 
-  }
-  htmlConcat2 = function () {
-    var bHtml = '';
-    for (var key in footerData.friendLinks) {
-      bHtml += '<ul><li>' + key + '</li>';
-      footerData.friendLinks[key].forEach(function (item) {
-        bHtml += '<li><a href="' + item.href + '">' + item.name + '</a></li>';
-      })
-      bHtml += '</ul>';
-    }
-    bHtml += '<div class="rwm"><img src="__static__/portal/images/ewm.png" /><p>网开亿面手机站</p></div><div class="phone"><a href="">网开亿面</a><span>4000-500-740</span></div>';
-    document.getElementById('links').innerHTML = bHtml;
-  }
+  // }
+  // htmlConcat2 = function () {
+  //   var bHtml = '';
+  //   for (var key in footerData.friendLinks) {
+  //     bHtml += '<ul><li>' + key + '</li>';
+  //     footerData.friendLinks[key].forEach(function (item) {
+  //       bHtml += '<li><a href="' + item.href + '">' + item.name + '</a></li>';
+  //     })
+  //     bHtml += '</ul>';
+  //   }
+  //   bHtml += '<div class="rwm"><img src="__static__/portal/images/ewm.png" /><p>网开亿面手机站</p></div><div class="phone"><a href="">网开亿面</a><span>4000-500-740</span></div>';
+  //   document.getElementById('links').innerHTML = bHtml;
+  // }
 </script>

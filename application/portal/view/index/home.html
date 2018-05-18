@@ -8,7 +8,7 @@
 <body>
     {include file="/index/header" /}
     <div id="app">
-        <div class="overhidden" :class="{on:(cancelOrder == 1)}"></div>
+        <!-- <div class="overhidden" :class="{on:(cancelOrder == 1)}"></div>
         <div class="w900 content-wl" :class="{on:(cancelOrder == 1)}">
             <div class="">
                 <ul>
@@ -29,7 +29,7 @@
             <button class="button transition border-grey " @click="closecancel()" style="margin-left: 170px;background: #fff;border: 1px solid #dedede;color: #616161 !important">取消</button>
             <button class="button transition" @click="closepage()">确定</button>
         </div>
-
+ -->
         <div class="w1200 margin-tt-15 over  black-text">
             <div class="left">
                 <!-- 个人信息卡 -->
@@ -53,19 +53,6 @@
                     </div>
                 </div>
                 <div class="white grey-text text-darken-3 margin-top-15" style="border-radius: 5px">
-                    <div class="card-right-nav-box  margin-10 padding-tt-10" style="border: none">
-                        <div class="card-right-nav">
-                            <div class="font-size-18 over margin-tt-10">
-                                <i class="iconfont icon-icon_order left text-lighten-1" style="font-size:24px; margin-right: 5px;height: 30px;line-height: 30px;"></i>
-                                <span class="left margin-top-5">交易管理</span>
-                            </div>
-                            <ul class="card-right-nav-ul">
-                                <li class="margin-tt-13" @click="goto('cart_list')">购物车</li>
-                                <li class="margin-tt-13" @click="goto('order_list')">我的订单</li>
-                                <li class="margin-tt-13" @click="goto('comment_list')">我的评价</li>
-                            </ul>
-                        </div>
-                    </div>
                     <div class="card-right-nav-box  margin-10 padding-tt-10">
                         <div class="card-right-nav">
                             <div class="font-size-18 over margin-tt-10">
@@ -75,13 +62,13 @@
                             <ul class="card-right-nav-ul">
                                 <li class="margin-tt-13" @click="goto('setting')">个人信息</li>
                                 <li class="margin-tt-13" @click="goto('account')">账号安全</li>
-                                <li class="margin-tt-13" @click="goto('idcard_auth')">实名认证</li>
-                                <li class="margin-tt-13" @click="goto('address_list')">地址管理</li>
+                                <!-- <li class="margin-tt-13" @click="goto('idcard_auth')">实名认证</li> -->
+                                <!-- <li class="margin-tt-13" @click="goto('address_list')">地址管理</li> -->
                                 <li class="margin-tt-13" @click="goto('collection_list')">我的收藏</li>
                                 <li class="margin-tt-13" @click="goto('level')">成长值
                                     <span class="blue-text text-lighten-1" v-text="'('+score+')'"></span>
                                 </li>
-                                <li class="margin-tt-13" @click="goto('bind')">第三方账户</li>
+                                <!-- <li class="margin-tt-13" @click="goto('bind')">第三方账户</li> -->
                             </ul>
                         </div>
                     </div>
@@ -93,10 +80,10 @@
                             </div>
                             <ul class="card-right-nav-ul">
                                 <li class="margin-tt-13" @click="goto('wallet')">我的钱包</li>
-                                <li class="margin-tt-13" @click="goto('bankcard_list')">我的银行卡</li>
+                               <!--  <li class="margin-tt-13" @click="goto('bankcard_list')">我的银行卡</li>
                                 <li class="margin-tt-13" @click="goto('my_coupon_list')">我的优惠券
                                     <span class="blue-text text-lighten-2" v-if="coupons.length"></span>
-                                </li>
+                                </li> -->
                             </ul>
                         </div>
                     </div>
@@ -143,7 +130,6 @@
                         </div>
                         <div class="left over margin-lr-15 bt">
                             <div class="left radius50 stting-order-icon" @click="goto('order_list',{status:-1})">
-                                <!--@click="changeStatus(-1)">-->
                                 <i class="blue-text iconfont icon-daifukuan" style="font-size: 28px;height: 55px;line-height: 55px"></i>
                             </div>
                             <div class="right center margin-lr-10">
@@ -303,7 +289,7 @@
                 </div>
             </div>
         </div>
-        <div class="w1200 white over margin-btn-15">
+       <!--  <div class="w1200 white over margin-btn-15">
             <div class="foot-list-title black-text text-lighten-1 margin-15 font-size-18 padding-left-15">猜你喜欢</div>
             <div class="foot-list margin-15 over">
                 <div class="left foot-list-box" v-for="guessGood in guessGoods" @click="goto('goods_detail',{goodsId:guessGood.id})">
@@ -320,7 +306,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
     </div>
 
     {include file="index/footer" /}

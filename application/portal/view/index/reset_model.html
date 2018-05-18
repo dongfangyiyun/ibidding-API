@@ -44,7 +44,7 @@
                     </div>
                 </div>
                 <div class="white grey-text text-darken-3 margin-top-15" style="border-radius: 5px">
-                    <div class="card-right-nav-box  margin-10 padding-tt-10" style="border: none">
+                    <!-- <div class="card-right-nav-box  margin-10 padding-tt-10" style="border: none">
                         <div class="card-right-nav">
                             <div class="font-size-18 over margin-tt-10">
                                 <i class="small material-icons left  blue-text text-lighten-1" style="width: 30px;margin-right: 5px;"></i>
@@ -56,7 +56,7 @@
                                 <li class="margin-tt-13" @click="goto('comment_list')">我的评价</li>
                             </ul>
                         </div>
-                    </div>
+                    </div> -->
                     <div class="card-right-nav-box  margin-10 padding-tt-10">
                         <div class="card-right-nav">
                             <div class="font-size-18 over margin-tt-10">
@@ -67,10 +67,10 @@
                                 <li class="margin-tt-13" @click="goto('setting')">个人信息</li>
                                 <li class="margin-tt-13" @click="goto('account')">账号安全</li>
                                 <li class="margin-tt-13" @click="goto('idcard_auth')" >实名认证</li>
-                                <li class="margin-tt-13" @click="goto('address_list')">地址管理</li>
+                                <!-- <li class="margin-tt-13" @click="goto('address_list')">地址管理</li> -->
                                 <li class="margin-tt-13"  @click="goto('collection_list')">我的收藏</li>
                                 <li class="margin-tt-13"  @click="goto('level')">成长值<span class="blue-text text-lighten-1" v-text="'('+score+')'"></span></li>
-                                <li class="margin-tt-13"  @click="goto('bind')">第三方账户</li>
+                                <!-- <li class="margin-tt-13"  @click="goto('bind')">第三方账户</li> -->
                             </ul>
                         </div>
                     </div>
@@ -82,8 +82,8 @@
                             </div>
                             <ul class="card-right-nav-ul">
                                 <li class="margin-tt-13" @click="goto('wallet')">我的钱包</li>
-                                <li class="margin-tt-13" @click="goto('bankcard_list')">我的银行卡</li>
-                                <li class="margin-tt-13" @click="goto('my_coupon_list')">我的优惠券<span class="blue-text text-lighten-2"></span></li>
+                               <!--  <li class="margin-tt-13" @click="goto('bankcard_list')">我的银行卡</li>
+                                <li class="margin-tt-13" @click="goto('my_coupon_list')">我的优惠券<span class="blue-text text-lighten-2"></span></li> -->
                             </ul>
                         </div>
                     </div>
@@ -138,7 +138,7 @@
                                </div>
                         </div>
                 </div>
-                        <div class="margin-15 over grey-text text-darken-3">
+                        <!-- <div class="margin-15 over grey-text text-darken-3">
                             <div class="font-size-16  margin-tt-15">为什么要进行安全验证</div>
                             <div class="font-size-12 margin-tt-5">
                                     1.为了确保您的账户安全，在变更账户中的重要信息时需要身份验证，感谢您的支持与理解。
@@ -146,14 +146,14 @@
                             <div class="font-size-12">
                                     2.验证身份遇到问题？请提供用户名，手机号，历史发票。 
                             </div>
-                        </div>
+                        </div> -->
             </div>
-            <div class="margin-top-15">
+           <!--  <div class="margin-top-15">
                     <img src="__static__/portal/img/lien-img.png" alt="" class="responsive-img">
-            </div>
+            </div> -->
         </div>
     </div>
-    <div class="w1200 white over margin-btn-15">
+    <!-- <div class="w1200 white over margin-btn-15">
         <div class="foot-list-title black-text text-lighten-1 margin-15 font-size-18 padding-left-15">猜你喜欢</div>
         <div class="foot-list margin-15 over">
           <div class="left foot-list-box" v-for="guessGood in guessGoods" @click="goto('goods_detail',{goodsId:guessGood.id})">
@@ -170,7 +170,7 @@
               </div>
           </div>
       </div>
-    </div>
+    </div> -->
     </div>
     {include file="index/footer" /}
     <script>
@@ -237,6 +237,12 @@
                             new_code:app.new_code,
                         }
                     })
+
+                    var data = {
+                        old_mobile:app.user.mobile,
+                        new_mobile:this.new_mobile,
+                        new_code:this.new_code,
+                    }
                     httpRequest("post",'api_users/user_accounts/change_mobile',data,function (resp){
                         if(resp.code == 1){
                             app.next = 2;
@@ -258,9 +264,6 @@
                     app.mobile = mask(this.user.mobile,3,7,"****");
                 //猜你喜欢
                 })
-                httpRequest('POST','api_goods/goods/lists',{is_top:1},function(resp){
-                    app.guessGoods = resp.data;
-                },{'page-num':1,'page-limit':4})
             }
         })
         function mask(str,begin,end,char){

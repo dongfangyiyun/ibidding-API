@@ -96,7 +96,7 @@ return array (
     'bami' => 
     array (
       'is_bami_sms' => '1',
-      'company' => '网开创',
+      'company' => 'iBidding',
       'account' => '1788',
       'password' => 'a8f969c9b9cc5cf48085bfa0d959dc73',
     ),

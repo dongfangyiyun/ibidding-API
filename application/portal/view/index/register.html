@@ -12,9 +12,13 @@
         <div class="white padding-tt-15">
             <div class="w1200 over">
                 <div class="over">
-                    <div class="left margin-right-10" onclick="goto('index')" v-for="(logo,key) in logos" :key="key">
+                    <!-- <div class="left margin-right-10" onclick="goto('index')" v-for="(logo,key) in logos" :key="key">
                         <img :src="logo.img" alt="">
                         <div class="center margin-5 grey-text text-darken-2" v-text="logo.title"></div>
+                    </div> -->
+
+                    <div class="left margin-right-10" onclick="goto('index')" style="cursor: pointer;">
+                        <div class="center text-ligthen-1 font-size-20 padding-10 margin-5">iBidding</div>
                     </div>
                     <div class="login-ti-border-left left grey-text text-ligthen-1 font-size-20 padding-10 margin-5">欢迎注册</div>
                 </div>
@@ -28,7 +32,7 @@
             <div class="over regoster-content">
                 <div class="left black-text" style="width: 440px;">
                     <div class="flex margin-tt-10">
-                        <div class="register-input-set ">手机号码：</div>
+                        <div class="register-input-set">手机号码：</div>
                         <div class="flex1 register-border ">
                             <input type="text" onkeyup="value=value.replace(/[^\d]/g,'')" v-model="register.mobile">
                         </div>
@@ -41,13 +45,13 @@
                         </div>
                     </div>
                     <div class="flex margin-tt-10">
-                        <div class="register-input-set ">设置登录密码：</div>
+                        <div class="register-input-set" style="margin-top:10px">设置登录密码：</div>
                         <div class="flex1 register-border margin-tt-10">
                             <input type="password" placeholder="密码要求必须大于6位" v-model="register.password">
                         </div>
                     </div>
                     <div class="flex margin-tt-10">
-                        <div class="register-input-set ">确认登录密码：</div>
+                        <div class="register-input-set" style="margin-top:10px">确认登录密码：</div>
                         <div class="flex1 register-border margin-tt-10">
                             <input type="password" placeholder="再次输入密码" v-model="register.repassword">
                         </div>
@@ -57,8 +61,8 @@
                         <div class="flex1 grey-text text-ligthen-1">
                             <i class="iconfont icon-yuanxingweixuanzhong left margin-right-5 " @click="isTrues()" v-if="!isTrue"></i>
                             <i class="iconfont icon-roundcheckfill left margin-right-5 blue-text" @click="isTrues()" v-else></i>
-                            用户注册即是代表
-                            <span class="blue-text bt" @click="goto('article', {articleId: 6})">《网开创 服务条例》
+                            同意
+                            <span class="blue-text bt" @click="goto('article', {articleId: 6})">《iBidding 注册协议》
                         </div>
                     </div>
                     <div class="flex margin-tt-15">
@@ -70,24 +74,24 @@
                 </div>
                 <div class="right center">
                     <div class="register-qrode-img">
-                        <img src="__static__/portal/img/appios.png" alt=""> 下载ios版本app
+                        <img src="__static__/portal/img/localhost.png" alt=""> 手机端
                     </div>
                     <div class="register-qrode-img">
-                        <img src="__static__/portal/img/appios.png" alt="">
-                        <span class=""> 下载安卓版本app</span>
+                        <img src="__static__/portal/img/localhost.png" alt="">
+                        <span class=""> 小程序端</span>
 
                     </div>
                     <div class="register-qrode-text black-text center" style="width:300px;">
-                        扫描此二维码下载网开创手机版app吧！
+                        扫描二维码访问其它端
                     </div>
                 </div>
             </div>
         </div>
         <div class="margin-top-15 padding-tt-15 center white">
-            <div class="over black-text inline-black margin-tt-15 padding-top-15">
+            <!-- <div class="over black-text inline-black margin-tt-15 padding-top-15">
                 <div class="left login-border-right margin-left-15  padding-right-15 pointer" v-for="(blogroll,key) in blogrolls" :key="key" v-text="blogroll.name" @click="gogoblogroll(blogroll.href)"></div>
-            </div>
-            <div class="black-text margin-tt-10">网络文化经营许可证：浙网文[2016]0155-055号 网开亿面公司版权所有©1997-2018 </div>
+            </div> -->
+            <div class="black-text margin-tt-10">E-mail：jianhaihao@gmail.com</div>
         </div>
     </div>
 </body>
@@ -140,7 +144,7 @@
                     return;
                 }
                 if (!this.isTrue) {
-                    layer.msg('请勾选我同意')
+                    layer.msg('请确认是否同意《iBidding 注册协议》')
                     return;
                 }
                 var data = {

@@ -121,19 +121,19 @@ function send_mobile_code_zjj($mobile)
 // 校验短信验证码
 function check_mobile_code($mobile, $code)
 {
-    $result = Db::name('mobile_msgs')->where(['mobile' => $mobile])->order('id DESC')->limit('1')->select();
-    if ($result) {
-        //验证码10分钟内有效
-        if ($result[0]['code'] == $code && (time() - strtotime($result[0]['send_time'])) <= 600) {
-            return true;
-        } else {
-            return false;
-        }
-    } else {
-        return false;
-    }
+    // $result = Db::name('mobile_msgs')->where(['mobile' => $mobile])->order('id DESC')->limit('1')->select();
+    // if ($result) {
+    //     //验证码10分钟内有效
+    //     if ($result[0]['code'] == $code && (time() - strtotime($result[0]['send_time'])) <= 600) {
+    //         return true;
+    //     } else {
+    //         return false;
+    //     }
+    // } else {
+    //     return false;
+    // }
 
-    // return true;
+    return true;
 }
 
 function wancll_md5($param)
