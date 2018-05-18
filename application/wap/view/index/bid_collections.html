@@ -20,13 +20,14 @@
       <div v-else class="aui-flex-col aui-flex-center">
         <div class="aui-flex-item-12">
           <div class="aui-flex-col">
-            <div class="aui-flex-item-6" style="position: relative;padding:3px;" v-for="(collection,key) in collections" :key="key">
-              <img :src="collection.bid_info.thum" @click="gobidDetail(collection)">
-              <h5 class="aui-text-default aui-ellipsis-2 aui-font-size-12 aui-padded-t-5 aui-padded-l-10 aui-padded-r-10  aui-bg-white"
-                v-text="collection.bid_info.name"></h5>
+            <div class="aui-flex-item-12" style="position: relative;padding:3px;" v-for="(collection,key) in collections" :key="key">
+              <h5 class="aui-text-default aui-ellipsis-2 aui-font-size-12 aui-padded-t-5 aui-padded-l-10 aui-padded-r-10  aui-bg-white" @click="goBidDetail(collection)">
+                  <span v-text="key+1+'.'"></span>
+                  <span v-text="collection.bid_info.title"></span>
+              </h5>
               <p class="aui-padded-b-5 aui-padded-t-5 aui-padded-l-10 aui-padded-r-10  aui-bg-white">
-                <span class="aui-text-price" style="font-size:0.5rem;">￥</span>
-                <span class="aui-text-price aui-font-size-14" v-text="collection.bid_info.sell_price"></span>
+                <span class="aui-text-price" v-text="'【'+collection.bid_info.type+'】'" style="font-size:0.5rem;"></span>
+                <span style="font-size:0.5rem;">收藏时间：<span v-text="collection.create_time"></span></span>
                 <span class="aui-iconfont iconfont icon-shanchu aui-pull-right" @click="removeCollection(collection)"></span>
               </p>
             </div>
@@ -62,7 +63,7 @@
             })
           })
         },
-        gobidDetail: function (collection) {
+        goBidDetail: function (collection) {
           goto('bid_detail', { bidId: collection.bid_id })
         }
       },

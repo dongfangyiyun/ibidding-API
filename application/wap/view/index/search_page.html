@@ -91,7 +91,7 @@
       },
       mounted: function () {
         // 热门搜索
-        httpRequest('POST', 'api_goods/goods_keywords/lists')
+        httpRequest('POST', 'api_bids/bid_keywords/lists')
           .then(function (resp) {
             app.hots = resp.data;
           });

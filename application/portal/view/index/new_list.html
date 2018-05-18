@@ -202,7 +202,7 @@
 		background: #108ee9!important;
 	}
 
-	.nav-3{
+	.nav-2{
 	    background-color: #43a7ef;
 	}
 </style>
@@ -213,75 +213,11 @@
 	{include file="/index/header" /}
 
 	<div class="w1200" id="app">
-		<div class="search-list-cont1 padding-top-10">
-			<div class="search-nav">
-				<p class="title inline-black">类型标签:</p>
-				<a class="bt" @click="selectalltype()">
-					<span v-if="selectedtypeId == 'all'" style="color: #039be5">【全部】</span>
-					<span v-else>全部</span>
-				</a>
-				<a class="bt" v-for="(type, typeKey) in types" :key="typeKey" @click="selecttype(type)">
-					<span v-if="type.id == selectedtypeId" style="color: #039be5" v-text="'【'+type.name+'】'" ></span>
-					<span v-else v-text="type.name"></span>
-				</a>
-			</div>
-			<div class="search-nav mr-33">
-				<a class="bt" v-for="(twotype,key) in twotypes" :key="key" @click="selectTwotype(twotype)">
-					<span v-if="key == 0"><p class="title inline-black">子标签：</p></span>
-					<span v-if="twotype.id == selectedtwotypeId" style="color: #039be5" v-text="'【'+twotype.name+'】'"></span>
-					<span v-else v-text="twotype.name"></span>
-				</a>
-			</div>
-		</div>
-		<div class="search-list-cont1 padding-top-10">
-			<div class="search-nav">
-				<p class="title inline-black">地区标签:</p>
-				<a class="bt" @click="selectallarea()">
-					<span v-if="selectedareaId == 'all'" style="color: #039be5">【全部】</span>
-					<span v-else>全部</span>
-				</a>
-				<a class="bt" v-for="(area, areaKey) in areas" :key="areaKey" @click="selectarea(area)">
-					<span v-if="area.id == selectedareaId" style="color: #039be5" v-text="'【'+area.name+'】'" ></span>
-					<span v-else v-text="area.name"></span>
-				</a>
-			</div>
-			<div class="search-nav mr-33">
-				<a class="bt" v-for="(twoarea,key) in twoareas" :key="key" @click="selectTwoarea(twoarea)">
-					<span v-if="key == 0"><p class="title inline-black">子标签：</p></span>
-					<span v-if="twoarea.id == selectedtwoareaId" style="color: #039be5" v-text="'【'+twoarea.name+'】'"></span>
-					<span v-else v-text="twoarea.name"></span>
-				</a>
-			</div>
-		</div>
-		<div class="search-list-cont1 padding-top-10">
-			<div class="search-nav">
-				<p class="title inline-black">行业标签:</p>
-				<a class="bt" @click="selectalltrade()">
-					<span v-if="selectedtradeId == 'all'" style="color: #039be5">【全部】</span>
-					<span v-else>全部</span>
-				</a>
-				<a class="bt" v-for="(trade, tradeKey) in trades" :key="tradeKey" @click="selecttrade(trade)">
-					<span v-if="trade.id == selectedtradeId" style="color: #039be5" v-text="'【'+trade.name+'】'" ></span>
-					<span v-else v-text="trade.name"></span>
-				</a>
-			</div>
-			<div class="search-nav mr-33">
-				<a class="bt" v-for="(twotrade,key) in twotrades" :key="key" @click="selectTwotrade(twotrade)">
-					<span v-if="key == 0"><p class="title inline-black">子标签：</p></span>
-					<span v-if="twotrade.id == selectedtwotradeId" style="color: #039be5" v-text="'【'+twotrade.name+'】'"></span>
-					<span v-else v-text="twotrade.name"></span>
-				</a>
-			</div>
-			<el-form-item label="下线时间" prop="offline_time">
-                      <el-date-picker type="datetime" placeholder="选择下线时间" value-format="yyyy-MM-dd HH:mm:ss" :clearable="false">
-                      </el-date-picker>
-                    </el-form-item>
-		</div>
 		<div class="search-list-cont2 padding-top-15">
 			<div v-if="haveNoData" class="search-none-cont1">
 				<div class="content">
 					<img class="img-logo" src="__static__/portal/images/search-logo.png">
-					<p class="title">暂无您检索的数据~</p>
+					<p class="title">暂无数据~</p>
 				</div>
 			</div>
 			<div v-else class="search-list">
@@ -341,96 +277,16 @@
 				twotypes: [],
 				areas: [],
 				twoareas: [],
-				trades: [],
-				twotrades: [],
 				totalpage: 0,
 				page_num: 1,
 				page_limit: 10,
 				haveNoData: false,
-				selectedtypeId: 'all',
-				selectedtypeName: '全部',
-				selectedareaId: 'all',
-				selectedareaName: '全部',
-				selectedtradeId: 'all',
-				selectedtradeName: '全部',
-				selectedtwotypeId: '',
-				selectedtwotypeName: '',
-				selectedtwoareaId: '',
-				selectedtwoareaName: '',
-				selectedtwotradeId: '',
-				selectedtwotradeName: '',
+				selectedtypeId: '',
 				annoncements:[],
 			},
 			methods: {
-				selecttype: function (type) {
-					app.twotypes = type._child;
-					app.selectedtypeId = type.id;
-					app.selectedtypeName = type.name;
-					app.selectedtwotypeId = 0;
-					app.selectedtwotypeName = '';
-					app.bidlist = [];
-					loadbid();
-				},
-				selectalltype: function () {
-					app.twotypes = [];
-					app.selectedtypeId = 'all';
-					app.selectedtypeName = '全部';
-					app.selectedtwotypeId = 0;
-					app.selectedtwotypeName = '';
-					app.bidlist = [];
-					loadbid();
-				},
-				selectarea: function (area) {
-					app.twoareas = area._child;
-					app.selectedareaId = area.id;
-					app.selectedareaName = area.name;
-					app.selectedtwoareaId = 0;
-					app.selectedtwoareaName = '';
-					app.bidlist = [];
-					loadbid();
-				},
-				selectallarea: function () {
-					app.twoareas = [];
-					app.selectedareaId = 'all';
-					app.selectedareaName = '全部';
-					app.selectedtwoareaId = 0;
-					app.selectedtwoareaName = '';
-					app.bidlist = [];
-					loadbid();
-				},
-				selecttrade: function (trade) {
-					app.twotrades = trade._child;
-					app.selectedtradeId = trade.id;
-					app.selectedtradeName = trade.name;
-					app.selectedtwotradeId = 0;
-					app.selectedtwotradeName = '';
-					app.bidlist = [];
-					loadbid();
-				},
-				selectalltrade: function () {
-					app.twotrades = [];
-					app.selectedtradeId = 'all';
-					app.selectedtradeName = '全部';
-					app.selectedtwotradeId = 0;
-					app.selectedtwotradeName = '';
-					app.bidlist = [];
-					loadbid();
-				},
 				selectTwotype: function (type) {
-					app.selectedtwotypeId = type.id;
-					app.selectedtwotypeName = type.name;
-					app.bidlist = [];
-					loadbid();
-				},
-				selectTwoarea: function (area) {
-					app.selectedtwoareaId = area.id;
-					app.selectedtwoareaName = area.name;
-					app.bidlist = [];
-					loadbid();
-				},
-				selectTwotrade: function (trade) {
-					app.selectedtwotradeId = trade.id;
-					app.selectedtwotradeName = trade.name;
+					app.selectedtypeId = type.id
 					app.bidlist = [];
 					loadbid();
 				},
@@ -443,6 +299,12 @@
 					app.bidlist = [];
 					loadbid();
 				},
+				selecttype: function (type) {
+					app.twotypes = type._child;
+					app.selectedtypeId = type.id;
+					app.bidlist = [];
+					loadbid();
+				},
 				addcondition: function (type) {
 					typestr = type;
 					app.bidlist = [];
@@ -450,59 +312,31 @@
 				},
 			},
 			mounted: function () {
-				// 加载类型标签
-				httpRequest('POST', 'api_bids/bid_types/lists_tree',{},function (resp) {
-					app.types = resp.data;
-				})
-				// 加载地区标签
-				httpRequest('POST', 'api_bids/bid_areas/lists_tree',{},function (resp) {
-					app.areas = resp.data;
-				})
-				// 加载行业标签
-				httpRequest('POST', 'api_bids/bid_trades/lists_tree',{},function (resp) {
-					app.trades = resp.data;
-				})
+				// // 加载类型标签
+				// httpRequest('POST', 'api_bids/bid_types/lists',{},function (resp) {
+				// 	app.types = resp.data;
+				// })
+				// // 加载地区标签
+				// httpRequest('POST', 'api_bids/bid_areas/lists',{},function (resp) {
+				// 	app.areas = resp.data;
+				// })
 			},
 		})
 		loadbid = function () {
 			var data = {};
 			//此处再添加addcondition的参数
 
-			if (querystring.keyword) {
-				data.keyword = decodeURIComponent(querystring.keyword);
-				header.search_text = data.keyword;
+			if (querystring.typeName) {
+				data.bid_type = querystring.typeName;
+			} else if (querystring.keyword) {
+				data.keyword = decodeURIComponent(querystring.keyword)
+			} else if (querystring.tag) {
+				data.tag = decodeURIComponent(querystring.tag);
 			}
-
 			if (app.selectedtypeId) {
-				data.type_id = app.selectedtypeId;
-				data.type_name = app.selectedtypeName;
+				data.keyword = '';
+				data.bid_type_name = app.selectedtypeName
 			}
-
-			if (app.selectedtwotypeId) {
-				data.twotype_id = app.selectedtwotypeId;
-				data.twotype_name = app.selectedtwotypeName;
-			}
-
-			if (app.selectedareaId) {
-				data.area_id = app.selectedareaId;
-				data.area_name = app.selectedareaName;
-			}
-
-			if (app.selectedtwoareaId) {
-				data.twoarea_id = app.selectedtwoareaId;
-				data.twoarea_name = app.selectedtwoareaName;
-			}
-
-			if (app.selectedtradeId) {
-				data.trade_id = app.selectedtradeId;
-				data.trade_name = app.selectedtradeName;
-			}
-
-			if (app.selectedtwotradeId) {
-				data.twotrade_id = app.selectedtwotradeId;
-				data.twotrade_name = app.selectedtwotradeName;
-			}
-
 			httpRequest('POST', 'api_bids/bids/lists', data,function (resp) {
 				if (resp.data.length > 0) {
 					app.totalpage = Math.ceil(resp.page.data_count / resp.page.page_limit);

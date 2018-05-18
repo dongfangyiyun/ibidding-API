@@ -299,4 +299,9 @@ class Index extends Controller
     {
         return view();
     }
+    // 信息详情页
+    public function bid_detail()
+    {
+        return view();
+    }
 }

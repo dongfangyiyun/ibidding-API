@@ -40,9 +40,9 @@ class BidAreas extends BaseModel
 
 
     // 查询全部(tree)
-    public function getAllTree()
+    public function getAllTree($where=[])
     {
-        $data = $this->order('sort desc,id desc')->select();
+        $data = $this->where($where)->order('sort desc,id desc')->select();
         return json_decode(json_encode($data), true);
     }
 }

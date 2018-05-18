@@ -68,35 +68,26 @@
     <!-- 一级类目 -->
     <div id="warp" class="warp">
       <div id="inner" class="inner aui-margin-l-5 aui-margin-r-5">
-        <span :class="{active: (activeCateId == cate.id)}" v-for="(cate, cateKey) in cates" :key="cateKey" v-text="cate.name" @click="selectCate(cate)"></span>
+        <span :class="{active: (activetypeId == type.id)}" v-for="(type, typeKey) in types" :key="typeKey" v-text="type.name" @click="selecttype(type)"></span>
       </div>
     </div>
-    <!-- 二级类目 -->
-    <section class="aui-grid">
-      <div class="aui-row aui-margin-l-5 aui-margin-r-5">
-        <div class="aui-col-5 aui-padded-5" v-for="(subCate, subCateKey) in subCates" :key="subCateKey" @click="selectSubCate(subCate)">
-          <img :src="subCate.thum || '__static__/images/avatar.png'" style="width:80%;">
-          <div class="aui-grid-label aui-padded-t-5" v-text="subCate.name"></div>
-        </div>
-      </div>
-    </section>
     <!-- 商品列表 -->
     <div v-if="haveNoData" class="aui-col-xs-12 aui-text-center" style="margin-top:30%;">
       <img src="__static__/wap/images/no_content.png" style="width:18%;margin:0 auto;">
-      <h5 style="margin-top:1rem;" class="aui-font-size-14">啊哦,这里什么都没有~</h5>
+      <h5 style="margin-top:1rem;" class="aui-font-size-14">暂无数据~</h5>
     </div>
     <div v-else class="aui-content" style="margin-bottom:2.8rem;">
       <div class="aui-flex-col aui-flex-center">
         <div class="aui-flex-item-12">
           <div class="aui-flex-col">
-            <div class="aui-flex-item-6" style="position: relative;padding:3px;" @click="goGoods(goods.id)" v-for="(goods,goodsKey) in goodslist"
-              :key="goodsKey">
-              <img :src="goods.thum">
-              <h5 class="aui-text-default aui-ellipsis-2 aui-font-size-12 aui-padded-t-5 aui-padded-l-10 aui-padded-r-10 aui-bg-white"
-                v-text="goods.name"></h5>
-              <p class="aui-padded-b-5 aui-padded-t-5 aui-padded-l-10 aui-padded-r-10 aui-bg-white">
-                <span class="aui-text-price aui-font-size-10">￥</span>
-                <span class="aui-text-price" v-text="goods.sell_price"></span>
+            <div class="aui-flex-item-12" style="position: relative;padding:3px;" @click="gobid(bid.id)" v-for="(bid,bidKey) in bidlist" :key="bidKey">
+              <h5 class="aui-text-default aui-ellipsis-2 aui-font-size-12 aui-padded-t-5 aui-padded-l-10 aui-padded-r-10  aui-bg-white">
+                  <span v-text="bidKey+1+'.'"></span>
+                  <span v-text="bid.title"></span>
+              </h5>
+              <p class="aui-padded-b-5 aui-padded-t-5 aui-padded-l-10 aui-padded-r-10  aui-bg-white">
+                <span class="aui-text-price" v-text="'【'+bid.type+'】'" style="font-size:0.5rem;"></span>
+                <span style="font-size:0.5rem;">发布时间：<span v-text="bid.issue_time"></span></span>
               </p>
             </div>
           </div>
@@ -110,7 +101,7 @@
     scrollEvent = function () {
       var scrollTop = document.documentElement.scrollTop || window.pageYOffset || document.body.scrollTop;
       if (document.documentElement.scrollHeight - scrollTop - document.documentElement.clientHeight < 10) {
-        loadGoods();
+        loadbid();
       }
     }
     var page = 1;
@@ -118,43 +109,49 @@
       el: '#app',
       data: {
         activeFooterIndex: 2,
-        goodslist: [],
-        cates: [
+        bidlist: [],
+        types: [
           {
             name: '全部',
-            id: ''
+            id: 0,
           }
         ],
-        subCates: [],
-        activeCateId: '',
-        selectedCateId: '',
+        subtypes: [],
+        activetypeId: '',
+        selectedtypeId: '',
+        selectedtypeName: '',
         haveNoData: false
       },
       methods: {
-        goGoods: function (goodsId) {
-          goto('goods_detail', {goodsId: goodsId });
+        gobid: function (bidId) {
+          goto('bid_detail', {bidId: bidId});
         },
-        selectCate: function (cate) {
-          this.activeCateId = cate.id;
-          this.selectedCateId = cate.id;
-          this.subCates = cate._child || [];
+        selecttype: function (type) {
+          this.activetypeId = type.id;
+          this.selectedtypeId = type.id;
+          if (type.id) {
+            this.selectedtypeName = type.name;
+          }else{
+            this.selectedtypeName = '';
+          }
+          this.subtypes = type._child || [];
           page = 1;
-          this.goodslist = [];
-          loadGoods()
+          this.bidlist = [];
+          loadbid()
         },
-        selectSubCate: function (subCate) {
-          this.selectedCateId = subCate.id;
+        selectSubtype: function (subtype) {
+          this.selectedtypeId = subtype.id;
           page = 1;
-          this.goodslist = [];
-          loadGoods()
+          this.bidlist = [];
+          loadbid()
         }
       },
       mounted: function () {
         var that = this;
         // 加载分类
-        httpRequest('POST', 'api_goods/goods_cates/lists_tree').then(function (resp) {
+        httpRequest('POST', 'api_bids/bid_types/lists').then(function (resp) {
           resp.data.forEach(function (item) {
-            that.cates.push(item)
+            that.types.push(item)
           });
           setTimeout(function () {
             new horizontalMove({
@@ -166,10 +163,10 @@
         }, {}, false);
       },
     })
-    loadGoods = function () {
+    loadbid = function () {
       document.body.onscroll = null;
-      httpRequest('POST', 'api_goods/goods/lists', {
-        goods_cate_id: app.selectedCateId
+      httpRequest('POST', 'api_bids/bids/lists', {
+        type: app.selectedtypeName
       }, {
           'page-num': page,
           'page-limit': 10
@@ -177,7 +174,7 @@
           if (resp.data.length > 0) {
             app.haveNoData = false;
             resp.data.forEach(function (item) {
-              app.goodslist.push(item);
+              app.bidlist.push(item);
             })
             if (resp.data.length == 10) {
               page++;
@@ -192,7 +189,7 @@
           }
         });
     }
-    loadGoods();
+    loadbid();
   </script>
 </body>
 

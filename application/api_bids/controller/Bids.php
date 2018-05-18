@@ -190,8 +190,116 @@ class Bids extends Rest
      */
     public function lists(Request $request)
     {
-        $map           = $request->param();
+        $map = $request->param();
+
+        if (isset($map['keyword'])) {
+            model('bid_keywords')->updateKeyword($map['keyword']);
+
+            if ($this->token != '') {
+                model('user_goods_keywords')->updateUserKeyword($this->token, $map['keyword']);
+            }
+        }
+
+        foreach ($map as $key => $value) {
+            if ($value) {
+                // 信息标题模糊查询
+                if ($key == 'keyword') {
+                    $map['title'] = ['like', '%' . $value . '%'];
+                    unset($map['keyword']);
+                }
+
+                if ($key == 'tag') {
+                    $map['tags'] = ['like', '%' . $value . '%'];
+                    unset($map['tag']);
+                }
+
+            } else {
+                unset($map[$key]);
+            }
+        }
+
         $map['status'] = 1;
+
+         // 处理类型查询
+        if (isset($map['type_id'])) {
+            if ($map['type_id']) {
+                if ($map['type_id'] != 'all') {
+                    if (isset($map['twotype_id'])) {
+                        if ($map['twotype_id']) {
+                            $map['type_tags'] = ['like', '%' . $map['twotype_name'] . '%'];
+                        }
+                    } else {
+                        $map['type'] = ['like', '%' . $map['type_name'] . '%'];
+                    }
+                }
+            }
+        }
+        if (isset($map['type_id'])) {
+            unset($map['type_id']);
+        }
+        if (isset($map['type_name'])) {
+            unset($map['type_name']);
+        }
+        if (isset($map['twotype_id'])) {
+            unset($map['twotype_id']);
+        }
+        if (isset($map['twotype_name'])) {
+            unset($map['twotype_name']);
+        }
+
+        // 处理地区查询
+        if (isset($map['area_id'])) {
+            if ($map['area_id']) {
+                if ($map['area_id'] != 'all') {
+                    if (isset($map['twoarea_id'])) {
+                        if ($map['twoarea_id']) {
+                            $map['area_tags'] = ['like', '%' . $map['twoarea_name'] . '%'];
+                        }
+                    } else {
+                        $map['area'] = ['like', '%' . $map['area_name'] . '%'];
+                    }
+                }
+            }
+        }
+        if (isset($map['area_id'])) {
+            unset($map['area_id']);
+        }
+        if (isset($map['area_name'])) {
+            unset($map['area_name']);
+        }
+        if (isset($map['twoarea_id'])) {
+            unset($map['twoarea_id']);
+        }
+        if (isset($map['twoarea_name'])) {
+            unset($map['twoarea_name']);
+        }
+
+        // 处理行业查询
+        if (isset($map['trade_id'])) {
+            if ($map['trade_id']) {
+                if ($map['trade_id'] != 'all') {
+                    if (isset($map['twotrade_id'])) {
+                        if ($map['twotrade_id']) {
+                            $map['trade_tags'] = ['like', '%' . $map['twotrade_name'] . '%'];
+                        }
+                    } else {
+                        $map['trade'] = ['like', '%' . $map['trade_name'] . '%'];
+                    }
+                }
+            }
+        }
+        if (isset($map['trade_id'])) {
+            unset($map['trade_id']);
+        }
+        if (isset($map['trade_name'])) {
+            unset($map['trade_name']);
+        }
+        if (isset($map['twotrade_id'])) {
+            unset($map['twotrade_id']);
+        }
+        if (isset($map['twotrade_name'])) {
+            unset($map['twotrade_name']);
+        }
 
         $count = model('bids')->getAllCount($map);
         $lists = model('bids')->getAll($map, $this->page_num, $this->page_limit);

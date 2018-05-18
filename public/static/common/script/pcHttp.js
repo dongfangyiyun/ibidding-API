@@ -68,7 +68,22 @@ var httpCodeMapping = {
     reLogin: 0,
     info: '当前系统临时维护，暂时关闭中'
   },
-
+  400100: {
+    reLogin: 0,
+    info: '非法操作'
+  },
+  400101: {
+    reLogin: 0,
+    info: '限管理员调用'
+  },
+  400102: {
+    reLogin: 0,
+    info: '限用户调用'
+  },
+  400103: {
+    reLogin: 0,
+    info: '限dev环境调用'
+  },
 }
 
 /**

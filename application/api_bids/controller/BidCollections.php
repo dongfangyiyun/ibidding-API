@@ -113,7 +113,7 @@ class BidCollections extends Rest
         if ($validate->scene('batch_create')->check($data)) {
             $result = model('bid_collections')->batchAddByBidIds($data);
             if ($result['code']) {
-                $this->data['msg']  = '商品收藏成功';
+                $this->data['msg']  = '信息收藏成功';
                 $this->data['data'] = $result['data'];
             } else {
                 $this->data['code'] = 0;
@@ -135,7 +135,7 @@ class BidCollections extends Rest
         $id     = input('id/d', 0);
         $result = model('bid_collections')->delOneTrue($id);
         if ($result['code']) {
-            $this->data['msg'] = '删除商品收藏成功';
+            $this->data['msg'] = '删除收藏成功';
         } else {
             $this->data['code'] = 0;
             $this->data['msg']  = $result['msg'];
@@ -153,7 +153,7 @@ class BidCollections extends Rest
 
         $result = model('bid_collections')->delAllTrue($ids);
         if ($result['code']) {
-            $this->data['msg'] = '批量删除商品收藏成功';
+            $this->data['msg'] = '批量删除收藏成功';
         } else {
             $this->data['code'] = 0;
             $this->data['msg']  = $result['msg'];

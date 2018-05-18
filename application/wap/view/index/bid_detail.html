@@ -1,0 +1,110 @@
+{include file="index/top" /}
+</head>
+
+<body>
+
+  <div id="app">
+    <header class="aui-bar aui-bar-nav aui-bar-light" id="header" style="background-image:none;">
+      <a class="aui-pull-left aui-btn" onclick="javascript:window.history.back(); return false;">
+        <span class="aui-iconfont aui-icon-left"></span>
+      </a>
+      <div class="aui-title" v-text="title"></div>
+    </header>
+
+    <div class="aui-content aui-margin-b-15">
+      <ul class="aui-list aui-form-list">
+        <li class="aui-list-item">
+          <div class="aui-list-item-inner">
+            <div class="aui-list-item-label">
+              信息标题
+            </div>
+            <div class="aui-list-item-input">
+              <textarea v-model="bid.title" readonly></textarea>
+            </div>
+          </div>
+        </li>
+        <li class="aui-list-item">
+          <div class="aui-list-item-inner">
+            <div class="aui-list-item-label">
+              信息类型
+            </div>
+            <div class="aui-list-item-input">
+              <input style="color: #f00;" type="text" v-model="bid.type" readonly>
+            </div>
+          </div>
+        </li>
+        <li class="aui-list-item">
+          <div class="aui-list-item-inner">
+            <div class="aui-list-item-label">
+              采购人
+            </div>
+            <div class="aui-list-item-input">
+              <textarea v-model="bid.purchaser" readonly></textarea>
+            </div>
+          </div>
+        </li>
+        <li class="aui-list-item">
+          <div class="aui-list-item-inner">
+            <div class="aui-list-item-label">
+              信息地区
+            </div>
+            <div class="aui-list-item-input">
+              <input type="text" v-model="bid.area" readonly>
+            </div>
+          </div>
+        </li>
+        <li class="aui-list-item">
+          <div class="aui-list-item-inner">
+            <div class="aui-list-item-label">
+              发布时间
+            </div>
+            <div class="aui-list-item-input">
+              <input type="text" v-model="bid.issue_time" readonly>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+    <footer class="aui-bar aui-bar-tab">
+      <div v-if="bid.url" class="aui-bar-tab-item aui-padded-l-15 aui-padded-r-15" @click="visit_detail()">
+        <div class="aui-btn aui-btn-block aui-btn-sm aui-btn-info">访问详细信息</div>
+      </div>
+    </footer>
+  </div>
+  <script type="text/javascript">
+    var app = new Vue({
+      el: '#app',
+      data: {
+        title: '信息详情',
+        bidId: querystring.bidId,
+        bid: {
+          title: '',
+          type: '',
+          area: '',
+          issue_time: '',
+          purchaser:'',
+          url: '',
+        }
+      },
+      methods: {
+        visit_detail:function(){
+          location = app.bid.url;
+        }
+      },
+      computed: {
+
+      },
+      filters: {
+
+      },
+      mounted: function () {
+        httpRequest('POST', 'api_bids/bids/read', {id: querystring.bidId})
+          .then(function (resp) {
+            app.bid = resp.data;
+          })
+      }
+    })
+  </script>
+</body>
+
+</html>

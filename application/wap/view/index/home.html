@@ -155,6 +155,11 @@
         }
       },
       mounted: function () {
+        httpRequest('POST', 'api_query/users/asset')
+          .then(function (resp) {
+            app.level = resp.data.level;
+            app.score = resp.data.score;
+          })
       }
     })
   </script>

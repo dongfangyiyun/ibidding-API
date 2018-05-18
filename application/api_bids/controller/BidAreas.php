@@ -10,8 +10,8 @@ class BidAreas extends Rest
     protected $beforeActionList = [
         'checkClientType',
         'checkAuth',
-        'checkToken' => ['except' => 'read,lists'],
-        'checkAdmin' => ['except' => 'read,lists'],
+        'checkToken' => ['except' => 'read,lists,lists_tree'],
+        'checkAdmin' => ['except' => 'read,lists,lists_tree'],
     ];
 
     /**
@@ -208,6 +208,17 @@ class BidAreas extends Rest
         ];
 
         $this->data['data'] = $lists;
+
+        return $this->data;
+    }
+
+    /**
+     * 【admin】查询全部招投标地区类别列表
+     */
+    public function lists_tree(Request $request)
+    {
+        $data               = model('bid_areas')->getAllTree(['status' => 1]);
+        $this->data['data'] = list_to_tree($data);
 
         return $this->data;
     }

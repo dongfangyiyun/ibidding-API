@@ -64,6 +64,10 @@ class Index extends Controller
     public function search_list(){
         return view();
     }
+    //最新信息列表
+    public function new_list(){
+        return view();
+    }
     //无订单
     public function no_order(){
         return view();

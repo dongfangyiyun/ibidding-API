@@ -62,7 +62,9 @@ var allRouters = {
   "article_detail": 0, //文章详情
   "search_page": 0,  //搜索页
   "my_coupon_list":1, //w我的优惠券
-  "bid_collections":1
+  "bid_collections":1,
+  "bid_detail":0,
+  "new_list":0,
 };
 
 /**
