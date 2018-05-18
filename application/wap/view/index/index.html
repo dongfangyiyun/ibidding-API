@@ -105,7 +105,7 @@
       <div class="aui-searchbar" id="search" style="background-color:rgba(0,0,0,0)" onclick="goto('search_page')">
         <div class="aui-searchbar-input aui-border-radius" id="search-header">
           <i class="aui-iconfont aui-icon-search" style="color: #fff!important;"></i>
-          <input type="search" placeholder="搜索商品" id="search-input" style="color: #fff!important;" readonly>
+          <input type="search" placeholder="搜索信息" id="search-input" style="color: #fff!important;" readonly>
           <div class="aui-searchbar-clear-btn" style="background:none;">
             <i class="aui-iconfont aui-icon-close"></i>
           </div>
@@ -124,121 +124,11 @@
           </a>
         </div>
       </div>
-      <!-- 标签 -->
-      <section class="aui-grid aui-padded-t-15 aui-padded-b-15">
-        <div class="aui-row aui-margin-l-5 aui-margin-r-5">
-          <div class="aui-col-xs-2" v-for="(tag,tagKey) in tags" :key="tagKey" @click="goGoodsList(tag)">
-            <img :src="tag.img" class="aui-padded-10">
-            <div class="aui-grid-label" v-text="tag.name"></div>
-          </div>
-        </div>
-      </section>
-      <!-- 公告 -->
-      <div class="aui-padded-10 aui-bg-white" v-if="annoncements.length != 0">
-        <div class="aui-list aui-media-list  aui-bg-default" style="background-image:none;border-radius: .2rem">
-          <div class="aui-media-list-item-inner">
-            <div class="aui-list-item-media aui-text-center" style="width:25%;padding-right: 0.5rem;">
-              <img src="__static__/wap/images/wangkaikuaibao.png" style="width:60%;margin:0 auto;">
-            </div>
-            <div class="aui-list-item-inner" style="width:75%;">
-              <div class="aui-list-item-text-right" v-for="(annoncement,annoncementKey) in annoncements" :key="annoncementKey" @click="goAnnoncements(annoncement)"
-                v-if="annoncementKey < 2">
-                <div class="aui-list-item-text" style="line-height:1.3rem;">
-                  <div class="dot"></div>
-                  <div class="aui-ellipsis-1" style="width:95%;" v-text="annoncement.title"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <!-- 限时折扣 -->
-      <div class="xianshizhekou" v-if="discountActivity.id">
-        <ul class="aui-list aui-list-in" onclick="goto('discount_page', {activityId: app.discountActivity.id})" style="background-image: none;">
-          <li class="aui-list-item" style="background-image: none;">
-            <div class="aui-list-item-inner aui-list-item-arrow">
-              <div class="aui-list-item-title aui-font-size-14">
-                <i class="iconfont icon-shizhong_l" style="color: #ff0000;"></i>
-                <span class="aui-font-size-16" style="color: #ff0000;">限时折扣</span>
-                <span v-text="discountActivity.name"></span>
-                <span style="color: #a3a3a3;font-size: .4rem;">{{discountActivity.deadline | timeFilter}}</span>
-              </div>
-            </div>
-          </li>
-        </ul>
-        <!-- 折扣轮播商品 -->
-        <div class="owl-carousel owl-theme aui-bg-white" id="xianshizhekou">
-          <div class="item " v-for="(rule, key) in discountActivity.rule_info " :key="key " style="padding: 4px; ">
-            <a :href="rule.href">
-              <img :src="rule.goods_info.thum" />
-              <div class="aui-font-size-12 aui-text-price aui-text-center aui-padded-t-5">
-                <span class="aui-font-size-10" style="font-size:0.5rem; ">￥</span>
-                <span v-text="rule.discount_price"></span>
-              </div>
-              <div class="aui-font-size-12 aui-text-center aui-text-pray" style="text-decoration: line-through;">
-                <span style="font-size:0.5rem;">￥</span>
-                <span v-text="rule.goods_info.sell_price"></span>
-              </div>
-            </a>
-          </div>
-        </div>
-        <!-- 优惠券和满减 -->
-        <div class="aui-bg-white aui-row aui-padded-b-10">
-          <div class="aui-col-xs-6 aui-padded-l-10 aui-padded-r-10 aui-border" style="display: flex;align-items: center;" onclick="goto('coupon')">
-            <span style="color: #f3503d;width: 50%;">优惠券</span>
-            <img src="__static__/wap/images/index_coupon.png" style="display: inline-block;width: 50%;height: 4rem;padding: 5px;">
-          </div>
-          <div class="aui-col-xs-6 aui-padded-l-10 aui-padded-r-10 aui-border" style="display: flex;align-items: center;" onclick="goto('goods_list')">
-            <span style="color: #ff9e4f;width: 50%;">满减促销</span>
-            <img src="__static__/wap/images/index_full.png" style="display: inline-block;width: 50%;height: 4rem;padding: 5px;">
-          </div>
-        </div>
-      </div>
-      <!-- 广告 -->
-      <div class="aui-bg-white aui-row">
-        <img :src="ad.img" v-for="(ad, adKey) in advertisements" :key="adKey" v-if="ad.position == 1" @click="goModel(ad)">
-        <img class="aui-col-xs-6" :src="ad.img" v-for="(ad, adKey) in advertisements" :key="adKey" v-if="ad.position == 2" @click="goModel(ad)">
-      </div>
-      <!-- 轮播商品 -->
-      <div class="aui-bg-white ">
-        <div v-for="(bannerGoods, bannerGoodsKey) in bannerGoodsList " :key="bannerGoodsKey ">
-          <a :href="bannerGoods.ad_href">
-            <img :src="bannerGoods.ad_img " style="width:100%; ">
-          </a>
-          <div class="aui-padded-t-15 aui-padded-b-15 ">
-            <div class="owl-carousel owl-theme " :id=" 'owl-carousel-goods' + bannerGoods.id ">
-              <div class="item " v-for="(goods,key) in bannerGoods.goods_info " :key="key " style="padding: 4px; ">
-                <a :href="goods.href ">
-                  <img :src="goods.thum " />
-                  <div class="aui-font-size-10 aui-text-default aui-ellipsis-2 " v-text="goods.name "></div>
-                  <div class="aui-font-size-12 aui-text-price ">
-                    <span style="font-size:0.5rem;">￥</span>
-                    <span v-text="goods.sell_price"></span>
-                  </div>
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+    </div>
 
-      <!-- 商品列表 -->
-      <div class="aui-flex-col aui-flex-center ">
-        <div class="aui-flex-item-12 ">
-          <div class="aui-flex-col ">
-            <div class="aui-flex-item-6 " style="position: relative;padding:3px;" @click="goGoodsDetail(goods.id)
-                " v-for="(goods,goodsKey) in goodslist" :key="goodsKey ">
-              <img :src="goods.thum ">
-              <h5 class="aui-text-default aui-ellipsis-2 aui-font-size-12 aui-padded-t-5 aui-padded-l-5 aui-padded-r-5
-                aui-bg-white " v-text="goods.name"></h5>
-              <p class="aui-padded-b-5 aui-padded-t-5 aui-padded-l-10 aui-padded-r-10 aui-bg-white ">
-                <span class="aui-text-price aui-font-size-10">￥</span>
-                <span class="aui-text-price " v-text="goods.sell_price "></span>
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div style="margin: 0 auto;text-align: center;">
+      <h1>iBidding</h1>
+      <div>基于Internet的招投标信息智能推送系统</div>
     </div>
 
     {include file="/index/footer" /}
@@ -364,88 +254,9 @@
             carouselInit('#owl-carousel1', 1)
           }, 50);
         })
-        // 加载公告
-        httpRequest('POST', 'api_articles/annoncements/lists', {
-          type: 'wap首页公告'
-        }, {}, false).then(function (resp) {
-          that.annoncements = resp.data;
-        })
-        // 加载限时折扣
-        httpRequest('POST', 'api_query/market/activity', {}, {}, false).then(function (resp) {
-          if (resp.data.discount) {
-            // 计算截至时间
-            resp.data.discount[0].deadline = resp.data.discount[0].end_timestamp * 1000 - Date.now();
-            // 限时折扣跳转
-            resp.data.discount[0].rule_info.forEach(function (item) {
-              item.href = location.origin + '/wap/index/goods_detail?isDiscountGoods=1&goodsId=' + item.goods_id
-            })
-            that.discountActivity = resp.data.discount[0];
-            // 限时折扣轮播初始
-            setTimeout(() => {
-              carouselInit('#xianshizhekou', 3)
-            }, 50);
-            // 倒计时
-            setInterval(function () {
-              that.discountActivity.deadline -= 1000;
-            }, 1000)
-          }
-        }).catch(function (e) {
-          console.log(e)
-        });
-        // 加载首页广告
-        httpRequest('POST', 'api_articles/advertisements/lists', {
-          type: 'wap首页广告'
-        }, {}, false).then(function (resp) {
-          app.advertisements = resp.data;
-        });
-        // 加载轮播商品
-        httpRequest('POST', 'api_query/configs/wap_index').then(function (resp) {
-          app.bannerGoodsList = resp.data;
-          setTimeout(() => {
-            resp.data.forEach(function (item) {
-              (item.goods_info || []).forEach(function (g) {
-                g.href = location.origin + '/index.php/wap/index/goods_detail?goodsId=' + g.id
-              })
-              carouselInit('#owl-carousel-goods' + item.id, (item.goods_info.length < 4) ? item.goods_info.length : 4);
-            })
-          }, 50);
-          if (resp.logodata.length == 0) {
-            app.logo = '__static__/wap/images/index_logo.png';
-          } else {
-            app.logo = resp.logodata[0].logo;
-          }
-        })
       }
     });
     var page = 1;
-    loadGoods = function () {
-      document.body.onscroll = null;
-      httpRequest('POST', 'api_goods/goods/lists', {
-        goods_cate_id: ''
-      }, {
-          'page-num': page,
-          'page-limit': 10
-        }).then(function (resp) {
-          if (resp.data.length > 0) {
-            app.haveNoData = false;
-            resp.data.forEach(function (item) {
-              app.goodslist.push(item);
-            })
-            if (resp.data.length == 10) {
-              page++;
-              document.body.onscroll = scrollEvent;
-            } else {
-              document.body.onscroll = null;
-            }
-          } else {
-            if (page == 1) {
-              app.haveNoData = true;
-            }
-          }
-        });
-    }
-    loadGoods();
-
   </script>
 </body>
 

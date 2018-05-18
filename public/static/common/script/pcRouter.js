@@ -68,7 +68,8 @@ var allRouters = {
   "search_list": 0,//搜索
   "third_login": 0,//第三方绑定调整页面
   "bind_mobile": 0,//第三方绑定手机页面
-  "article": 0
+  "article": 0,
+  "bid_collections":1
 };
 
 /**

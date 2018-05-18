@@ -11,7 +11,8 @@
       <div class="aui-title" v-text="title" style="color:#333!important;"></div>
     </header>
     <div class="aui-content aui-text-center">
-      <img :src="login_logo" style="width:65%;margin:2.5rem auto 0 auto;margin-bottom: 2rem;">
+      <!-- <img :src="login_logo" style="width:65%;margin:2.5rem auto 0 auto;margin-bottom: 2rem;"> -->
+      <h1 style="color: #1E90FF;margin: 20px;">iBidding</h1>
       <div class="area">
         <div class="tips aui-text-left" v-if="openid">请注册绑定手机号,下次可直接用第三方账号登录</div>
         <!-- <div class="mix">
@@ -37,6 +38,12 @@
           <i class="aui-iconfont aui-icon-lock"></i>
           <input type="password" class="input" placeholder="确认密码" v-model="repassword">
         </div>
+        <h4 style="width:100%;text-align:center;" class="aui-padded-t-10 aui-padded-b-10 aui-text-default">
+          <i class="aui-iconfont iconfont icon-roundcheckfill" style="color: #ccc" v-show="!isAgree" @click="isAgree = !isAgree"></i>
+          <i class="aui-iconfont iconfont icon-roundcheckfill aui-text-info" v-show="isAgree" @click="isAgree = !isAgree"></i>
+          我同意
+          <span @click="goRule(1)" class="aui-font-weight">《iBidding 注册协议》</span>
+        </h4>
         <!-- <div class="other" style="width:100%;" onclick="goto('login')">
                     <p style="float:left;">已有账号?马上登录</p>
                 </div> -->
@@ -44,13 +51,7 @@
       </div>
 
     </div>
-    <h4 style="width:100%;text-align:center;" class="aui-padded-t-10 aui-padded-b-10 aui-text-default">
-      <i class="aui-iconfont iconfont icon-roundcheckfill" style="color: #ccc" v-show="!isAgree" @click="isAgree = !isAgree"></i>
-      <i class="aui-iconfont iconfont icon-roundcheckfill aui-text-info" v-show="isAgree" @click="isAgree = !isAgree"></i>
-      我同意
-      <span @click="goRule(1)" class="aui-font-weight" style="text-decoration: underline">《服务条款》</span>和
-      <span @click="goRule(2)" class="aui-font-weight" style="text-decoration: underline">《隐私政策》</span>
-    </h4>
+    
 
 
   </div>
@@ -94,7 +95,7 @@
             return;
           }
           if (!this.isAgree) {
-            layer.msg('请勾选我同意');
+            layer.msg('请勾选同意《iBidding 注册协议》');
             return;
           }
           var data = {

@@ -11,7 +11,8 @@
       <div class="aui-title" v-text="title" style="color:#333!important;"></div>
     </header>
     <div class="area aui-text-center">
-      <img :src="login_logo" style="width:65%;margin:2.5rem auto 0 auto;margin-bottom: 2rem;">
+      <!-- <img :src="login_logo" style="width:65%;margin:2.5rem auto 0 auto;margin-bottom: 2rem;"> -->
+      <h1 style="color: #1E90FF;margin: 20px;">iBidding</h1>
       <div class="mix">
         <i class="aui-iconfont aui-icon-mobile"></i>
         <input id="mobile" type="text" class="input" v-model="mobile" pattern="[0-9]*" onkeyup="value=value.replace(/[^\d]/g,'')"
@@ -26,13 +27,13 @@
         <p style="float:left;" onclick="goto('reset_password', {type: 1})">忘记密码?</p>
         <p style="float:right;" onclick="goto('register')">没有账号?立即注册</p>
       </div>
-      <div class="third">第三方登录</div>
+     <!--  <div class="third">第三方登录</div>
       <div class="icon">
         <svg style="width: 1.5rem;height: 1.5rem;" aria-hidden="true" @click="qqLogin();">
           <use xlink:href="#icon-social-qq"></use>
         </svg>
         <i class="iconfont icon-gongzhonghao" v-if="atWechatEnvironment" @click="wechatLogin();" style="color: #09bb07;font-size: 1.5rem;"></i>
-      </div>
+      </div> -->
     </div>
   </div>
   <script>

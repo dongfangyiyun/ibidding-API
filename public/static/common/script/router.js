@@ -61,7 +61,8 @@ var allRouters = {
   "article_list": 0,   //文章列表
   "article_detail": 0, //文章详情
   "search_page": 0,  //搜索页
-  "my_coupon_list":1 //w我的优惠券
+  "my_coupon_list":1, //w我的优惠券
+  "bid_collections":1
 };
 
 /**
