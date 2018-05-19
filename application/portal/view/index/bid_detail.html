@@ -201,10 +201,6 @@
 	.current {
 		background: #108ee9!important;
 	}
-
-	.nav-2{
-	    background-color: #43a7ef;
-	}
 </style>
 
 </head>
@@ -214,17 +210,32 @@
 
 	<div class="w1200" id="app">
 		<div class="search-list-cont2 padding-top-15">
-			<div v-if="haveNoData" class="search-none-cont1">
-				<div class="content">
-					<img class="img-logo" src="__static__/portal/images/search-logo.png">
-					<p class="title">暂无数据~</p>
-				</div>
-			</div>
-			<div v-else class="search-list">
+			<div class="search-list">
 				<ul>
-					<li class="pointer" v-for="(bid,bidKey) in bidlist" :key="bidKey" @click="gobid(bid.id)" >
-						<div class="cont2-bottom">
-							<a class="title font-size-14 margin-btn-15" v-text="(page_num-1)*page_limit+bidKey+1+'. '+bid.title"></a>
+					<li class="pointer">
+						<div class="cont2-bottom" style="margin: 0 auto;text-align: center;">
+							<h5>信息详情</h5>
+							<div style="width: 50%;height: auto;text-align: left;margin: 0 auto;color: #000;">
+								<div style="margin: 30px;">
+									<b>信息标题：</b><span v-text="bid.title"></span>
+								</div>
+								<div style="margin: 30px;">
+									<b>信息类型：</b><span style="color: #f00" v-text="'【'+bid.type+'】'"></span>
+								</div>
+								<div style="margin: 30px;">
+									<b>采购人：</b><span v-text="bid.purchaser"></span>
+								</div>
+								<div style="margin: 30px;">
+									<b>信息地区：</b><span v-text="bid.area"></span>
+								</div>
+								<div style="margin: 30px;">
+									<b>发布时间：</b><span v-text="bid.issue_time"></span>
+								</div>
+								<div style="margin: 30px;">
+									<b>查看源信息：</b><a :href="bid.url">点击访问>></a>
+								</div>
+							</div>
+							<!-- <a class="title font-size-14 margin-btn-15" v-text="(page_num-1)*page_limit+bidKey+1+'. '+bid.title"></a>
 							<div class="clearfix">
 								<p class="price" v-text="'【'+bid.type+'】'"></p>
 								<p class="mun font-size-12">发布时间：{{bid.issue_time}}</p>
@@ -232,27 +243,12 @@
 							<span v-for="(tag,tagKey) in bid.tags" :key="tagKey">
 								<span style="margin-right: 10px;" v-if="tagKey == 0" v-text="'信息标签：['+tag+']'"></span>
 								<span style="margin-right: 10px;" v-else v-text="'['+tag+']'"></span>
-							</span>
+							</span> -->
 						</div>
 					</li>
 				</ul>
 				<div class="fen-page">
-					<a v-if="page_num != 1" @click="goPage(1)">
-						<span>首页</span>
-					</a>
-					<a style="cursor:default" v-for="n in totalpage" v-if="n>(page_num-4) && n<(page_num+4)"  @click="goPage(n)">
-						<span v-if="totalpage <= 9">
-							<span class="current" v-if="page_num == n">{{ n }}</span>
-							<span v-else>{{ n }}</span>
-						</span>
-						<span v-else>
-							<span class="current" v-if="page_num == n">{{ n }}</span>
-							<span v-else>{{ n }}</span>
-						</span>
-					</a>
-					<a v-if="page_num != totalpage" @click="goPage(totalpage)">
-						<span>尾页</span>
-					</a>
+					点击收藏
 				</div>
 			</div>
 		</div>
@@ -267,93 +263,21 @@
 				window.location = '/portal/index/search_list?keyword=' + keysear;
 			});
 		});
-		var page = 1;
-		var typestr = '';
 		var app = new Vue({
 			el: '#app',
 			data: {
-				bidlist: [],
-				types: [],
-				twotypes: [],
-				areas: [],
-				twoareas: [],
-				totalpage: 1,
-				page_num: 1,
-				page_limit: 10,
-				haveNoData: false,
-				selectedtypeId: '',
-				annoncements:[],
+				bid: [],
 			},
 			methods: {
-				selectTwotype: function (type) {
-					app.selectedtypeId = type.id
-					app.bidlist = [];
-					loadbid();
-				},
-				gobid: function (bidId) {
-					goto('bid_detail', { bidId: bidId });
-				},
-				goPage: function (pagenum) {
-					app.page_num = pagenum
-					page = pagenum;
-					app.bidlist = [];
-					loadbid();
-				},
-				selecttype: function (type) {
-					app.twotypes = type._child;
-					app.selectedtypeId = type.id;
-					app.bidlist = [];
-					loadbid();
-				},
-				addcondition: function (type) {
-					typestr = type;
-					app.bidlist = [];
-					loadbid();
-				},
+				
 			},
 			mounted: function () {
-				// // 加载类型标签
-				// httpRequest('POST', 'api_bids/bid_types/lists',{},function (resp) {
-				// 	app.types = resp.data;
-				// })
-				// // 加载地区标签
-				// httpRequest('POST', 'api_bids/bid_areas/lists',{},function (resp) {
-				// 	app.areas = resp.data;
-				// })
+				// 加载当前标签
+				httpRequest('POST', 'api_bids/bids/read',{id:querystring.bidId},function (resp) {
+					app.bid = resp.data;
+				})
 			},
 		})
-		loadbid = function () {
-			var data = {};
-			//此处再添加addcondition的参数
-
-			if (querystring.typeName) {
-				data.bid_type = querystring.typeName;
-			} else if (querystring.keyword) {
-				data.keyword = decodeURIComponent(querystring.keyword)
-			} else if (querystring.tag) {
-				data.tag = decodeURIComponent(querystring.tag);
-			}
-			if (app.selectedtypeId) {
-				data.keyword = '';
-				data.bid_type_name = app.selectedtypeName
-			}
-			httpRequest('POST', 'api_bids/bids/lists', data,function (resp) {
-				if (resp.data.length > 0) {
-					app.totalpage = Math.ceil(resp.page.data_count / resp.page.page_limit);
-					app.haveNoData = false;
-					// app.page_num = resp.page.page_num;
-					resp.data.forEach(function (item) {
-						app.bidlist.push(item);
-					})
-				} else { //window.location.href='/portal/index/search_none';
-					app.haveNoData = true;
-				}
-			},{
-				'page-num': page,
-				'page-limit': 10
-			},)
-		}
-		loadbid();
 	</script>
 </body>
 

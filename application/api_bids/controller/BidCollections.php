@@ -197,7 +197,7 @@ class BidCollections extends Rest
 
             $result = model('bid_collections')->delOneTrue($bid_collection['id']);
             if ($result['code']) {
-                $this->data['msg']  = '取消商品收藏成功';
+                $this->data['msg']  = '删除收藏成功';
                 $this->data['data'] = $result['data'];
             } else {
                 $this->data['code'] = 0;

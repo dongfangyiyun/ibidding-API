@@ -66,12 +66,12 @@
         margin: 13px
     }
     .collection_null_img{
-        margin-top:200px; 
+        margin-top:100px; 
     }
     .collection_null_text{
         width: 100%;
         position: absolute;
-         top: 252px;
+         top: 152px;
          color: #666;
     }
     .collection_null_box{
@@ -81,6 +81,10 @@
 
 .collection-active{background: #03a9f4 !important;color: #fff!important;}
 .collection-page:hover{background: #03a9f4 !important;color: #fff!important}
+
+.current {
+        background: #108ee9!important;
+    }
 </style>
 </head>
 
@@ -163,45 +167,30 @@
                     我的收藏
                 </div>
                 <div v-if="haveNoData" class="over margin-btn-15">
-                        <div class="center relative margin-btn-15">
-                                <div class="collection_null_text">空空如也~</div>
-                                <img  src="__static__/portal/img/404.png" alt="" class="responsive-img collection_null_img"><br>
-                                <div class="setting-go-btn white-text blue inline-black margin-15 collection_null_box bt" @click="goto('index')">去逛逛</div>
-                         </div>
+                    <div class="center relative margin-btn-10">
+                            <div class="collection_null_text">暂无数据</div>
+                            <img  src="__static__/portal/img/404.png" alt="" class="responsive-img collection_null_img"><br>
+                     </div>
                 </div>
                 <div v-else class="over">
-                    <div class=" relative left collection-list border-grey collection-list" v-for="collection in collections">
-                        <div class="collection-twobtn font-size-12">
-                            <div class="left grey-text text-lighten-4 pointer grey " @click="changeCollect(collection.id)">取消收藏</div>
-                            <div class="right white-text red pointer" @click="goto('goods_detail',{goodsId:collection.goods_id})">查看详情</div>
-                        </div>
-                        <div class="collection-ifbtn" v-if="cancal == collection.id">
-                            <div class="collection-greyback"></div>
-                            <div class="over collection-ond">
-                                <div class="white-text">主人要抛弃我了么~</div>
-                                <div class="left white-text red  collection-true pointer" @click="cancalCollection(collection)">确定</div>
-                                <div class="right white grey-text text-darken-2 collection-false pointer" @click="changeCollect(0)">取消</div>
-                            </div>
-                        </div>
-                        <div class="raletive collection-list-img">
-                            <img :src="collection.goods_info.thum" class="responsive-img">
-                        </div>
+                    <div class="relative border-grey" v-for="(collection,key) in collections" :key="key" style="margin-bottom: 10px;">
                         <div class="padding-10">
-                            <div class="font-size-14" v-text="collection.goods_info.name" style="height: 42px;"></div>
+                            <div class="font-size-14" v-text="(currentPage-1)*page_size+key+1+'. '+collection.bid_info.title" style="height: 42px;"></div>
                             <div class="red-text">
-                                <span class="" v-text="'￥'+collection.goods_info.sell_price"></span>
-                                <span class="font-size-10 grey-text line-th" v-text="'￥'+collection.goods_info.sell_price"></span>
+                                <span class="" v-text="'【'+collection.bid_info.type+'】'"></span>
+                                <span class="font-size-10 grey-text line-th" v-text="'收藏时间：'+collection.create_time"></span>
+                                <span style="float: right;cursor: pointer;" @click="cancalCollection(collection)" class="aui-iconfont iconfont icon-shanchu aui-pull-right"></span>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="fen-page" style="margin-top:24px;text-align:left;margin-left:23px;margin-bottom:12px;" v-if="page_count > page_size">
-                        <span v-for="(page,key) in pages" v-text="page" @click="getPage(page)"></span>
+                        <span v-for="(page,key) in pages" @click="getPage(page)">
+                            <span v-if="currentPage == page" class="current" v-text="page"></span>
+                            <span v-else v-text="page"></span>
+                        </span>
                     </div>
             </div>
-          <!--   <div class="margin-top-15">
-                <img src="__static__/portal/img/lien-img.png" alt="" class="responsive-img">
-            </div> -->
         </div>
     </div>
 </div>
@@ -241,8 +230,8 @@
                     this.cancal = status;
                 },
                 cancalCollection: function (collection){
-                    httpRequest('POST', 'api_goods/goods_collections/cancel',{
-                        goods_id:collection.goods_id
+                    httpRequest('POST', 'api_bids/bid_collections/cancel',{
+                        bid_id:collection.bid_id
                     },function (resp){
                         layer.msg(resp.msg)
                         setTimeout(function () {
@@ -264,8 +253,8 @@
                   this.loadTableData();
                 },
                 getPage: function (data) {
+                    this.currentPage = data;
                     app.pages = []
-                    this.activeclass = data
                     app.collections = []
                     loadOrders(data)
                 }
@@ -275,14 +264,13 @@
                             app.level = resp.data.level;
                             app.score = resp.data.score;
                         })
-                        httpRequest('POST', 'api_goods/goods_collections/lists',{},function (resp){
+                        httpRequest('POST', 'api_bids/bid_collections/lists',{},function (resp){
                             if (resp.data.length > 0) {
                                 var data_count = resp.page.data_count;
                                 app.haveNoData = false;
                                 app.page_count = data_count;
                                 app.page_size = resp.page.page_limit;
                                 pagesStatus(data_count);
-                                console.log(JSON.stringify(resp.data));
                                 resp.data.forEach(function (item) {
                                     app.collections.push(item);
                                 })
@@ -294,22 +282,16 @@
                                 'page-num':this.currentPage,
                                 'page-limit': this.currentPageSize
                             })
-                //猜你喜欢
-                httpRequest('POST','api_goods/goods/lists',{is_top:1},function(resp){
-                    app.guessGoods = resp.data;}
-                ,{'page-num':1,'page-limit':4})
             }
         })
         loadOrders = function(page){
-            httpRequest('POST', 'api_goods/goods_collections/lists',{},function (resp){
-                console.log(resp.data);
+            httpRequest('POST', 'api_bids/bid_collections/lists',{},function (resp){
                 if (resp.data.length > 0) {
                     var data_count = resp.page.data_count;
                     app.haveNoData = false;
                     app.page_count = data_count;
                     app.page_size = resp.page.page_limit;
                     pagesStatus(data_count);
-                    console.log(app.pages);
                     resp.data.forEach(function (item) {
                         app.collections.push(item);
                     })
@@ -323,14 +305,11 @@
                     app.haveNoData = true;
                 }
                 app.total = resp.page.data_count || 0;
-            //猜你喜欢
+                //猜你喜欢
                 },{
                 'page-num': page,
                 'page-limit': app.currentPageSize
             })
-                httpRequest('POST','api_goods/goods/lists',{is_top:1},function(resp){
-                    app.guessGoods = resp.data;
-                },{'page-num':1,'page-limit':4})
         }
         pagesStatus = function (data) {
             app.pages = []

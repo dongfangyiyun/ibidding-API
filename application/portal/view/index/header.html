@@ -121,6 +121,20 @@
 					goto('login')
 				}
 			},
+			gocart:function(){
+				if (user) {
+					goto('collection_list');
+				} else{
+					goto('login')
+				}
+			},
+			goorder:function(){
+				if (user) {
+					goto('collection_list');
+				} else{
+					goto('login')
+				}
+			},
 		},
 		mounted: function () {
 			var that = this;

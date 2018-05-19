@@ -20,7 +20,7 @@
 											<img :src="user.avatar" alt="">
 									</div>
 									<div class="left margin-top-15">
-											<div class="font-size-18 margin-top-15 white-text" v-text="user.mobile"></div>
+											<div class="font-size-18 margin-top-15 white-text" v-text="user.nick_name || user.mobile"></div>
 											<div class="blue lighten-1 margin-top-5" style="border-radius: 4px;padding: 2px 4px;">
 													<img src="__static__/portal/img/lr.png" alt="">
 													<span class="font-size-12 white-text" v-text="level"></span>

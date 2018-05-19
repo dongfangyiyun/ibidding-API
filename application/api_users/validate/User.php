@@ -18,6 +18,8 @@ class User extends Validate
         ['gender', 'in:0,1,2', '会员性别值非法'],
         ['status', 'in:1,9', '会员状态值非法'],
         ['role_ids', 'array|checkHasValue:role_ids', '角色IDs格式错误'],
+        ['receive_mobile', 'mobile', '接收推送信息手机号格式错误'],
+        ['receive_email', 'email', '接收推送信息邮箱格式错误'],
     ];
 
     protected $regex = [
@@ -26,8 +28,8 @@ class User extends Validate
     ];
 
     protected $scene = [
-        'create' => ['mobile', 'user_name', 'nick_name', 'telephone', 'qq', 'wechat', 'email', 'gender', 'status', 'role_ids', 'password'],
-        'update' => ['mobile', 'user_name', 'nick_name', 'telephone', 'qq', 'wechat', 'email', 'gender', 'status', 'role_ids', 'id'],
+        'create' => ['mobile', 'user_name', 'nick_name', 'telephone', 'qq', 'wechat', 'email', 'gender', 'status', 'role_ids', 'password', 'receive_mobile', 'receive_email'],
+        'update' => ['mobile', 'user_name', 'nick_name', 'telephone', 'qq', 'wechat', 'email', 'gender', 'status', 'role_ids', 'id', 'receive_mobile', 'receive_email'],
     ];
 
     protected function checkHasValue($value, $rule)

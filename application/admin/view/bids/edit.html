@@ -13,90 +13,102 @@
               <legend v-text="title"></legend>
             </fieldset>
             <el-row :gutter="20">
-              <el-col :span="16">
-                <el-card>
-                  <div slot="header">
-                    <span>信息内容</span>
-                  </div>
-                  <el-form :model="formData" ref="ruleForm" :rules="rules" label-position="left" label-width="120px">
-                    <el-form-item label="信息标题" prop="title">
-                      <el-input v-model="formData.title" clearable></el-input>
-                    </el-form-item>
-                    <el-form-item label="信息地区" prop="area">
-                      <el-input v-model="formData.area" clearable></el-input>
-                    </el-form-item>
-                    <el-form-item label="信息类别" prop="type">
-                      <el-input v-model="formData.type" clearable></el-input>
-                    </el-form-item>
-                    <el-form-item label="采购人" prop="purchaser">
-                      <el-input v-model="formData.purchaser" clearable></el-input>
-                    </el-form-item>
-                    <el-form-item label="信息外链" prop="url">
-                      <el-input v-model="formData.url" clearable type="textarea"></el-input>
-                    </el-form-item>
-                    <el-form-item label="信息标签" prop="tags">
-                      <el-input v-model="formData.tags" clearable type="textarea"></el-input>
-                    </el-form-item>
-                    <el-form-item label="信息发布时间" prop="issue_time">
-                      <el-input v-model="formData.issue_time" clearable></el-input>
-                    </el-form-item>
-                    <el-form-item label="信息采集来源" prop="source_url">
-                      <el-input v-model="formData.source_url" clearable type="textarea"></el-input>
-                    </el-form-item>
-                    <el-form-item label="状态" prop="status">
-                      <el-radio v-model="formData.status" :label="status[0]">上线</el-radio>
-                      <el-radio v-model="formData.status" :label="status[1]">下线</el-radio>
-                    </el-form-item>
-                    <el-form-item>
-                      <el-button type="primary" @click="submitForm('ruleForm')" icon="el-icon-check">提交</el-button>
-                      <el-button type="info" icon="el-icon-d-arrow-left" @click="returnIndex()" plain>返回</el-button>
-                    </el-form-item>
-                  </el-form>
-                </el-card>
-              </el-col>
-              <el-col :span="8">
-                <!-- 缩略图 -->
-                <!-- <el-card body-style="text-align: center;">
-                  <div slot="header">
-                    <span>缩略图</span>
-                  </div>
-                  <ul class="el-upload-list el-upload-list--picture-card" v-show="formData.thum">
-                    <li class="el-upload-list__item is-ready">
-                      <img :src="formData.thum" alt="" class="el-upload-list__item-thumbnail">
-                      <span class="el-upload-list__item-actions">
-                        <span class="el-upload-list__item-delete" @click="formData.thum = ''">
-                          <i class="el-icon-delete"></i>
-                        </span>
-                      </span>
-                    </li>
-                  </ul>
-                  <div class="el-upload el-upload--picture-card" @click="fileClick('imgAdd');">
-                    <i class="el-icon-plus"></i>
-                  </div>
-                </el-card> -->
-                <!-- 图集 -->
-                <!-- <el-card body-style="text-align: center;" style="margin-top: 20px;">
-                  <div slot="header">
-                    <span>图集</span>
-                    <el-button style="float: right; padding: 3px 0" type="text" @click="fileClick('imgsAdd');">增加图集图片</el-button>
-                  </div>
-                  <div v-for="(img, imgKey) in formData.imgs" :key="imgKey" style="margin-top:10px;">
-                    <ul class="el-upload-list el-upload-list--picture-card" v-show="img != ''">
+              <el-form :model="formData" ref="ruleForm" :rules="rules" label-position="left" label-width="120px">
+                <el-col :span="16">
+                  <el-card>
+                    <div slot="header">
+                      <span>信息内容</span>
+                    </div>
+                      <el-form-item label="信息标题" prop="title">
+                        <el-input v-model="formData.title" clearable></el-input>
+                      </el-form-item>
+                      <el-form-item label="信息地区" prop="area">
+                        <el-input v-model="formData.area" clearable></el-input>
+                      </el-form-item>
+                      <el-form-item label="信息类别" prop="type">
+                        <el-input v-model="formData.type" clearable></el-input>
+                      </el-form-item>
+                      <el-form-item label="采购人" prop="purchaser">
+                        <el-input v-model="formData.purchaser" clearable></el-input>
+                      </el-form-item>
+                      <el-form-item label="信息外链" prop="url">
+                        <el-input v-model="formData.url" clearable type="textarea"></el-input>
+                      </el-form-item>
+                      <el-form-item label="信息标签" prop="tags">
+                        <el-input v-model="formData.tags" clearable type="textarea"></el-input>
+                      </el-form-item>
+                      <el-form-item label="信息发布时间" prop="issue_time">
+                        <el-input v-model="formData.issue_time" clearable></el-input>
+                      </el-form-item>
+                      <el-form-item label="信息采集来源" prop="source_url">
+                        <el-input v-model="formData.source_url" clearable type="textarea"></el-input>
+                      </el-form-item>
+                      <el-form-item label="状态" prop="status">
+                        <el-radio v-model="formData.status" :label="status[0]">上线</el-radio>
+                        <el-radio v-model="formData.status" :label="status[1]">下线</el-radio>
+                      </el-form-item>
+                      <el-form-item>
+                        <el-button type="primary" @click="submitForm('ruleForm')" icon="el-icon-check">提交</el-button>
+                        <el-button type="info" icon="el-icon-d-arrow-left" @click="returnIndex()" plain>返回</el-button>
+                      </el-form-item>
+                  </el-card>
+                </el-col>
+                <el-col :span="8">
+                  <el-card>
+                    <div slot="header">
+                      <span>信息标签</span>
+                    </div>
+                    <el-tag style="margin: 5px;" :key="tag" v-for="tag in dynamicTags" closable :disable-transitions="false" @close="handleClose(tag)">
+                      {{tag}}
+                    </el-tag>
+                    <el-input class="input-new-tag" v-if="inputVisible" v-model="inputValue" ref="saveTagInput" size="small" @keyup.enter.native="handleInputConfirm"
+                      @blur="handleInputConfirm">
+                    </el-input>
+                    <el-button v-else class="button-new-tag" size="small" @click="showInput">增加标签</el-button>
+                  </el-card>
+                  <!-- 缩略图 -->
+                  <!-- <el-card body-style="text-align: center;">
+                    <div slot="header">
+                      <span>缩略图</span>
+                    </div>
+                    <ul class="el-upload-list el-upload-list--picture-card" v-show="formData.thum">
                       <li class="el-upload-list__item is-ready">
-                        <img :src="img" alt="" class="el-upload-list__item-thumbnail">
+                        <img :src="formData.thum" alt="" class="el-upload-list__item-thumbnail">
                         <span class="el-upload-list__item-actions">
-                          <span class="el-upload-list__item-edit" @click="fileClick('imgEdit', imgKey);">
-                            <i class="el-icon-edit"></i>
-                          </span>
-                          <span class="el-upload-list__item-delete" @click="formData.imgs.splice(imgKey, 1)">
+                          <span class="el-upload-list__item-delete" @click="formData.thum = ''">
                             <i class="el-icon-delete"></i>
                           </span>
                         </span>
                       </li>
                     </ul>
-                  </div>
-                </el-card> -->
-              </el-col>
+                    <div class="el-upload el-upload--picture-card" @click="fileClick('imgAdd');">
+                      <i class="el-icon-plus"></i>
+                    </div>
+                  </el-card> -->
+                  <!-- 图集 -->
+                  <!-- <el-card body-style="text-align: center;" style="margin-top: 20px;">
+                    <div slot="header">
+                      <span>图集</span>
+                      <el-button style="float: right; padding: 3px 0" type="text" @click="fileClick('imgsAdd');">增加图集图片</el-button>
+                    </div>
+                    <div v-for="(img, imgKey) in formData.imgs" :key="imgKey" style="margin-top:10px;">
+                      <ul class="el-upload-list el-upload-list--picture-card" v-show="img != ''">
+                        <li class="el-upload-list__item is-ready">
+                          <img :src="img" alt="" class="el-upload-list__item-thumbnail">
+                          <span class="el-upload-list__item-actions">
+                            <span class="el-upload-list__item-edit" @click="fileClick('imgEdit', imgKey);">
+                              <i class="el-icon-edit"></i>
+                            </span>
+                            <span class="el-upload-list__item-delete" @click="formData.imgs.splice(imgKey, 1)">
+                              <i class="el-icon-delete"></i>
+                            </span>
+                          </span>
+                        </li>
+                      </ul>
+                    </div>
+                  </el-card> -->
+                </el-col>
+              </el-form>
             </el-row>
             <input @change="fileChange($event)" type="file" id="imgAdd" style="display: none">
             <input @change="fileChange($event)" type="file" id="imgsAdd" style="display: none" multiple>
@@ -107,18 +119,7 @@
     </section>
   </section>
 
-  <!-- 百度编辑器 -->
-  <script type="text/javascript" src="__static__/ueditor/ueditor.config.js"></script>
-  <script type="text/javascript" src="__static__/ueditor/ueditor.all.min.js"></script>
-
   <script type="text/javascript">
-    var ue = UE.getEditor('container');
-    // 取消编辑器的默认宽度
-    ue.ready(() => {
-      document.getElementById('edui1').style.removeProperty('width')
-      document.getElementById('edui1_iframeholder').style.removeProperty('width')
-    });
-
     var app = new Vue({
       el: '#app',
       data: {
@@ -132,7 +133,7 @@
           tags: '',
           purchaser: '',
           source_url: '',
-          status: 1
+          status: 1,
         },
         status: [1, 2],
         rules: {
@@ -145,6 +146,10 @@
         currentUploadIndex: 0,
         // 信息分类
         types: [],
+        // 动态商品标签
+        dynamicTags: [],
+        inputVisible: false,
+        inputValue: '',
       },
       watch: {
         type_ids(value) {
@@ -152,13 +157,29 @@
         }
       },
       methods: {
+        handleClose(tag) {
+          this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1);
+        },
+        showInput() {
+          this.inputVisible = true;
+          this.$nextTick(function(){
+            this.$refs.saveTagInput.$refs.input.focus();
+          });
+        },
+        handleInputConfirm() {
+          let inputValue = this.inputValue;
+          if (inputValue) {
+            this.dynamicTags.push(inputValue);
+          }
+          this.inputVisible = false;
+          this.inputValue = '';
+        },
         submitForm(formName) {
           this.$refs[formName].validate((valid) => {
             if (valid) {
               // 通过校验
               var data = deepCopy(app.formData);
-              data.content = ue.getContent();
-              console.log(data)
+              data.tags = app.dynamicTags;
               let router = querystring.bidId ? 'api_bids/bids/update' : 'api_bids/bids/save'
               httpRequest('post', router, data).then((resp) => {
                 this.$message.success(resp.msg)
@@ -255,10 +276,7 @@
           httpRequest('POST', 'api_bids/bids/read', { id: querystring.bidId })
             .then((resp) => {
               this.formData = resp.data;
-              this.type_ids = packageCascaderSelecteData(this.types, this.formData.type_id);
-              ue.ready(() => {
-                ue.setContent(this.formData.content);
-              });
+              this.dynamicTags = resp.data.tags;
             })
         }
       }

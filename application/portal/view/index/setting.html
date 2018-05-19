@@ -21,7 +21,7 @@
                                 <img :src="user.avatar" alt="">
                             </div>
                             <div class="left margin-top-15">
-                                <div class="font-size-18 margin-top-15 white-text" v-text="user.mobile"></div>
+                                <div class="font-size-18 margin-top-15 white-text" v-text="user.nick_name || user.mobile"></div>
                                 <div class="blue lighten-1 margin-top-5" style="border-radius: 4px;padding: 2px 4px;">
                                     <img src="__static__/portal/img/lr.png" alt="">
                                     <span class="font-size-12 white-text" v-text="level"></span>
@@ -96,19 +96,19 @@
                         </div>
                     </div>
                     <div class="flex margin-tt-15">
-                            <div class="setting-usertype">用户昵称：</div>
-                            <div class="border-grey" style="width: 400px;">
-                                <input type="text" class="" v-model='nick_name' :value="nick_name">
-                            </div>
+                        <div class="setting-usertype">用户昵称：</div>
+                        <div class="border-grey" style="width: 400px;">
+                            <input type="text" class="" v-model='nick_name' :value="nick_name">
                         </div>
+                    </div>
                         <div class="flex margin-tt-15">
-                            <div class="setting-usertype">电话号码：</div>
-                            <div class="border-grey "style="width: 400px;">
-                                    <input type="text" class="" disabled="disabled" :value="mobile" style="border: none;">
-                            </div>
+                          <div class="setting-usertype">手机号：</div>
+                          <div class="border-grey "style="width: 400px;">
+                                  <input type="text" class="" disabled="disabled" :value="mobile" style="border: none;">
+                          </div>
                      <!--    <div class="blue-text pointer" style="line-height: 40px;margin-left: 10px; " @click="goto('reset_model')">修改</div> -->
                           </div>
-                        <div class="flex margin-tt-15">
+                      <div class="flex margin-tt-15">
                                 <div class="setting-usertype">性别：</div>
                                 <div class="margin-lr-10">
                                     <span class="choice pointer" :class="{'choice-active':user.gender == 0}" @click="changeSex(0)"></span>
@@ -123,6 +123,18 @@
                                         女
                                 </div>
                         </div>
+                      <div class="flex margin-tt-15">
+                        <div class="setting-usertype">接收推送信息手机号：</div>
+                        <div class="border-grey" style="width: 400px;">
+                            <input type="text" class="" v-model='receive_mobile' :value="receive_mobile">
+                        </div>
+                      </div>
+                      <div class="flex margin-tt-15">
+                        <div class="setting-usertype">接收推送信息邮箱：</div>
+                        <div class="border-grey" style="width: 400px;">
+                            <input type="text" class="" v-model='receive_email' :value="receive_email">
+                        </div>
+                      </div>
                         <div class="flex margin-tt-15">
                                 <div class="setting-usertype"></div>
                                 <div class="pointer margin-lr-10 padding-10 white-text blue radius5 center" style="width: 80px;" @click="submit()">
@@ -173,6 +185,8 @@
         page_size:'',
         nick_name:user.nick_name || '匿名用户',
         mobile:user.mobile,
+        receive_mobile:user.receive_mobile,
+        receive_email:user.receive_email,
         guessGoods:[],
       },
       methods: {
@@ -189,7 +203,9 @@
         submit:function(){
             var data = {
                 gender:app.user.gender,
-                nick_name:this.nick_name
+                nick_name:this.nick_name,
+                receive_mobile:this.receive_mobile,
+                receive_email:this.receive_email,
              }
             this.updateAjax(data);
         },  

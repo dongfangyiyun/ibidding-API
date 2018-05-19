@@ -207,4 +207,14 @@ class Index extends Controller
     public function article(){
         return view();
     }
+    // 信息收藏页
+    public function bid_collections()
+    {
+        return view();
+    }
+    // 信息详情页
+    public function bid_detail()
+    {
+        return view();
+    }
 }
