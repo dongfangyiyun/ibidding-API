@@ -12,15 +12,17 @@
 // [ 应用入口文件 ]
 
 // 测试环境
-defined('WANCLL_ENV') or define('WANCLL_ENV', 'dev');
+// defined('WANCLL_ENV') or define('WANCLL_ENV', 'dev');
 
 // 产品环境
 // defined('WANCLL_ENV') or define('WANCLL_ENV', 'prod');
 
 // API版本号
-defined('API_VERSION') or define('API_VERSION', '1.2.0');
+// defined('API_VERSION') or define('API_VERSION', '1.2.0');
 
 // 定义应用目录
-define('APP_PATH', __DIR__ . '/application/');
+// define('APP_PATH', __DIR__ . '/application/');
 // 加载框架引导文件
-require __DIR__ . '/thinkphp/start.php';
+// require __DIR__ . '/thinkphp/start.php';
+
+echo "<h5 style='margin:0 auto;text-align:center;margin-top:20px'>系统内测中，感谢您的关注！</h5>";
