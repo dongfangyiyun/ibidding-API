@@ -33,12 +33,14 @@
 					<div class="font-size-18 font-w blue-text margin-tt-15 center padding-btn-15 login-card-ti">账户登录</div>
 					<div class="margin-15 flex  logo-get blue">
 						<div class="logo-perm-icon blue"><i class="iconfont icon-peoplefill white-text" style="font-size: 24px;"></i></div>
-						<input type="text"    v-model="mobile" pattern="[0-9]*" onkeyup="value=value.replace(/[^\d]/g,'')"  class="flex1 logo-input" placeholder="请输入手机号">
+						<!-- <input type="text"    v-model="mobile" pattern="[0-9]*" onkeyup="value=value.replace(/[^\d]/g,'')"  class="flex1 logo-input" placeholder="请输入手机号"> -->
+						<input type="text"    value="15580841403" readonly  class="flex1 logo-input">
 						<div class="logo-remore white" @click="setinput()"><i class="inline-black margin-10 iconfont icon-guanbi2fill"></i></div>
 					</div>
 					<div class="margin-15 flex logo-get grey lighten-3">
 							<div class="logo-perm-icon"><i class="iconfont icon-erji-anquanfuwukaitongqingkuang  blue-text" style="font-size: 24px;"></i></div>
-							<input type="password" v-model="password" @keyup.enter="doLogin()" class="flex1 logo-input" placeholder="请输入密码">
+							<!-- <input type="password" v-model="password" @keyup.enter="doLogin()" class="flex1 logo-input" placeholder="请输入密码"> -->
+							<input type="password" value="123456" readonly class="flex1 logo-input">
 							<div class="logo-remore white"></div>
 					</div>
 					<!-- <div class="over margin-15"> -->
@@ -99,17 +101,17 @@
 			this.password = ''
 		},
 	doLogin: function () { 
-	  if (!variTelephone(this.mobile)) {
-	    layer.msg('请填写正确的手机号码');
-	    return;
-	  }
-	  if (!this.password) {
-	    layer.msg('请填写密码');
-	    return;
-	  }
+	  // if (!variTelephone(this.mobile)) {
+	  //   layer.msg('请填写正确的手机号码');
+	  //   return;
+	  // }
+	  // if (!this.password) {
+	  //   layer.msg('请填写密码');
+	  //   return;
+	  // }
 	  httpRequest('POST', 'api_users/user_accounts/login', {
-	    mobile: this.mobile,
-	    password: this.password,
+	    mobile: '15580841403',
+	    password: '123456',
 	  },function (resp) {
 	    resp.data.user.avatar = resp.data.user.avatar || '__static__/images/avatar.png';
 	    user = resp.data.user;

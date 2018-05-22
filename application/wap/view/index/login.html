@@ -15,12 +15,15 @@
       <h1 style="color: #1E90FF;margin: 20px;">iBidding</h1>
       <div class="mix">
         <i class="aui-iconfont aui-icon-mobile"></i>
-        <input id="mobile" type="text" class="input" v-model="mobile" pattern="[0-9]*" onkeyup="value=value.replace(/[^\d]/g,'')"
-          placeholder="输入手机号码">
+       <!--  <input id="mobile" type="text" class="input" v-model="mobile" pattern="[0-9]*" onkeyup="value=value.replace(/[^\d]/g,'')"
+          placeholder="输入手机号码"> -->
+           <input id="mobile" type="text" class="input" value="15580841403" readonly placeholder="输入手机号码">
       </div>
       <div class="mix">
         <i class="aui-iconfont aui-icon-lock"></i>
-        <input type="password" class="input" v-model="password" placeholder="输入登录密码">
+        <!-- <input type="password" class="input" v-model="password" placeholder="输入登录密码"> -->
+        <input type="password" class="input" value="123456" readonly placeholder="输入登录密码">
+
       </div>
       <div class="submit" @click="doLogin()">登录</div>
       <div class="other">
@@ -48,17 +51,17 @@
       },
       methods: {
         doLogin: function () {
-          if (!variTelephone(this.mobile)) {
-            layer.msg('请填写正确的手机号码');
-            return;
-          }
-          if (!this.password) {
-            layer.msg('请填写密码');
-            return;
-          }
+          // if (!variTelephone(this.mobile)) {
+          //   layer.msg('请填写正确的手机号码');
+          //   return;
+          // }
+          // if (!this.password) {
+          //   layer.msg('请填写密码');
+          //   return;
+          // }
           httpRequest('POST', 'api_users/user_accounts/login', {
-            mobile: this.mobile,
-            password: this.password,
+            mobile: '15580841403',
+            password: '123456',
           }).then(function (resp) {
             resp.data.user.avatar = resp.data.user.avatar || '__static__/images/avatar.png';
             user = resp.data.user;
