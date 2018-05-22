@@ -23,7 +23,7 @@
 					<li class="margin-lr-15 bt" @click="gocart()">
 						<i class="iconfont icon-xiexinzhangjie blue-text"></i> 我的收藏</li>
 					<li class="margin-lr-15 bt" @click="goorder()">
-						<i class="iconfont icon-icon_order blue-text"></i> 我的订阅</li>
+						<i class="iconfont icon-icon_order blue-text"></i> 我的推送</li>
 					<!-- <li class="margin-lr-15 bt">
 						<i class="iconfont icon-custom-service blue-text"></i> 联系客服</li> -->
 				</ul>
@@ -130,7 +130,7 @@
 			},
 			goorder:function(){
 				if (user) {
-					goto('collection_list');
+					goto('comment');
 				} else{
 					goto('login')
 				}
